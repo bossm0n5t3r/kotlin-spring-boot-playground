@@ -1,9 +1,0 @@
-{
-  "version": "1",
-  "name": "kotlin-spring-boot-playground",
-  "type": "collection",
-  "ignore": [
-    "node_modules",
-    ".git"
-  ]
-}
