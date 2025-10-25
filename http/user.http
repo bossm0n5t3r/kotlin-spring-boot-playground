@@ -1,0 +1,25 @@
+### Create User
+POST {{host}}/api/v1/users
+Content-Type: application/json
+
+{
+  "name": "John",
+  "age": 20
+}
+
+> {% client.global.set("user-id", response.body['id']); %}
+
+### Find User By ID
+GET {{host}}/api/v1/users/{{user-id}}
+Content-Type: application/json
+
+### Update User
+PUT {{host}}/api/v1/users/{{user-id}}
+Content-Type: application/json
+
+{
+  "name": "John Doe"
+}
+
+### Delete User
+DELETE {{host}}/api/v1/users/{{user-id}}
