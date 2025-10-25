@@ -1,7 +1,7 @@
 package me.bossm0n5t3r.configuration
 
 import com.zaxxer.hikari.HikariDataSource
-import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.v1.jdbc.Database
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
