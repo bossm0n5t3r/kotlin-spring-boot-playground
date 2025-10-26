@@ -28,6 +28,7 @@ dependencies {
     implementation(libs.kotlin.reflect)
     implementation(libs.spring.boot.starter.data.jdbc)
     implementation(libs.spring.boot.starter.web)
+    implementation(libs.spring.boot.starter.webflux)
     implementation(libs.jackson.module.kotlin)
 
     implementation(libs.exposed.core)
@@ -39,6 +40,7 @@ dependencies {
 
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.kotlin.test.junit5)
+    testImplementation(libs.okhttp3.mockwebserver)
     testRuntimeOnly(libs.junit.platform.launcher)
 }
 
