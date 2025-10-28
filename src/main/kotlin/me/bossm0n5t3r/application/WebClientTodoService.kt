@@ -10,14 +10,14 @@ import org.springframework.stereotype.Service
 class WebClientTodoService(
     private val client: JsonPlaceholderWebClient,
 ) {
-    fun getTodo(id: Long): TodoDto = client.getTodo(id)
+    suspend fun getTodo(id: Long): TodoDto = client.getTodo(id)
 
-    fun create(request: CreateTodoRequest): TodoDto = client.createTodo(request)
+    suspend fun create(request: CreateTodoRequest): TodoDto = client.createTodo(request)
 
-    fun update(
+    suspend fun update(
         id: Long,
         request: UpdateTodoRequest,
     ): TodoDto = client.updateTodo(id, request)
 
-    fun delete(id: Long) = client.deleteTodo(id)
+    suspend fun delete(id: Long) = client.deleteTodo(id)
 }
