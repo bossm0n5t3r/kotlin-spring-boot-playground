@@ -1,0 +1,52 @@
+### Todo 생성
+
+POST {{host}}/rest-client/todos
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "title": "foo",
+  "completed": false
+}
+
+> {%
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+### Todo 조회
+
+GET {{host}}/rest-client/todos/1
+
+> {%
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+### Todo 수정
+
+PUT {{host}}/rest-client/todos/1
+Content-Type: application/json
+
+{
+  "title": "bar",
+  "completed": false
+}
+
+> {%
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+### Todo 삭제
+
+DELETE {{host}}/rest-client/todos/1
+
+> {%
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
