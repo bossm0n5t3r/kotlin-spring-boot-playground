@@ -26,6 +26,8 @@ repositories {
 
 dependencies {
     implementation(libs.kotlin.reflect)
+    implementation(libs.kotlinx.coroutines.reactor)
+
     implementation(libs.spring.boot.starter.data.jdbc)
     implementation(libs.spring.boot.starter.web)
     implementation(libs.spring.boot.starter.webflux)
