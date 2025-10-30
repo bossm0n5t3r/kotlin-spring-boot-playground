@@ -6,8 +6,8 @@ import org.springframework.boot.runApplication
 
 @SpringBootApplication
 @ConfigurationPropertiesScan
-class KotlinSpringBootPlaygroundApplication
+class JdbcExposedApplication
 
 fun main(args: Array<String>) {
-    runApplication<KotlinSpringBootPlaygroundApplication>(*args)
+    runApplication<JdbcExposedApplication>(*args)
 }
