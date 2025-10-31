@@ -16,14 +16,16 @@ import org.jetbrains.exposed.v1.jdbc.insertAndGetId
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.jdbc.update
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 
 @Service
 class UserService(
-    private val database: Database,
+    @Qualifier("masterDatabase") private val masterDatabase: Database,
+    @Qualifier("slaveDatabase") private val slaveDatabase: Database,
 ) {
     fun findUserById(id: UserId): UserDto =
-        transaction(database) {
+        transaction(slaveDatabase) {
             addLogger(StdOutSqlLogger)
             val query =
                 UserEntity
@@ -35,7 +37,7 @@ class UserService(
 
     fun create(request: UserCreateRequest): UserId {
         val id =
-            transaction(database) {
+            transaction(masterDatabase) {
                 addLogger(StdOutSqlLogger)
                 UserEntity.insertAndGetId {
                     it[name] = request.name
@@ -49,7 +51,7 @@ class UserService(
     fun update(
         id: Long,
         request: UserUpdateRequest,
-    ) = transaction(database) {
+    ) = transaction(masterDatabase) {
         addLogger(StdOutSqlLogger)
         UserEntity.update({ UserEntity.id eq id }) {
             request.name?.let { name -> it[UserEntity.name] = name }
@@ -58,7 +60,7 @@ class UserService(
     }
 
     fun delete(id: UserId) =
-        transaction(database) {
+        transaction(masterDatabase) {
             addLogger(StdOutSqlLogger)
             UserEntity.deleteWhere { UserEntity.id eq id.value }
         }
