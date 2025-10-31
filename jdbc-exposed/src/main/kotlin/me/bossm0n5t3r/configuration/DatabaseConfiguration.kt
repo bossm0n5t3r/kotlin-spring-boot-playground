@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Primary
 
 @Configuration
 class DatabaseConfiguration {
-    // Master DataSource/Database
     @Bean
     @Primary
     @ConfigurationProperties("app.datasource.master.hikari")
@@ -22,7 +21,6 @@ class DatabaseConfiguration {
         @Qualifier("masterDataSource") dataSource: HikariDataSource,
     ): Database = Database.connect(dataSource)
 
-    // Slave DataSource/Database
     @Bean
     @ConfigurationProperties("app.datasource.slave.hikari")
     fun slaveDataSource() = HikariDataSource()
