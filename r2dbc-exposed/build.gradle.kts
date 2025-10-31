@@ -28,17 +28,17 @@ dependencies {
     implementation(libs.kotlin.reflect)
     implementation(libs.kotlinx.coroutines.reactor)
 
-    implementation(libs.spring.boot.starter.data.jdbc)
     implementation(libs.spring.boot.starter.web)
     implementation(libs.spring.boot.starter.webflux)
     implementation(libs.jackson.module.kotlin)
 
     implementation(libs.exposed.core)
     implementation(libs.exposed.dao)
-    implementation(libs.exposed.jdbc)
+    implementation(libs.exposed.r2dbc)
     implementation(libs.exposed.json)
     implementation(libs.exposed.kotlin.datetime)
     runtimeOnly(libs.h2)
+    runtimeOnly(libs.r2dbc.h2)
 
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.kotlin.test.junit5)
