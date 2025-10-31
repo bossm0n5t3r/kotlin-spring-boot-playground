@@ -1,3 +1,12 @@
+app:
+  datasource:
+    master:
+      r2dbc:
+        url: r2dbc:h2:mem:///test;DB_CLOSE_DELAY=-1
+    slave:
+      r2dbc:
+        url: r2dbc:h2:mem:///test;DB_CLOSE_DELAY=-1
+
 clients:
   jsonplaceholder:
     base-url: https://jsonplaceholder.typicode.com

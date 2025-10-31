@@ -17,14 +17,16 @@ import org.jetbrains.exposed.v1.r2dbc.insertAndGetId
 import org.jetbrains.exposed.v1.r2dbc.selectAll
 import org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
 import org.jetbrains.exposed.v1.r2dbc.update
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 
 @Service
 class UserService(
-    private val database: R2dbcDatabase,
+    @Qualifier("masterDatabase") private val masterDatabase: R2dbcDatabase,
+    @Qualifier("slaveDatabase") private val slaveDatabase: R2dbcDatabase,
 ) {
     suspend fun findUserById(id: UserId): UserDto =
-        suspendTransaction(database) {
+        suspendTransaction(slaveDatabase) {
             addLogger(StdOutSqlLogger)
             UserEntity
                 .selectAll()
@@ -36,7 +38,7 @@ class UserService(
 
     suspend fun create(request: UserCreateRequest): UserId {
         val id =
-            suspendTransaction(database) {
+            suspendTransaction(masterDatabase) {
                 addLogger(StdOutSqlLogger)
                 UserEntity.insertAndGetId {
                     it[name] = request.name
@@ -50,7 +52,7 @@ class UserService(
     suspend fun update(
         id: Long,
         request: UserUpdateRequest,
-    ) = suspendTransaction(database) {
+    ) = suspendTransaction(masterDatabase) {
         addLogger(StdOutSqlLogger)
         UserEntity.update({ UserEntity.id eq id }) {
             request.name?.let { name -> it[UserEntity.name] = name }
@@ -59,7 +61,7 @@ class UserService(
     }
 
     suspend fun delete(id: UserId) =
-        suspendTransaction(database) {
+        suspendTransaction(masterDatabase) {
             addLogger(StdOutSqlLogger)
             UserEntity.deleteWhere { UserEntity.id eq id.value }
         }
