@@ -25,7 +25,7 @@ class UserController(
 ) {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    fun findUserById(
+    suspend fun findUserById(
         @PathVariable id: Long,
     ): UserResponse =
         userService
@@ -35,7 +35,7 @@ class UserController(
     // Create User
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
-    fun create(
+    suspend fun create(
         @RequestBody form: UserCreateRequest,
     ): UserCreateResponse {
         val userId = userService.create(form)
@@ -45,7 +45,7 @@ class UserController(
     // Update User
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    fun update(
+    suspend fun update(
         @PathVariable id: Long,
         @RequestBody form: UserUpdateRequest,
     ) {
@@ -58,7 +58,7 @@ class UserController(
     // Delete User
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun delete(
+    suspend fun delete(
         @PathVariable id: Long,
     ) {
         userService.delete(UserId(id))
