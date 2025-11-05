@@ -1,6 +1,6 @@
 package me.bossm0n5t3r.application.dto
 
-import me.bossm0n5t3r.domain.User
+import me.bossm0n5t3r.domain.entity.User
 
 data class UserDto(
     val id: UserId,
@@ -8,7 +8,7 @@ data class UserDto(
     val age: Int,
 ) {
     constructor(user: User) : this(
-        id = UserId(user.id.value),
+        id = UserId(requireNotNull(user.id)),
         name = user.name,
         age = user.age,
     )
