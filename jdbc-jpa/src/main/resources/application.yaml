@@ -2,16 +2,30 @@ app:
   datasource:
     master:
       hikari:
-        jdbc-url: jdbc:h2:mem:test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+        jdbc-url: jdbc:h2:mem:test_master;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
         driver-class-name: org.h2.Driver
         username: sa
         password:
+        pool-name: master-pool
+        maximum-pool-size: 10
+        minimum-idle: 2
+        connection-timeout: 30000
+        idle-timeout: 600000
+        max-lifetime: 1800000
+
     slave:
       hikari:
-        jdbc-url: jdbc:h2:mem:test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+        jdbc-url: jdbc:h2:mem:test_slave;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
         driver-class-name: org.h2.Driver
         username: sa
         password:
+        pool-name: slave-pool
+        maximum-pool-size: 10
+        minimum-idle: 2
+        connection-timeout: 30000
+        idle-timeout: 600000
+        max-lifetime: 1800000
+        read-only: true
 
 clients:
   jsonplaceholder:
