@@ -10,6 +10,7 @@ h2 = "2.4.240"
 r2dbc-h2 = "1.1.0.RELEASE"
 okhttp3 = "5.3.2"
 kotlinx-coroutines = "1.10.2"
+ulid-kotlin = "1.5.0"
 
 [plugins]
 # Kotlin JVM Gradle plugin
@@ -50,8 +51,12 @@ exposed-kotlin-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datet
 h2 = { module = "com.h2database:h2", version.ref = "h2" }
 r2dbc-h2 = { module = "io.r2dbc:r2dbc-h2", version.ref = "r2dbc-h2" }
 
+spring-boot-starter-data-redis = { module = "org.springframework.boot:spring-boot-starter-data-redis" }
+
 okhttp3-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp3" }
 
 kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+
+ulid-kotlin = { module = "com.aallam.ulid:ulid-kotlin", version.ref = "ulid-kotlin" }
