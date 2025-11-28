@@ -30,6 +30,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.reactor)
 
     implementation(libs.spring.boot.starter.data.jdbc)
+    implementation(libs.spring.boot.starter.data.redis)
     implementation(libs.spring.boot.starter.web)
     implementation(libs.spring.boot.starter.kotlin.serialization)
 
@@ -39,6 +40,8 @@ dependencies {
     implementation(libs.exposed.json)
     implementation(libs.exposed.kotlin.datetime)
     runtimeOnly(libs.h2)
+
+    implementation(libs.ulid.kotlin)
 
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.kotlin.test.junit5)
