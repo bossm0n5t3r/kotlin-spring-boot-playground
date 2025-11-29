@@ -42,6 +42,9 @@ dependencies {
     testImplementation(libs.okhttp3.mockwebserver)
     testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation(libs.kotlinx.coroutines.test)
+
+    implementation(libs.spring.kafka)
+    testImplementation(libs.spring.kafka.test)
 }
 
 kotlin {
