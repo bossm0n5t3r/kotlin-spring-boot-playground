@@ -12,7 +12,7 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 @EnableScheduling
 @Component
-class EventPublisher(
+class RedisPublisher(
     @param:Qualifier("redisStreamEventStore")
     private val eventStore: EventStore,
 ) {
