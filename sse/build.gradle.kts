@@ -43,6 +43,7 @@ dependencies {
     testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation(libs.kotlinx.coroutines.test)
 
+    implementation(libs.spring.boot.starter.kafka)
     implementation(libs.spring.kafka)
     testImplementation(libs.spring.kafka.test)
 }

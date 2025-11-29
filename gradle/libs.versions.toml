@@ -40,6 +40,7 @@ spring-boot-starter-webflux = { module = "org.springframework.boot:spring-boot-s
 
 spring-boot-docker-compose = { module = "org.springframework.boot:spring-boot-docker-compose" }
 
+spring-boot-starter-kafka = { module = "org.springframework.boot:spring-boot-starter-kafka" }
 spring-kafka = { module = "org.springframework.kafka:spring-kafka" }
 spring-kafka-test = { module = "org.springframework.kafka:spring-kafka-test" }
 
