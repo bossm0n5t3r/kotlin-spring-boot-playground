@@ -17,10 +17,10 @@ import java.time.Duration
 @RequestMapping("/sse/redis")
 class RedisSseController(
     @param:Qualifier("redisStreamEventStore")
-    private val eventStore: EventStore,
-) {
+    override val eventStore: EventStore,
+) : SseController {
     @GetMapping(produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
-    fun sse(
+    override fun sse(
         @RequestHeader(LAST_EVENT_ID, required = false)
         lastEventId: String?,
     ): Flux<ServerSentEvent<SseEvent>> =
