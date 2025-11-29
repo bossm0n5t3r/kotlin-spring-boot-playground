@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <title>SSE Client Demo</title>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background: #f6f7f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            background: #ffffff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e2e3e7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.06);
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: red;
+        }
+
+        .dot.connected {
+            background: #2ecc71;
+        }
+
+        main {
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex-grow: 1;
+        }
+
+        .message {
+            background: white;
+            padding: 14px 16px;
+            border-radius: 6px;
+            border-left: 4px solid #4a8af4;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        footer {
+            padding: 16px;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <div class="status">
+        <div id="statusDot" class="dot"></div>
+        <span id="statusText">Disconnected</span>
+    </div>
+    <div>
+        SSE Demo — <b>/sse</b>
+    </div>
+</header>
+
+<main id="messages"></main>
+
+<footer>
+    Last Event ID: <span id="lastId">None</span>
+</footer>
+
+<script>
+    class SSEClient {
+        constructor(url) {
+            this.url = url;
+            this.eventSource = null;
+            this.backoff = 1000;
+            this.maxBackoff = 15000;
+            this.lastEventId = localStorage.getItem("lastEventId") || null;
+            this.connect();
+        }
+
+        connect() {
+            const url = this.lastEventId
+                ? `${this.url}?lastEventId=${this.lastEventId}`
+                : this.url;
+
+            this.eventSource = new EventSource(url);
+
+            this.eventSource.onopen = () => {
+                this.setStatus(true);
+                this.backoff = 1000;
+            };
+
+            this.eventSource.onmessage = (event) => {
+                if (event.lastEventId) {
+                    this.lastEventId = event.lastEventId;
+                    localStorage.setItem("lastEventId", this.lastEventId);
+                    document.getElementById("lastId").innerText = this.lastEventId;
+                }
+                this.addMessage(event.data);
+            };
+
+            this.eventSource.onerror = () => {
+                this.setStatus(false);
+                this.eventSource.close();
+                setTimeout(() => this.connect(), this.backoff);
+                this.backoff = Math.min(this.backoff * 2, this.maxBackoff);
+            };
+        }
+
+        addMessage(text) {
+            const container = document.getElementById("messages");
+            const div = document.createElement("div");
+            div.className = "message";
+            div.textContent = text;
+
+            container.insertBefore(div, container.firstChild);
+        }
+
+        setStatus(connected) {
+            const dot = document.getElementById("statusDot");
+            const text = document.getElementById("statusText");
+
+            if (connected) {
+                dot.classList.add("connected");
+                text.textContent = "Connected";
+            } else {
+                dot.classList.remove("connected");
+                text.textContent = "Disconnected";
+            }
+        }
+    }
+
+    const client = new SSEClient("http://localhost:8080/sse");
+</script>
+
+</body>
+</html>
