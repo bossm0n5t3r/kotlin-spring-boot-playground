@@ -14,10 +14,10 @@ import kotlin.time.ExperimentalTime
 @Component
 class RedisPublisher(
     @param:Qualifier("redisStreamEventStore")
-    private val eventStore: EventStore,
-) {
+    override val eventStore: EventStore,
+) : EventPublisher {
     @Scheduled(fixedRate = 5_000)
-    fun publishTick() {
+    override fun publish() {
         val event = eventStore.publish("tick at ${Clock.System.now()}")
         LOGGER.info("published event: {}", event)
     }
