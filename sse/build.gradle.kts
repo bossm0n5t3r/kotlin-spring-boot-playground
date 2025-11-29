@@ -29,17 +29,11 @@ dependencies {
     implementation(libs.kotlin.reflect)
     implementation(libs.kotlinx.coroutines.reactor)
 
-    implementation(libs.spring.boot.starter.data.jdbc)
     implementation(libs.spring.boot.starter.data.redis)
-    implementation(libs.spring.boot.starter.web)
+    implementation(libs.spring.boot.starter.webflux)
     implementation(libs.spring.boot.starter.kotlin.serialization)
 
-    implementation(libs.exposed.core)
-    implementation(libs.exposed.dao)
-    implementation(libs.exposed.jdbc)
-    implementation(libs.exposed.json)
-    implementation(libs.exposed.kotlin.datetime)
-    runtimeOnly(libs.h2)
+    developmentOnly(libs.spring.boot.docker.compose)
 
     implementation(libs.ulid.kotlin)
 
