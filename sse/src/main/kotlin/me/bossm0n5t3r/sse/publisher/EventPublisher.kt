@@ -1,6 +1,8 @@
-package me.bossm0n5t3r.sse.service
+package me.bossm0n5t3r.sse.publisher
 
 import me.bossm0n5t3r.sse.configuration.LOGGER
+import me.bossm0n5t3r.sse.service.EventStore
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -11,6 +13,7 @@ import kotlin.time.ExperimentalTime
 @EnableScheduling
 @Component
 class EventPublisher(
+    @param:Qualifier("redisStreamEventStore")
     private val eventStore: EventStore,
 ) {
     @Scheduled(fixedRate = 5_000)
