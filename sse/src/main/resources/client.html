@@ -58,13 +58,35 @@
             border-radius: 6px;
             border-left: 4px solid #4a8af4;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            font-size: 13px;
         }
 
         footer {
-            padding: 16px;
+            padding: 12px 16px;
             font-size: 12px;
             color: #666;
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            background: #f0f1f3;
+            border-top: 1px solid #ddd;
+        }
+
+        .controls button {
+            margin-left: 8px;
+            padding: 6px 10px;
+            font-size: 12px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .controls button.active {
+            border-color: #4a8af4;
+            color: #4a8af4;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -75,15 +97,22 @@
         <div id="statusDot" class="dot"></div>
         <span id="statusText">Disconnected</span>
     </div>
-    <div>
-        SSE Demo — <b>/sse</b>
+    <div class="controls">
+        Backend:
+        <button id="btnRedis" class="active">Redis (/sse)</button>
+        <button id="btnKafka">Kafka (/sse-kafka)</button>
     </div>
 </header>
 
 <main id="messages"></main>
 
 <footer>
-    Last Event ID: <span id="lastId">None</span>
+    <div>
+        Last Event ID: <span id="lastId">None</span>
+    </div>
+    <div>
+        Backend: <span id="backendLabel">Redis</span>
+    </div>
 </footer>
 
 <script>
@@ -93,35 +122,58 @@
             this.eventSource = null;
             this.backoff = 1000;
             this.maxBackoff = 15000;
-            this.lastEventId = localStorage.getItem("lastEventId") || null;
+            this.lastEventId = localStorage.getItem(this.storageKey()) || null;
+            this.retryTimeoutId = null;
+            this.closed = false;
             this.connect();
         }
 
+        storageKey() {
+            // backend별로 lastEventId를 분리 저장
+            return "lastEventId:" + this.url;
+        }
+
         connect() {
+            if (this.closed) return;
+
             const url = this.lastEventId
-                ? `${this.url}?lastEventId=${this.lastEventId}`
+                ? `${this.url}?lastEventId=${encodeURIComponent(this.lastEventId)}`
                 : this.url;
 
             this.eventSource = new EventSource(url);
 
             this.eventSource.onopen = () => {
+                if (this.closed) return;
                 this.setStatus(true);
                 this.backoff = 1000;
             };
 
             this.eventSource.onmessage = (event) => {
+                if (this.closed) return;
+
                 if (event.lastEventId) {
                     this.lastEventId = event.lastEventId;
-                    localStorage.setItem("lastEventId", this.lastEventId);
+                    localStorage.setItem(this.storageKey(), this.lastEventId);
                     document.getElementById("lastId").innerText = this.lastEventId;
                 }
+
                 this.addMessage(event.data);
             };
 
             this.eventSource.onerror = () => {
+                if (this.closed) return;
+
                 this.setStatus(false);
                 this.eventSource.close();
-                setTimeout(() => this.connect(), this.backoff);
+
+                if (this.retryTimeoutId) {
+                    clearTimeout(this.retryTimeoutId);
+                }
+
+                this.retryTimeoutId = setTimeout(() => {
+                    this.connect();
+                }, this.backoff);
+
                 this.backoff = Math.min(this.backoff * 2, this.maxBackoff);
             };
         }
@@ -131,15 +183,18 @@
             const div = document.createElement("div");
             div.className = "message";
 
+            // 서버에서 SseEvent JSON 내려온다고 가정
             try {
                 const obj = JSON.parse(text);
                 const ulid = obj.ulid || "NO-ULID";
-                const message = obj.message || text;
-                div.textContent = `[${ulid}] ${message}`;
+                const msg = obj.message || text;
+                const createdAt = obj.createdAt || "";
+                div.textContent = `[${ulid}] ${msg} (${createdAt})`;
             } catch (e) {
                 div.textContent = text;
             }
 
+            // 새 메시지 위에서부터
             container.insertBefore(div, container.firstChild);
         }
 
@@ -155,9 +210,68 @@
                 text.textContent = "Disconnected";
             }
         }
+
+        close() {
+            this.closed = true;
+
+            if (this.retryTimeoutId) {
+                clearTimeout(this.retryTimeoutId);
+                this.retryTimeoutId = null;
+            }
+
+            if (this.eventSource) {
+                this.eventSource.onopen = null;
+                this.eventSource.onmessage = null;
+                this.eventSource.onerror = null;
+                this.eventSource.close();
+            }
+
+            this.setStatus(false);
+        }
     }
 
-    const client = new SSEClient("http://localhost:8080/sse");
+    const host = "http://localhost:8080";
+    let client = new SSEClient(host + "/sse/redis"); // 기본 Redis
+
+    function clearMessages() {
+        const container = document.getElementById("messages");
+        container.innerHTML = "";
+    }
+
+    function switchBackend(backend) {
+        if (client) {
+            client.close();
+        }
+
+        clearMessages();
+
+        const btnRedis = document.getElementById("btnRedis");
+        const btnKafka = document.getElementById("btnKafka");
+        const backendLabel = document.getElementById("backendLabel");
+
+        btnRedis.classList.remove("active");
+        btnKafka.classList.remove("active");
+
+        let url;
+        if (backend === "redis") {
+            btnRedis.classList.add("active");
+            backendLabel.textContent = "Redis";
+            url = "/sse/redis";
+        } else {
+            btnKafka.classList.add("active");
+            backendLabel.textContent = "Kafka";
+            url = "/sse/kafka";
+        }
+
+        client = new SSEClient(host + url);
+
+        // backend 바꿀 때 해당 backend용 lastEventId 표기
+        const lastId = localStorage.getItem(client.storageKey());
+        document.getElementById("lastId").innerText = lastId || "None";
+    }
+
+    document.getElementById("btnRedis").onclick = () => switchBackend("redis");
+    document.getElementById("btnKafka").onclick = () => switchBackend("kafka");
 </script>
 
 </body>
