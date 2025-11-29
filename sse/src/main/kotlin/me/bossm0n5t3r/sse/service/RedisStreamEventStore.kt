@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Sinks
+import ulid.ULID
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -29,8 +30,11 @@ class RedisStreamEventStore(
 
     override fun publish(message: String): SseEvent {
         val createdAt = Clock.System.now()
+        val ulid = ULID.randomULID(createdAt.toEpochMilliseconds())
+
         val map =
             mapOf(
+                "ulid" to ulid,
                 "message" to message,
                 "createdAt" to createdAt.toString(),
             )
@@ -49,52 +53,50 @@ class RedisStreamEventStore(
 
         val event =
             SseEvent(
-                id = recordId.value,
+                streamId = recordId.value,
+                ulid = ulid,
                 message = message,
                 createdAt = createdAt,
             )
 
-        // 실시간 구독자에게도 push
         val result = sink.tryEmitNext(event)
         if (result.isFailure) {
-            LOGGER.warn("Failed to emit event to sink: {}", result)
+            LOGGER.warn("Failed to emit SSE event to sink: {}", result)
         }
 
         return event
     }
 
-    override fun streamFrom(lastEventId: String?): Flux<SseEvent> {
-        // 1) Redis Streams 에서 과거 이벤트 조회
-        val missedEvents: List<SseEvent> = loadMissedEvents(lastEventId)
-
-        val missedFlux = Flux.fromIterable(missedEvents)
+    override fun streamFrom(lastStreamId: String?): Flux<SseEvent> {
+        val missed = loadMissedEvents(lastStreamId)
+        val missedFlux = Flux.fromIterable(missed)
         val liveFlux = sink.asFlux()
-
-        // 2) 과거 이벤트 다 보내고 -> 이후에는 실시간 스트림
         return missedFlux.concatWith(liveFlux)
     }
 
-    private fun loadMissedEvents(lastEventId: String?): List<SseEvent> {
+    private fun loadMissedEvents(lastStreamId: String?): List<SseEvent> {
         val ops = redisTemplate.opsForStream<String, String>()
 
-        val records: List<MapRecord<String, String, String>> =
-            if (lastEventId == null) {
-                // 처음 접속: 스트림 전체 (실서비스라면 TTL/최대 길이 고려)
-                ops.range(STREAM_KEY, Range.unbounded()) ?: emptyList()
+        val range: Range<String> =
+            if (lastStreamId == null) {
+                Range.unbounded()
             } else {
-                // lastEventId 보다 큰 ID 들만
-                ops.range(STREAM_KEY, Range.rightOpen(lastEventId, "+")) ?: emptyList()
+                Range.rightOpen(lastStreamId, "+")
             }
 
+        val records: List<MapRecord<String, String, String>> = ops.range(STREAM_KEY, range) ?: emptyList()
+
         return records.map { record ->
-            val id = record.id.value
+            val streamId = record.id.value
             val map = record.value
 
+            val ulid = map["ulid"] ?: "UNKNOWN"
             val message = map["message"] ?: ""
             val createdAt = map["createdAt"]?.let { Instant.parse(it) } ?: Instant.fromEpochMilliseconds(0L)
 
             SseEvent(
-                id = id,
+                streamId = streamId,
+                ulid = ulid,
                 message = message,
                 createdAt = createdAt,
             )

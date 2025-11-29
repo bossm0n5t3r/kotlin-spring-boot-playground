@@ -30,7 +30,7 @@ class SseController(
             .map { event ->
                 ServerSentEvent
                     .builder<SseEvent>()
-                    .id(event.id) // SSE id → 브라우저가 Last-Event-ID 로 돌려줌
+                    .id(event.streamId)
                     .event("message")
                     .data(event)
                     .retry(Duration.ofSeconds(3)) // 끊기면 3초 후 재접속

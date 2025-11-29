@@ -130,7 +130,15 @@
             const container = document.getElementById("messages");
             const div = document.createElement("div");
             div.className = "message";
-            div.textContent = text;
+
+            try {
+                const obj = JSON.parse(text);
+                const ulid = obj.ulid || "NO-ULID";
+                const message = obj.message || text;
+                div.textContent = `[${ulid}] ${message}`;
+            } catch (e) {
+                div.textContent = text;
+            }
 
             container.insertBefore(div, container.firstChild);
         }

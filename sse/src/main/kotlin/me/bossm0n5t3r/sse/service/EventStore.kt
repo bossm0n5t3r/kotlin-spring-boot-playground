@@ -6,5 +6,5 @@ import reactor.core.publisher.Flux
 interface EventStore {
     fun publish(message: String): SseEvent
 
-    fun streamFrom(lastEventId: String?): Flux<SseEvent>
+    fun streamFrom(lastStreamId: String?): Flux<SseEvent>
 }
