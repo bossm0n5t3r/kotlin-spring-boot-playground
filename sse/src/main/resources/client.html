@@ -99,8 +99,9 @@
     </div>
     <div class="controls">
         Backend:
-        <button id="btnRedis" class="active">Redis (/sse)</button>
-        <button id="btnKafka">Kafka (/sse-kafka)</button>
+        <button id="btnRedis" class="active">Redis (/sse/redis)</button>
+        <button id="btnKafka">Kafka (/sse/kafka)</button>
+        <button id="btnKafkaReactor">Kafka (/sse/kafka/reactor)</button>
     </div>
 </header>
 
@@ -247,20 +248,26 @@
 
         const btnRedis = document.getElementById("btnRedis");
         const btnKafka = document.getElementById("btnKafka");
+        const btnKafkaReactor = document.getElementById("btnKafkaReactor");
         const backendLabel = document.getElementById("backendLabel");
 
         btnRedis.classList.remove("active");
         btnKafka.classList.remove("active");
+        btnKafkaReactor.classList.remove("active");
 
         let url;
         if (backend === "redis") {
             btnRedis.classList.add("active");
             backendLabel.textContent = "Redis";
             url = "/sse/redis";
-        } else {
+        } else if (backend === "kafka") {
             btnKafka.classList.add("active");
             backendLabel.textContent = "Kafka";
             url = "/sse/kafka";
+        } else if (backend === "kafkaReactor") {
+            btnKafkaReactor.classList.add("active");
+            backendLabel.textContent = "Kafka (Reactor)";
+            url = "/sse/kafka/reactor";
         }
 
         client = new SSEClient(host + url);
@@ -272,6 +279,7 @@
 
     document.getElementById("btnRedis").onclick = () => switchBackend("redis");
     document.getElementById("btnKafka").onclick = () => switchBackend("kafka");
+    document.getElementById("btnKafkaReactor").onclick = () => switchBackend("kafkaReactor");
 </script>
 
 </body>
