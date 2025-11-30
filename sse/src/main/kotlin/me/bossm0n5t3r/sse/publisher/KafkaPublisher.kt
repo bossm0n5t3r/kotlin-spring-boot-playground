@@ -16,7 +16,8 @@ class KafkaPublisher(
 ) : EventPublisher {
     @Scheduled(fixedRate = 5000)
     override fun publish() {
-        val event = eventStore.publish("[kafka] tick at ${Clock.System.now()}")
-        LOGGER.info("published Kafka SSE event: {}", event)
+        eventStore
+            .publish("[kafka] tick at ${Clock.System.now()}")
+            .subscribe { LOGGER.info("published Kafka SSE event: {}", it) }
     }
 }

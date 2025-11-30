@@ -16,7 +16,8 @@ class RedisPublisher(
 ) : EventPublisher {
     @Scheduled(fixedRate = 5_000)
     override fun publish() {
-        val event = eventStore.publish("[redis] tick at ${Clock.System.now()}")
-        LOGGER.info("published Redis Stream SSE event: {}", event)
+        eventStore
+            .publish("[redis] tick at ${Clock.System.now()}")
+            .subscribe { LOGGER.info("published Redis Stream SSE event: {}", it) }
     }
 }
