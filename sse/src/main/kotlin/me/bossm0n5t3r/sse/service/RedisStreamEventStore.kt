@@ -9,6 +9,7 @@ import org.springframework.data.redis.connection.stream.StreamRecords
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import reactor.core.publisher.Sinks
 import ulid.ULID
 import kotlin.time.Clock
@@ -28,44 +29,45 @@ class RedisStreamEventStore(
     private val sink: Sinks.Many<SseEvent> =
         Sinks.many().multicast().onBackpressureBuffer()
 
-    override fun publish(message: String): SseEvent {
-        val createdAt = Clock.System.now()
-        val ulid = ULID.randomULID(createdAt.toEpochMilliseconds())
+    override fun publish(message: String): Mono<SseEvent> =
+        Mono.fromCallable {
+            val createdAt = Clock.System.now()
+            val ulid = ULID.randomULID(createdAt.toEpochMilliseconds())
 
-        val map =
-            mapOf(
-                "ulid" to ulid,
-                "message" to message,
-                "createdAt" to createdAt.toString(),
-            )
+            val map =
+                mapOf(
+                    "ulid" to ulid,
+                    "message" to message,
+                    "createdAt" to createdAt.toString(),
+                )
 
-        val record =
-            StreamRecords
-                .newRecord()
-                .ofMap(map)
-                .withStreamKey(STREAM_KEY)
+            val record =
+                StreamRecords
+                    .newRecord()
+                    .ofMap(map)
+                    .withStreamKey(STREAM_KEY)
 
-        val recordId: RecordId =
-            redisTemplate
-                .opsForStream<String, String>()
-                .add(record)
-                ?: throw IllegalStateException("Failed to add record to Redis Stream")
+            val recordId: RecordId =
+                redisTemplate
+                    .opsForStream<String, String>()
+                    .add(record)
+                    ?: throw IllegalStateException("Failed to add record to Redis Stream")
 
-        val event =
-            SseEvent(
-                streamId = recordId.value,
-                ulid = ulid,
-                message = message,
-                createdAt = createdAt,
-            )
+            val event =
+                SseEvent(
+                    streamId = recordId.value,
+                    ulid = ulid,
+                    message = message,
+                    createdAt = createdAt,
+                )
 
-        val result = sink.tryEmitNext(event)
-        if (result.isFailure) {
-            LOGGER.warn("Failed to emit SSE event to sink: {}", result)
+            val result = sink.tryEmitNext(event)
+            if (result.isFailure) {
+                LOGGER.warn("Failed to emit SSE event to sink: {}", result)
+            }
+
+            event
         }
-
-        return event
-    }
 
     override fun streamFrom(lastStreamId: String?): Flux<SseEvent> {
         val missed = loadMissedEvents(lastStreamId)
