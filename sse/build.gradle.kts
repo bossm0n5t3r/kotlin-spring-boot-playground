@@ -45,6 +45,8 @@ dependencies {
 
     implementation(libs.spring.boot.starter.kafka)
     implementation(libs.spring.kafka)
+    implementation(libs.reactor.kafka)
+    implementation(libs.kafka.streams)
     testImplementation(libs.spring.kafka.test)
 }
 

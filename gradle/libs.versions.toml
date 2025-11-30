@@ -11,6 +11,8 @@ r2dbc-h2 = "1.1.0.RELEASE"
 okhttp3 = "5.3.2"
 kotlinx-coroutines = "1.10.2"
 ulid-kotlin = "1.5.0"
+reactor-kafka = "1.3.25"
+apache-kafka = "4.1.1"
 
 [plugins]
 # Kotlin JVM Gradle plugin
@@ -66,3 +68,6 @@ spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-star
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 
 ulid-kotlin = { module = "com.aallam.ulid:ulid-kotlin", version.ref = "ulid-kotlin" }
+
+reactor-kafka = { module = "io.projectreactor.kafka:reactor-kafka", version.ref = "reactor-kafka" }
+kafka-streams = { module = "org.apache.kafka:kafka-streams", version.ref = "apache-kafka" }
