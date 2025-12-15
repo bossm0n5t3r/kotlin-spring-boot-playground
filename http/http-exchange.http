@@ -1,0 +1,23 @@
+### json-place-holders (posts)
+
+GET https://jsonplaceholder.typicode.com/posts
+
+### json-place-holders (users)
+
+GET https://jsonplaceholder.typicode.com/users
+
+### json-place-holders (todos)
+
+GET https://jsonplaceholder.typicode.com/todos
+
+### Application (posts)
+
+GET localhost:8080/http-exchange/posts
+
+### Application (users)
+
+GET localhost:8080/http-exchange/users
+
+### Application (todos)
+
+GET localhost:8080/http-exchange/todos
