@@ -9,7 +9,7 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(name = "users")
-class User(
+open class User(
     @Column(nullable = false)
     var name: String,
     @Column(nullable = false)
