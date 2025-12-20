@@ -14,11 +14,9 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory
 @Configuration
 class HttpClientsConfiguration {
     @Bean
-    fun jsonPlaceholderWebClient(
-        builder: WebClient.Builder,
-        props: JsonPlaceholderProperties,
-    ): WebClient =
-        builder
+    fun jsonPlaceholderWebClient(props: JsonPlaceholderProperties): WebClient =
+        WebClient
+            .builder()
             .baseUrl(props.baseUrl)
             .build()
 
@@ -30,11 +28,9 @@ class HttpClientsConfiguration {
     }
 
     @Bean
-    fun jsonPlaceholderRestClient(
-        builder: RestClient.Builder,
-        props: JsonPlaceholderProperties,
-    ): RestClient =
-        builder
+    fun jsonPlaceholderRestClient(props: JsonPlaceholderProperties): RestClient =
+        RestClient
+            .builder()
             .baseUrl(props.baseUrl)
             .build()
 
