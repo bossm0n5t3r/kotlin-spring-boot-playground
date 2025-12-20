@@ -10,6 +10,7 @@ import org.springframework.web.client.support.RestClientAdapter
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.support.WebClientAdapter
 import org.springframework.web.service.invoker.HttpServiceProxyFactory
+import org.springframework.web.service.invoker.createClient
 
 @Configuration
 class HttpClientsConfiguration {
@@ -24,7 +25,7 @@ class HttpClientsConfiguration {
     fun jsonPlaceholderClient(webClient: WebClient): JsonPlaceholderWebClient {
         val adapter = WebClientAdapter.create(webClient)
         val factory = HttpServiceProxyFactory.builder().exchangeAdapter(adapter).build()
-        return factory.createClient(JsonPlaceholderWebClient::class.java)
+        return factory.createClient<JsonPlaceholderWebClient>()
     }
 
     @Bean
@@ -38,6 +39,6 @@ class HttpClientsConfiguration {
     fun jsonPlaceholderRestExchangeClient(restClient: RestClient): JsonPlaceholderRestClient {
         val adapter = RestClientAdapter.create(restClient)
         val factory = HttpServiceProxyFactory.builder().exchangeAdapter(adapter).build()
-        return factory.createClient(JsonPlaceholderRestClient::class.java)
+        return factory.createClient<JsonPlaceholderRestClient>()
     }
 }
