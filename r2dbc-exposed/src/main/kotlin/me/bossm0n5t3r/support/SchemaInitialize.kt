@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component
 class SchemaInitialize(
     @Qualifier("masterDatabase") private val masterDatabase: R2dbcDatabase,
 ) : ApplicationRunner {
-    override fun run(args: ApplicationArguments?) =
+    override fun run(args: ApplicationArguments) =
         runBlocking {
             suspendTransaction(masterDatabase) {
                 addLogger(StdOutSqlLogger)
