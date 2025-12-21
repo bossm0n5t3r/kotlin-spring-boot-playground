@@ -6,6 +6,10 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import me.bossm0n5t3r.dto.DateTimeDto
 import me.bossm0n5t3r.dto.PersonDto
 import me.bossm0n5t3r.dto.SerializationTestData
+import me.bossm0n5t3r.dto.SerializationTestData.WEIRD_DTO_RIGHT_JSON
+import me.bossm0n5t3r.dto.SerializationTestData.WEIRD_DTO_WRONG_JSON
+import me.bossm0n5t3r.dto.SerializationTestData.weirdDto
+import me.bossm0n5t3r.dto.WeirdDto
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import kotlin.test.assertNotEquals
@@ -66,30 +70,25 @@ class LegacyJacksonSerializationTest {
         assertEquals(SerializationTestData.dateTimeDto.updatedAt.toInstant(), deserializedDateTimeDto.updatedAt.toInstant())
     }
 
-    private data class WeirdDto(
-        val xId: String,
-    )
-
     @Test
     fun `Jackson handles weird DTO`() {
-        val dto = WeirdDto("It’s really weird.")
-        val weirdJson = """{"xId":"It’s really weird."}"""
+        val wrongSerialized = mapper.writeValueAsString(weirdDto)
+        assertNotEquals(WEIRD_DTO_RIGHT_JSON, wrongSerialized)
+        assertEquals(WEIRD_DTO_WRONG_JSON, wrongSerialized)
 
-        val serialized = mapper.writeValueAsString(dto)
-        assertNotEquals(weirdJson, serialized)
-
-        val deserialized = mapper.readValue<WeirdDto>(weirdJson)
-        assertEquals(dto, deserialized)
+        val deserialized = mapper.readValue<WeirdDto>(WEIRD_DTO_RIGHT_JSON)
+        assertEquals(weirdDto, deserialized)
 
         val rightObjectMapper =
             legacyJacksonObjectMapper {
                 enable(KotlinFeature.KotlinPropertyNameAsImplicitName)
             }.registerModule(JavaTimeModule())
 
-        val rightSerialized = rightObjectMapper.writeValueAsString(dto)
-        assertEquals(weirdJson, rightSerialized)
+        val rightSerialized = rightObjectMapper.writeValueAsString(weirdDto)
+        assertEquals(WEIRD_DTO_RIGHT_JSON, rightSerialized)
+        assertNotEquals(WEIRD_DTO_WRONG_JSON, rightSerialized)
 
-        val rightDeserialized = rightObjectMapper.readValue<WeirdDto>(weirdJson)
-        assertEquals(dto, rightDeserialized)
+        val anotherDeserialized = rightObjectMapper.readValue<WeirdDto>(WEIRD_DTO_RIGHT_JSON)
+        assertEquals(weirdDto, anotherDeserialized)
     }
 }

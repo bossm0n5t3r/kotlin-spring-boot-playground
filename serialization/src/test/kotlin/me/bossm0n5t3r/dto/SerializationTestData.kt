@@ -32,4 +32,8 @@ object SerializationTestData {
 
     const val DATE_TIME_JSON =
         """{"name":"bossm0n5t3r","createdAt":"2006-01-02T15:04:05","updatedAt":"01/02 03:04:05PM '06 -0700"}"""
+
+    val weirdDto = WeirdDto("bossm0n5t3r", "It’s really weird.")
+    const val WEIRD_DTO_RIGHT_JSON = """{"xId":"bossm0n5t3r","xMessage":"It’s really weird."}"""
+    const val WEIRD_DTO_WRONG_JSON = """{"xid":"bossm0n5t3r","xmessage":"It’s really weird."}"""
 }
