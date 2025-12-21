@@ -1,5 +1,6 @@
 package me.bossm0n5t3r.jackson
 
+import me.bossm0n5t3r.dto.DateTimeDto
 import me.bossm0n5t3r.dto.PersonDto
 import me.bossm0n5t3r.dto.SerializationTestData
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -31,5 +32,32 @@ class JacksonSerializationTest {
         val deserializedPerson = mapper.readValue<PersonDto>(json)
 
         assertEquals(SerializationTestData.personWithDefaultValues, deserializedPerson)
+    }
+
+    @Test
+    fun `Jackson serialization and deserialization test for LocalDateTime`() {
+        val dateTimeDto = SerializationTestData.dateTimeDto
+
+        // Serialization
+        val json = mapper.writeValueAsString(dateTimeDto)
+        println("Jackson DateTime JSON: $json")
+
+        // Deserialization
+        val deserializedDateTimeDto = mapper.readValue<DateTimeDto>(json)
+
+        assertEquals(dateTimeDto.name, deserializedDateTimeDto.name)
+        assertEquals(dateTimeDto.createdAt, deserializedDateTimeDto.createdAt)
+        assertEquals(dateTimeDto.updatedAt.toInstant(), deserializedDateTimeDto.updatedAt.toInstant())
+    }
+
+    @Test
+    fun `Jackson handles DATE_TIME_JSON`() {
+        val json = SerializationTestData.DATE_TIME_JSON
+
+        val deserializedDateTimeDto = mapper.readValue<DateTimeDto>(json)
+
+        assertEquals(SerializationTestData.dateTimeDto.name, deserializedDateTimeDto.name)
+        assertEquals(SerializationTestData.dateTimeDto.createdAt, deserializedDateTimeDto.createdAt)
+        assertEquals(SerializationTestData.dateTimeDto.updatedAt.toInstant(), deserializedDateTimeDto.updatedAt.toInstant())
     }
 }

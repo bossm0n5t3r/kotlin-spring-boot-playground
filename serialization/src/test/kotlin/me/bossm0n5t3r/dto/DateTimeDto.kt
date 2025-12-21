@@ -1,0 +1,57 @@
+package me.bossm0n5t3r.dto
+
+import com.fasterxml.jackson.annotation.JsonFormat
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
+
+const val LOCAL_DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss"
+const val OFFSET_DATE_TIME_PATTERN = "MM/dd hh:mm:ssa ''yy Z"
+
+@Serializable
+data class DateTimeDto(
+    val name: String,
+    @Serializable(with = LocalDateTimeSerializer::class)
+    @field:JsonFormat(pattern = LOCAL_DATE_TIME_PATTERN)
+    val createdAt: LocalDateTime,
+    @Serializable(with = OffsetDateTimeSerializer::class)
+    @field:JsonFormat(pattern = OFFSET_DATE_TIME_PATTERN, with = [JsonFormat.Feature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE])
+    val updatedAt: OffsetDateTime,
+)
+
+object LocalDateTimeSerializer : KSerializer<LocalDateTime> {
+    private val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("LocalDateTime", PrimitiveKind.STRING)
+
+    override fun serialize(
+        encoder: Encoder,
+        value: LocalDateTime,
+    ) {
+        encoder.encodeString(value.format(formatter))
+    }
+
+    override fun deserialize(decoder: Decoder): LocalDateTime = LocalDateTime.parse(decoder.decodeString(), formatter)
+}
+
+object OffsetDateTimeSerializer : KSerializer<OffsetDateTime> {
+    private val formatter = DateTimeFormatter.ofPattern(OFFSET_DATE_TIME_PATTERN)
+
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("OffsetDateTime", PrimitiveKind.STRING)
+
+    override fun serialize(
+        encoder: Encoder,
+        value: OffsetDateTime,
+    ) {
+        encoder.encodeString(value.format(formatter))
+    }
+
+    override fun deserialize(decoder: Decoder): OffsetDateTime = OffsetDateTime.parse(decoder.decodeString(), formatter)
+}
