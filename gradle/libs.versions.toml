@@ -56,8 +56,12 @@ spring-kafka-test = { module = "org.springframework.kafka:spring-kafka-test" }
 
 # Serialization
 spring-boot-starter-kotlin-serialization = { module = "org.springframework.boot:spring-boot-starter-kotlin-serialization", version.ref = "spring-boot-starter-kotlin-serialization" }
+
 jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "fasterxml-jackson" }
 jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "fasterxml-jackson" }
+
+tools-jackson-module-kotlin = { module = "tools.jackson.module:jackson-module-kotlin", version.ref = "tools-jackson" }
+
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-jvm-extra = { module = "io.github.bossm0n5t3r:kotlinx-serialization-jvm-extra", version.ref = "kotlinx-serialization-jvm-extra" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
