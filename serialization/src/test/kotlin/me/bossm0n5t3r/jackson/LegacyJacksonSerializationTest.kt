@@ -2,6 +2,7 @@ package me.bossm0n5t3r.jackson
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinFeature
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import me.bossm0n5t3r.dto.DateTimeDto
 import me.bossm0n5t3r.dto.PersonDto
@@ -13,11 +14,10 @@ import me.bossm0n5t3r.dto.WeirdDto
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import kotlin.test.assertNotEquals
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper as legacyJacksonObjectMapper
 
 class LegacyJacksonSerializationTest {
     private val mapper =
-        legacyJacksonObjectMapper()
+        jacksonObjectMapper()
             .registerModule(JavaTimeModule())
 
     @Test
@@ -80,7 +80,7 @@ class LegacyJacksonSerializationTest {
         assertEquals(weirdDto, deserialized)
 
         val rightObjectMapper =
-            legacyJacksonObjectMapper {
+            jacksonObjectMapper {
                 enable(KotlinFeature.KotlinPropertyNameAsImplicitName)
             }.registerModule(JavaTimeModule())
 
