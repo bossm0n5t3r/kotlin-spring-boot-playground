@@ -23,7 +23,8 @@ repositories {
 }
 
 dependencies {
-    testImplementation(libs.tools.jackson.module.kotlin)
+    testImplementation(libs.jackson.module.kotlin)
+    testImplementation(libs.jackson.datatype.jsr310)
 
     testImplementation(libs.kotlinx.serialization.json)
     testImplementation(libs.kotlinx.serialization.jvm.extra)

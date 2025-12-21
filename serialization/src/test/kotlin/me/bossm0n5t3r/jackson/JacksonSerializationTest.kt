@@ -1,15 +1,18 @@
 package me.bossm0n5t3r.jackson
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import me.bossm0n5t3r.dto.DateTimeDto
 import me.bossm0n5t3r.dto.PersonDto
 import me.bossm0n5t3r.dto.SerializationTestData
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import tools.jackson.module.kotlin.jacksonObjectMapper
-import tools.jackson.module.kotlin.readValue
 
 class JacksonSerializationTest {
-    private val mapper = jacksonObjectMapper()
+    private val mapper =
+        jacksonObjectMapper()
+            .registerModule(JavaTimeModule())
 
     @Test
     fun `Jackson serialization and deserialization test`() {

@@ -19,7 +19,6 @@ const val OFFSET_DATE_TIME_PATTERN = "MM/dd hh:mm:ssa ''yy Z"
 data class DateTimeDto(
     val name: String,
     @Serializable(with = LocalDateTimeSerializer::class)
-    @field:JsonFormat(pattern = LOCAL_DATE_TIME_PATTERN)
     val createdAt: LocalDateTime,
     @Serializable(with = OffsetDateTimeSerializer::class)
     @field:JsonFormat(pattern = OFFSET_DATE_TIME_PATTERN, with = [JsonFormat.Feature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE])
