@@ -2,6 +2,7 @@ package me.bossm0n5t3r.kotlinx
 
 import kotlinx.serialization.json.Json
 import me.bossm0n5t3r.dto.DateTimeDto
+import me.bossm0n5t3r.dto.DateTimeDtoUsingLibrary
 import me.bossm0n5t3r.dto.PersonDto
 import me.bossm0n5t3r.dto.SerializationTestData
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -39,7 +40,7 @@ class KotlinxSerializationTest {
     }
 
     @Test
-    fun `kotlinx-serialization serialization and deserialization test for LocalDateTime`() {
+    fun `DateTimeDto - kotlinx-serialization serialization and deserialization test for LocalDateTime`() {
         val dateTimeDto = SerializationTestData.dateTimeDto
 
         // Serialization
@@ -53,11 +54,27 @@ class KotlinxSerializationTest {
     }
 
     @Test
+    fun `DateTimeDtoUsingLibrary - kotlinx-serialization serialization and deserialization test for LocalDateTime`() {
+        val dateTimeDtoUsingLibrary = SerializationTestData.dateTimeDtoUsingLibrary
+
+        // Serialization
+        val jsonString = json.encodeToString(dateTimeDtoUsingLibrary)
+        println("kotlinx-serialization DateTime JSON: $jsonString")
+
+        // Deserialization
+        val deserializedDateTimeDto = json.decodeFromString<DateTimeDtoUsingLibrary>(jsonString)
+
+        assertEquals(dateTimeDtoUsingLibrary, deserializedDateTimeDto)
+    }
+
+    @Test
     fun `kotlinx-serialization handles DATE_TIME_JSON`() {
         val jsonString = SerializationTestData.DATE_TIME_JSON
 
         val deserializedDateTimeDto = json.decodeFromString<DateTimeDto>(jsonString)
+        val deserializedDateTimeDtoUsingLibrary = json.decodeFromString<DateTimeDtoUsingLibrary>(jsonString)
 
         assertEquals(SerializationTestData.dateTimeDto, deserializedDateTimeDto)
+        assertEquals(SerializationTestData.dateTimeDtoUsingLibrary, deserializedDateTimeDtoUsingLibrary)
     }
 }

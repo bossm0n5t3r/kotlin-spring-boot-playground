@@ -12,8 +12,7 @@ import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
-const val LOCAL_DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss"
-const val OFFSET_DATE_TIME_PATTERN = "MM/dd hh:mm:ssa ''yy Z"
+const val OFFSET_DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ssXXX"
 
 @Serializable
 data class DateTimeDto(
@@ -25,7 +24,7 @@ data class DateTimeDto(
     val updatedAt: OffsetDateTime,
 )
 
-object LocalDateTimeSerializer : KSerializer<LocalDateTime> {
+private object LocalDateTimeSerializer : KSerializer<LocalDateTime> {
     private val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("LocalDateTime", PrimitiveKind.STRING)
@@ -40,8 +39,8 @@ object LocalDateTimeSerializer : KSerializer<LocalDateTime> {
     override fun deserialize(decoder: Decoder): LocalDateTime = LocalDateTime.parse(decoder.decodeString(), formatter)
 }
 
-object OffsetDateTimeSerializer : KSerializer<OffsetDateTime> {
-    private val formatter = DateTimeFormatter.ofPattern(OFFSET_DATE_TIME_PATTERN)
+private object OffsetDateTimeSerializer : KSerializer<OffsetDateTime> {
+    private val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("OffsetDateTime", PrimitiveKind.STRING)
 
