@@ -19,6 +19,9 @@ tools-jackson = "3.0.3"
 kotlinx-serialization = "1.10.0-RC"
 kotlinx-serialization-jvm-extra = "0.2.0"
 gson = "2.13.2"
+jackson-dataformat-msgpack = "0.9.10"
+google-protobuf = "4.33.2"
+protobuf-gradle-plugin = "0.9.6"
 
 [plugins]
 # Kotlin JVM Gradle plugin
@@ -36,6 +39,9 @@ spring-dependency-management = { id = "io.spring.dependency-management", version
 
 # ktlint Gradle plugin
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-gradle" }
+
+# Protobuf
+protobuf = { id = "com.google.protobuf", version.ref = "protobuf-gradle-plugin" }
 
 [libraries]
 
@@ -59,6 +65,9 @@ spring-boot-starter-kotlin-serialization = { module = "org.springframework.boot:
 
 jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "fasterxml-jackson" }
 jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "fasterxml-jackson" }
+jackson-dataformat-msgpack = { module = "org.msgpack:jackson-dataformat-msgpack", version.ref = "jackson-dataformat-msgpack" }
+protobuf-java = { module = "com.google.protobuf:protobuf-java", version.ref = "google-protobuf" }
+protobuf-kotlin = { module = "com.google.protobuf:protobuf-kotlin", version.ref = "google-protobuf" }
 
 tools-jackson-module-kotlin = { module = "tools.jackson.module:jackson-module-kotlin", version.ref = "tools-jackson" }
 
