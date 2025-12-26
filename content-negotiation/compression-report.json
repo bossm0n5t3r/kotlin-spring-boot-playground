@@ -1,0 +1,76 @@
+{
+  "generatedAt" : "2025-12-27T05:59:30.00000+09:00",
+  "cases" : [ {
+    "format" : "json",
+    "endpoint" : "/payload/small",
+    "acceptHeader" : "application/json",
+    "identityBytes" : 73,
+    "gzipBytes" : 92,
+    "ratio" : 1.26,
+    "gzipApplied" : true
+  }, {
+    "format" : "json",
+    "endpoint" : "/payload/medium",
+    "acceptHeader" : "application/json",
+    "identityBytes" : 47561,
+    "gzipBytes" : 517,
+    "ratio" : 0.011,
+    "gzipApplied" : true
+  }, {
+    "format" : "json",
+    "endpoint" : "/payload/large",
+    "acceptHeader" : "application/json",
+    "identityBytes" : 9741,
+    "gzipBytes" : 447,
+    "ratio" : 0.046,
+    "gzipApplied" : true
+  }, {
+    "format" : "msgpack",
+    "endpoint" : "/payload/small",
+    "acceptHeader" : "application/x-msgpack",
+    "identityBytes" : 61,
+    "gzipBytes" : 83,
+    "ratio" : 1.361,
+    "gzipApplied" : true
+  }, {
+    "format" : "msgpack",
+    "endpoint" : "/payload/medium",
+    "acceptHeader" : "application/x-msgpack",
+    "identityBytes" : 47554,
+    "gzipBytes" : 525,
+    "ratio" : 0.011,
+    "gzipApplied" : true
+  }, {
+    "format" : "msgpack",
+    "endpoint" : "/payload/large",
+    "acceptHeader" : "application/x-msgpack",
+    "identityBytes" : 9434,
+    "gzipBytes" : 438,
+    "ratio" : 0.046,
+    "gzipApplied" : true
+  }, {
+    "format" : "protobuf",
+    "endpoint" : "/payload/small",
+    "acceptHeader" : "application/x-protobuf",
+    "identityBytes" : 45,
+    "gzipBytes" : 71,
+    "ratio" : 1.578,
+    "gzipApplied" : true
+  }, {
+    "format" : "protobuf",
+    "endpoint" : "/payload/medium",
+    "acceptHeader" : "application/x-protobuf",
+    "identityBytes" : 47535,
+    "gzipBytes" : 503,
+    "ratio" : 0.011,
+    "gzipApplied" : true
+  }, {
+    "format" : "protobuf",
+    "endpoint" : "/payload/large",
+    "acceptHeader" : "application/x-protobuf",
+    "identityBytes" : 9515,
+    "gzipBytes" : 421,
+    "ratio" : 0.044,
+    "gzipApplied" : true
+  } ]
+}
