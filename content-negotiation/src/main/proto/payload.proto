@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package me.bossm0n5t3r.contentnegotiation;
+
+option java_multiple_files = true;
+
+message PayloadProto {
+  string id = 1;
+  string content = 2;
+  repeated string data = 3;
+}
