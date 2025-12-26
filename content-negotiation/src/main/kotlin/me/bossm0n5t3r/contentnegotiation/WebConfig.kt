@@ -20,5 +20,5 @@ class WebConfig : WebMvcConfigurer {
 class MessagePackHttpMessageConverter :
     AbstractJackson2HttpMessageConverter(
         ObjectMapper(MessagePackFactory()),
-        MediaType("application", "x-msgpack"),
+        MediaType.parseMediaType(Constants.MSGPACK_MEDIA_TYPE),
     )
