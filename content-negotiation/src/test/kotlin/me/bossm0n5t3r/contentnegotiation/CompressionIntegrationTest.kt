@@ -129,16 +129,50 @@ class CompressionIntegrationTest {
     fun tearDown() {
         printMarkdownTable()
         saveJsonResponse()
+        updateReadme()
+    }
+
+    private fun generateMarkdownTable(): String {
+        val sb = StringBuilder()
+        sb.append("| Format | Endpoint | Identity (B) | Gzip (B) | Ratio | GzipApplied |\n")
+        sb.append("| :--- | :--- | :--- | :--- | :--- | :--- |\n")
+        results.sortedWith(compareBy({ it.format }, { it.endpoint })).forEach {
+            val ratioStr = it.ratio?.toString() ?: "-"
+            sb.append("| ${it.format} | ${it.endpoint} | ${it.identityBytes} | ${it.gzipBytes} | $ratioStr | ${it.gzipApplied} |\n")
+        }
+        return sb.toString()
     }
 
     private fun printMarkdownTable() {
         println("\n### Compression Test Report")
-        println("| Format | Endpoint | Identity (B) | Gzip (B) | Ratio | GzipApplied |")
-        println("| :--- | :--- | :--- | :--- | :--- | :--- |")
-        results.sortedWith(compareBy({ it.format }, { it.endpoint })).forEach {
-            val ratioStr = it.ratio?.toString() ?: "-"
-            println("| ${it.format} | ${it.endpoint} | ${it.identityBytes} | ${it.gzipBytes} | $ratioStr | ${it.gzipApplied} |")
+        println(generateMarkdownTable())
+    }
+
+    private fun updateReadme() {
+        val readmeFile = File("content-negotiation/README.md")
+        if (!readmeFile.exists()) {
+            println("\nREADME.md not found at ${readmeFile.absolutePath}")
+            return
         }
+
+        val content = readmeFile.readText()
+        val header = "## 실험 결과 예시"
+        
+        val newTable = generateMarkdownTable()
+        
+        val newContent = if (content.contains(header)) {
+            val startIndex = content.indexOf(header)
+            val nextHeaderIndex = content.indexOf("\n##", startIndex + header.length)
+            
+            val before = content.substring(0, startIndex + header.length)
+            val after = if (nextHeaderIndex != -1) content.substring(nextHeaderIndex) else ""
+            "$before\n\n$newTable\n$after"
+        } else {
+            "$content\n\n$header\n\n$newTable\n"
+        }
+
+        readmeFile.writeText(newContent)
+        println("\nREADME.md updated with test results.")
     }
 
     private fun saveJsonResponse() {

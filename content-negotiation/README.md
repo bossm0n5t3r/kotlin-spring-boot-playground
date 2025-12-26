@@ -17,18 +17,28 @@
 ## 검증 방법 (curl)
 
 ### 1. JSON
-- **무압축**: `curl -H "Accept: application/json" -H "Accept-Encoding: identity" http://localhost:8080/payload/large -D - -o /dev/null -w "Size: %{size_download} bytes\n"`
-- **Gzip**: `curl -H "Accept: application/json" -H "Accept-Encoding: gzip" --compressed http://localhost:8080/payload/large -D - -o /dev/null -w "Size: %{size_download} bytes\n"`
+
+- **무압축**:
+  `curl -H "Accept: application/json" -H "Accept-Encoding: identity" http://localhost:8080/payload/large -D - -o /dev/null -w "Size: %{size_download} bytes\n"`
+- **Gzip**:
+  `curl -H "Accept: application/json" -H "Accept-Encoding: gzip" --compressed http://localhost:8080/payload/large -D - -o /dev/null -w "Size: %{size_download} bytes\n"`
 
 ### 2. MessagePack
-- **무압축**: `curl -H "Accept: application/x-msgpack" -H "Accept-Encoding: identity" http://localhost:8080/payload/large -D - -o /dev/null -w "Size: %{size_download} bytes\n"`
-- **Gzip**: `curl -H "Accept: application/x-msgpack" -H "Accept-Encoding: gzip" --compressed http://localhost:8080/payload/large -D - -o /dev/null -w "Size: %{size_download} bytes\n"`
+
+- **무압축**:
+  `curl -H "Accept: application/x-msgpack" -H "Accept-Encoding: identity" http://localhost:8080/payload/large -D - -o /dev/null -w "Size: %{size_download} bytes\n"`
+- **Gzip**:
+  `curl -H "Accept: application/x-msgpack" -H "Accept-Encoding: gzip" --compressed http://localhost:8080/payload/large -D - -o /dev/null -w "Size: %{size_download} bytes\n"`
 
 ### 3. Protobuf
-- **무압축**: `curl -H "Accept: application/x-protobuf" -H "Accept-Encoding: identity" http://localhost:8080/payload/large -D - -o /dev/null -w "Size: %{size_download} bytes\n"`
-- **Gzip**: `curl -H "Accept: application/x-protobuf" -H "Accept-Encoding: gzip" --compressed http://localhost:8080/payload/large -D - -o /dev/null -w "Size: %{size_download} bytes\n"`
+
+- **무압축**:
+  `curl -H "Accept: application/x-protobuf" -H "Accept-Encoding: identity" http://localhost:8080/payload/large -D - -o /dev/null -w "Size: %{size_download} bytes\n"`
+- **Gzip**:
+  `curl -H "Accept: application/x-protobuf" -H "Accept-Encoding: gzip" --compressed http://localhost:8080/payload/large -D - -o /dev/null -w "Size: %{size_download} bytes\n"`
 
 ### 결과 확인 포인트
+
 - 응답 헤더에 `Content-Type`(json/msgpack/protobuf) 및 `Content-Encoding: gzip` 포함 여부 확인 (`-D -`)
 - `Vary: Accept, Accept-Encoding` 헤더 확인
 - `Size`를 통해 포맷별/압축별 전송 바이트 차이 비교
@@ -51,14 +61,32 @@
 ```
 
 ### 테스트 내용
+
 - **대상 포맷**: JSON, MessagePack, Protobuf
 - **대상 엔드포인트**: `/payload/small`, `/payload/medium`, `/payload/large`
 - **측정 항목**: 무압축(identity) 대비 Gzip 압축 전송 바이트 및 압축률
 - **검증**: Gzip 응답을 디컴프레션하여 원본 데이터와 일치하는지 확인
 
 ### 리포트
+
 - **콘솔 출력**: 테스트 종료 시 Markdown 테이블 형태로 결과가 출력됩니다.
 - **JSON 리포트**: `content-negotiation/build/reports/content-negotiation/compression-report.json` 위치에 상세 데이터가 저장됩니다.
 
 ### 참고 사항
-- `min-response-size`(현재 1024B)보다 작은 응답(예: `/payload/small`)은 `Accept-Encoding: gzip` 요청에도 압축이 적용되지 않을 수 있습니다. 이 경우 `GzipApplied`는 `false`로 표시됩니다.
+
+- `min-response-size`(현재 1024B)보다 작은 응답(예: `/payload/small`)은 `Accept-Encoding: gzip` 요청에도 압축이 적용되지 않을 수 있습니다. 이 경우
+  `GzipApplied`는 `false`로 표시됩니다.
+
+## 실험 결과 예시
+
+| Format   | Endpoint        | Identity (B) | Gzip (B) | Ratio | GzipApplied |
+|:---------|:----------------|:-------------|:---------|:------|:------------|
+| json     | /payload/large  | 9741         | 447      | 0.046 | true        |
+| json     | /payload/medium | 47561        | 517      | 0.011 | true        |
+| json     | /payload/small  | 73           | 92       | 1.26  | true        |
+| msgpack  | /payload/large  | 9434         | 438      | 0.046 | true        |
+| msgpack  | /payload/medium | 47554        | 525      | 0.011 | true        |
+| msgpack  | /payload/small  | 61           | 83       | 1.361 | true        |
+| protobuf | /payload/large  | 9515         | 421      | 0.044 | true        |
+| protobuf | /payload/medium | 47535        | 503      | 0.011 | true        |
+| protobuf | /payload/small  | 45           | 71       | 1.578 | true        |

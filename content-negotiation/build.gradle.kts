@@ -49,6 +49,7 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    workingDir = rootProject.projectDir
 }
 
 ktlint {
