@@ -3,4 +3,4 @@ server:
   compression:
     enabled: true
     mime-types: application/json,application/x-msgpack,application/x-protobuf,application/protobuf,text/html,text/xml,text/plain,application/xml,application/xhtml+xml,application/rss+xml,application/javascript,text/css
-    min-response-size: 1024 # 1KB
+    min-response-size: 1

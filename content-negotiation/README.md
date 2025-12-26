@@ -39,3 +39,26 @@
 - **Accept-Encoding (Compression)**: 클라이언트가 지원하는 압축 알고리즘(Gzip 등)을 명시하며, 서버는 이를 통해 응답 본문을 압축해 전송 효율을 높입니다.
 - **Vary Header**: 응답이 `Accept` 및 `Accept-Encoding` 헤더에 따라 달라질 수 있음을 캐시 서버 등에 알립니다.
 - 두 과정 모두 클라이언트-서버 간 최적의 통신 형태를 협상(Negotiation)하는 과정입니다.
+
+## 압축률 비교 테스트
+
+이 모듈은 자동화된 압축률 비교 테스트를 포함하고 있습니다.
+
+### 테스트 실행
+
+```bash
+./gradlew :content-negotiation:test
+```
+
+### 테스트 내용
+- **대상 포맷**: JSON, MessagePack, Protobuf
+- **대상 엔드포인트**: `/payload/small`, `/payload/medium`, `/payload/large`
+- **측정 항목**: 무압축(identity) 대비 Gzip 압축 전송 바이트 및 압축률
+- **검증**: Gzip 응답을 디컴프레션하여 원본 데이터와 일치하는지 확인
+
+### 리포트
+- **콘솔 출력**: 테스트 종료 시 Markdown 테이블 형태로 결과가 출력됩니다.
+- **JSON 리포트**: `content-negotiation/build/reports/content-negotiation/compression-report.json` 위치에 상세 데이터가 저장됩니다.
+
+### 참고 사항
+- `min-response-size`(현재 1024B)보다 작은 응답(예: `/payload/small`)은 `Accept-Encoding: gzip` 요청에도 압축이 적용되지 않을 수 있습니다. 이 경우 `GzipApplied`는 `false`로 표시됩니다.
