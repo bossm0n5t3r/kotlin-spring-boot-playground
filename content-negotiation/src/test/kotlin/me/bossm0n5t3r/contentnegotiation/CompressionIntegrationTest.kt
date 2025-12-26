@@ -1,7 +1,7 @@
 package me.bossm0n5t3r.contentnegotiation
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.fasterxml.jackson.module.kotlin.KotlinFeature
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.apache.hc.client5.http.classic.methods.HttpGet
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient
 import org.apache.hc.client5.http.impl.classic.HttpClients
@@ -14,8 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.test.context.ActiveProfiles
 import java.io.File
-import java.nio.file.Files
-import java.nio.file.Paths
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.util.zip.GZIPInputStream
@@ -27,7 +25,10 @@ class CompressionIntegrationTest {
     @LocalServerPort
     private var port: Int = 0
 
-    private val objectMapper = ObjectMapper().registerKotlinModule()
+    private val mapper =
+        jacksonObjectMapper {
+            enable(KotlinFeature.KotlinPropertyNameAsImplicitName)
+        }
 
     private val results = mutableListOf<TestResult>()
 
@@ -157,27 +158,27 @@ class CompressionIntegrationTest {
 
         val content = readmeFile.readText()
         val header = "## 실험 결과 예시"
-        
+
         val newTable = generateMarkdownTable()
-        
-        val newContent = if (content.contains(header)) {
-            val startIndex = content.indexOf(header)
-            val nextHeaderIndex = content.indexOf("\n##", startIndex + header.length)
-            
-            val before = content.substring(0, startIndex + header.length)
-            val after = if (nextHeaderIndex != -1) content.substring(nextHeaderIndex) else ""
-            "$before\n\n$newTable\n$after"
-        } else {
-            "$content\n\n$header\n\n$newTable\n"
-        }
+
+        val newContent =
+            if (content.contains(header)) {
+                val startIndex = content.indexOf(header)
+                val nextHeaderIndex = content.indexOf("\n##", startIndex + header.length)
+
+                val before = content.substring(0, startIndex + header.length)
+                val after = if (nextHeaderIndex != -1) content.substring(nextHeaderIndex) else ""
+                "$before\n\n$newTable\n$after"
+            } else {
+                "$content\n\n$header\n\n$newTable\n"
+            }
 
         readmeFile.writeText(newContent)
         println("\nREADME.md updated with test results.")
     }
 
     private fun saveJsonResponse() {
-        val reportDir = "build/reports/content-negotiation"
-        Files.createDirectories(Paths.get(reportDir))
+        val reportDir = "content-negotiation"
         val reportFile = File("$reportDir/compression-report.json")
 
         val report =
@@ -186,7 +187,6 @@ class CompressionIntegrationTest {
                 "cases" to results,
             )
 
-        val mapper = ObjectMapper().registerKotlinModule()
         reportFile.writeText(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(report))
         println("\nJSON report saved to: ${reportFile.absolutePath}")
     }
