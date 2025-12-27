@@ -1,4 +1,4 @@
-package me.bossm0n5t3r.contentnegotiation
+package me.bossm0n5t3r.contentnegotiation.configuration
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.msgpack.jackson.dataformat.MessagePackFactory

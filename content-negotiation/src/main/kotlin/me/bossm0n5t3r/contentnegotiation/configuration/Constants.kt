@@ -1,4 +1,4 @@
-package me.bossm0n5t3r.contentnegotiation
+package me.bossm0n5t3r.contentnegotiation.configuration
 
 object Constants {
     const val MSGPACK_MEDIA_TYPE = "application/x-msgpack"

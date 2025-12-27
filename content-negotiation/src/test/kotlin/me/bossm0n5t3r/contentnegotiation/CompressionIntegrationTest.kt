@@ -2,6 +2,7 @@ package me.bossm0n5t3r.contentnegotiation
 
 import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import me.bossm0n5t3r.contentnegotiation.configuration.Constants
 import org.apache.hc.client5.http.classic.methods.HttpGet
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient
 import org.apache.hc.client5.http.impl.classic.HttpClients

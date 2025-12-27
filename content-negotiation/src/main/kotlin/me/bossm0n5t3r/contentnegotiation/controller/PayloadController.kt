@@ -1,6 +1,6 @@
 package me.bossm0n5t3r.contentnegotiation.controller
 
-import me.bossm0n5t3r.contentnegotiation.Constants
+import me.bossm0n5t3r.contentnegotiation.configuration.Constants
 import me.bossm0n5t3r.contentnegotiation.dto.PayloadData
 import me.bossm0n5t3r.contentnegotiation.service.PayloadGeneratorService
 import org.springframework.http.MediaType
