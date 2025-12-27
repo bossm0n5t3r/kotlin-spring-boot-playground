@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
+import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import java.io.File
 import java.time.OffsetDateTime
@@ -47,7 +48,7 @@ class CompressionIntegrationTest {
     fun testCompression() {
         val formats =
             listOf(
-                "json" to "application/json",
+                "json" to MediaType.APPLICATION_JSON_VALUE,
                 "msgpack" to Constants.MSGPACK_MEDIA_TYPE,
                 "protobuf" to Constants.PROTOBUF_MEDIA_TYPE,
             )
