@@ -1,0 +1,63 @@
+### Content Negotiation & Compression Test
+
+@host = http://localhost:8080
+
+### 1. JSON - Small
+GET {{host}}/payload/small
+Accept: application/json
+Accept-Encoding: identity
+
+### 2. JSON - Medium
+GET {{host}}/payload/medium
+Accept: application/json
+Accept-Encoding: identity
+
+### 3. JSON - Large
+GET {{host}}/payload/large
+Accept: application/json
+Accept-Encoding: identity
+
+### 4. JSON - Large (Gzip)
+GET {{host}}/payload/large
+Accept: application/json
+Accept-Encoding: gzip
+
+### 5. MessagePack - Small
+GET {{host}}/payload/small
+Accept: application/x-msgpack
+Accept-Encoding: identity
+
+### 6. MessagePack - Medium
+GET {{host}}/payload/medium
+Accept: application/x-msgpack
+Accept-Encoding: identity
+
+### 7. MessagePack - Large
+GET {{host}}/payload/large
+Accept: application/x-msgpack
+Accept-Encoding: identity
+
+### 8. MessagePack - Large (Gzip)
+GET {{host}}/payload/large
+Accept: application/x-msgpack
+Accept-Encoding: gzip
+
+### 9. Protobuf - Small
+GET {{host}}/payload/small
+Accept: application/x-protobuf
+Accept-Encoding: identity
+
+### 10. Protobuf - Medium
+GET {{host}}/payload/medium
+Accept: application/x-protobuf
+Accept-Encoding: identity
+
+### 11. Protobuf - Large
+GET {{host}}/payload/large
+Accept: application/x-protobuf
+Accept-Encoding: identity
+
+### 12. Protobuf - Large (Gzip)
+GET {{host}}/payload/large
+Accept: application/x-protobuf
+Accept-Encoding: gzip
