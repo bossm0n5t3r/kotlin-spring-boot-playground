@@ -1,5 +1,6 @@
 package me.bossm0n5t3r.contentnegotiation
 
+import me.bossm0n5t3r.contentnegotiation.dto.PayloadData
 import org.springframework.stereotype.Service
 
 @Service
@@ -29,20 +30,4 @@ class PayloadGeneratorService {
             data = randomData + repeatedData,
         )
     }
-}
-
-data class PayloadData(
-    val id: String,
-    val content: String,
-    val data: List<String> = emptyList(),
-) {
-    fun toDto() = PayloadDto(id, content, data)
-
-    fun toProto(): PayloadProto =
-        PayloadProto
-            .newBuilder()
-            .setId(id)
-            .setContent(content)
-            .addAllData(data)
-            .build()
 }

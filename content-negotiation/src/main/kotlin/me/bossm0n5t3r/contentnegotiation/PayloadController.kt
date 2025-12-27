@@ -1,5 +1,6 @@
 package me.bossm0n5t3r.contentnegotiation
 
+import me.bossm0n5t3r.contentnegotiation.dto.PayloadData
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -63,9 +64,3 @@ class PayloadController(
             }
         }
 }
-
-data class PayloadDto(
-    val id: String,
-    val content: String,
-    val data: List<String> = emptyList(),
-)
