@@ -1,6 +1,7 @@
 package me.bossm0n5t3r.contentnegotiation
 
 import me.bossm0n5t3r.contentnegotiation.dto.PayloadData
+import me.bossm0n5t3r.contentnegotiation.service.PayloadGeneratorService
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping

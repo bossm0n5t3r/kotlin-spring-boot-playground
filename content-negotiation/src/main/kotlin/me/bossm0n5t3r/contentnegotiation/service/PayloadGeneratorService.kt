@@ -1,5 +1,6 @@
-package me.bossm0n5t3r.contentnegotiation
+package me.bossm0n5t3r.contentnegotiation.service
 
+import me.bossm0n5t3r.contentnegotiation.Constants
 import me.bossm0n5t3r.contentnegotiation.dto.PayloadData
 import org.springframework.stereotype.Service
 
