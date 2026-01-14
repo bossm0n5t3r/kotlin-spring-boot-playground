@@ -180,7 +180,7 @@ spring:
 
 ## License
 
-- TODO: Add license details (no LICENSE file detected in repo at the time of writing).
+This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details.
 
 ## Notes
 
