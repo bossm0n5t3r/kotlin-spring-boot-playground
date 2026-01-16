@@ -4,6 +4,7 @@ ktlint-gradle = "14.0.1"
 pinterest-ktlint = "1.6.0"
 jdk = "25"
 spring-boot = "4.0.1"
+spring-boot-start-aop = "4.0.0-M2"
 spring-boot-starter-kotlin-serialization = "4.0.0"
 spring-dependency-management = "1.1.7"
 exposed = "1.0.0-rc-4"
@@ -23,6 +24,7 @@ gson = "2.13.2"
 jackson-dataformat-msgpack = "0.9.10"
 google-protobuf = "4.33.2"
 protobuf-gradle-plugin = "0.9.6"
+mockk = "1.14.7"
 
 [plugins]
 # Kotlin JVM Gradle plugin
@@ -54,6 +56,11 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 spring-boot-starter-data-jdbc = { module = "org.springframework.boot:spring-boot-starter-data-jdbc" }
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
 spring-boot-starter-webflux = { module = "org.springframework.boot:spring-boot-starter-webflux" }
+spring-boot-starter-aop = { module = "org.springframework.boot:spring-boot-starter-aop", version.ref = "spring-boot-start-aop" }
+
+# Reactor
+reactor-kotlin-extensions = { module = "io.projectreactor.kotlin:reactor-kotlin-extensions" }
+reactor-test = { module = "io.projectreactor:reactor-test" }
 
 spring-boot-docker-compose = { module = "org.springframework.boot:spring-boot-docker-compose" }
 
@@ -99,3 +106,5 @@ ulid-kotlin = { module = "com.aallam.ulid:ulid-kotlin", version.ref = "ulid-kotl
 
 reactor-kafka = { module = "io.projectreactor.kafka:reactor-kafka", version.ref = "reactor-kafka" }
 kafka-streams = { module = "org.apache.kafka:kafka-streams", version.ref = "apache-kafka" }
+
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }

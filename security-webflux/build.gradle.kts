@@ -30,11 +30,15 @@ dependencies {
     implementation(libs.kotlinx.coroutines.reactor)
 
     implementation(libs.spring.boot.starter.webflux)
+    implementation(libs.spring.boot.starter.aop)
     implementation(libs.jackson.module.kotlin)
+    implementation(libs.reactor.kotlin.extensions)
 
     runtimeOnly(libs.r2dbc.h2)
 
     testImplementation(libs.spring.boot.starter.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.reactor.test)
     testImplementation(libs.kotlin.test.junit5)
     testImplementation(libs.kotlinx.coroutines.test)
 }
