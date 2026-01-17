@@ -26,6 +26,9 @@ google-protobuf = "4.33.2"
 protobuf-gradle-plugin = "0.9.6"
 mockk = "1.14.7"
 
+jjwt = "0.13.0"
+r2dbc-postgresql = "1.1.1.RELEASE"
+
 [plugins]
 # Kotlin JVM Gradle plugin
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -108,3 +111,9 @@ reactor-kafka = { module = "io.projectreactor.kafka:reactor-kafka", version.ref 
 kafka-streams = { module = "org.apache.kafka:kafka-streams", version.ref = "apache-kafka" }
 
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+
+jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
+jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
+jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
+r2dbc-postgresql = { module = "org.postgresql:r2dbc-postgresql", version.ref = "r2dbc-postgresql" }
+spring-boot-starter-data-r2dbc = { module = "org.springframework.boot:spring-boot-starter-data-r2dbc" }
