@@ -1,0 +1,29 @@
+### Account API
+
+@host = http://localhost:8080
+
+### Register a new user
+POST {{host}}/api/account/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "nickname": "테스터",
+  "email": "test@example.com",
+  "password": "testpassword"
+}
+
+> {%
+    client.global.set("username", response.body.username);
+%}
+
+### Get Token
+GET {{host}}/api/account/token?username=testuser&password=testpassword
+
+> {%
+    client.global.set("auth_token", response.body.token);
+%}
+
+### Get User Info
+GET {{host}}/api/account/me
+Authorization: Bearer {{auth_token}}
