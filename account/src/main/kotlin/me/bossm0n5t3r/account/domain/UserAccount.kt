@@ -10,4 +10,5 @@ data class UserAccount(
     val username: String,
     val nickname: String,
     val email: String,
+    val password: String,
 )

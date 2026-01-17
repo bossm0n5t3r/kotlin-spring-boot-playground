@@ -25,7 +25,8 @@ class AccountController(
     @GetMapping("/token")
     suspend fun getToken(
         @RequestParam username: String,
-    ): TokenResponse = accountService.getToken(username)
+        @RequestParam password: String,
+    ): TokenResponse = accountService.getToken(username, password)
 
     @GetMapping("/me")
     suspend fun getMe(
