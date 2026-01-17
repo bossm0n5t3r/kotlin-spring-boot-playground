@@ -2,13 +2,9 @@ spring:
   application:
     name: account
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/account
-    username: user
-    password: password
-  docker:
-    compose:
-      enabled: true
-      file: account/compose.yaml
+    url: r2dbc:h2:mem:///account;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
   sql:
     init:
       mode: always

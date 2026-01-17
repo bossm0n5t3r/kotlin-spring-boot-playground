@@ -33,7 +33,6 @@ dependencies {
     implementation(libs.spring.boot.starter.data.r2dbc)
     implementation(libs.spring.boot.starter.security)
     implementation(libs.spring.boot.starter.aop)
-    developmentOnly(libs.spring.boot.docker.compose)
     implementation(libs.jackson.module.kotlin)
     implementation(libs.reactor.kotlin.extensions)
 
@@ -41,7 +40,6 @@ dependencies {
     runtimeOnly(libs.jjwt.impl)
     runtimeOnly(libs.jjwt.jackson)
 
-    runtimeOnly(libs.r2dbc.postgresql)
     runtimeOnly(libs.r2dbc.h2)
 
     testImplementation(libs.spring.boot.starter.test)

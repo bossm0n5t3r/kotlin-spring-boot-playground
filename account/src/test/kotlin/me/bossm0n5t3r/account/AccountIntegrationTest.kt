@@ -30,6 +30,7 @@ class AccountIntegrationTest {
                 username = "testuser",
                 nickname = "테스터",
                 email = "test@example.com",
+                password = "testpassword",
             )
 
         // 1. 유저 등록
@@ -48,12 +49,17 @@ class AccountIntegrationTest {
 
         assert(userResponse.username == "testuser")
 
-        // 2. 토큰 발급
+        // 2. 토큰 발급 (성공)
         val tokenResponse =
             webTestClient
                 .get()
-                .uri { it.path("/api/account/token").queryParam("username", "testuser").build() }
-                .exchange()
+                .uri {
+                    it
+                        .path("/api/account/token")
+                        .queryParam("username", "testuser")
+                        .queryParam("password", "testpassword")
+                        .build()
+                }.exchange()
                 .expectStatus()
                 .isOk
                 .expectBody<TokenResponse>()
@@ -62,6 +68,19 @@ class AccountIntegrationTest {
 
         val token = tokenResponse.token
         assert(token.isNotBlank())
+
+        // 2-1. 토큰 발급 (실패 - 잘못된 비밀번호)
+        webTestClient
+            .get()
+            .uri {
+                it
+                    .path("/api/account/token")
+                    .queryParam("username", "testuser")
+                    .queryParam("password", "wrongpassword")
+                    .build()
+            }.exchange()
+            .expectStatus()
+            .is5xxServerError // require() 실패 시 500 에러 발생 (기본 설정 시)
 
         // 3. 정보 조회
         webTestClient
