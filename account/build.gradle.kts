@@ -32,6 +32,7 @@ dependencies {
     implementation(libs.spring.boot.starter.webflux)
     implementation(libs.spring.boot.starter.data.r2dbc)
     implementation(libs.spring.boot.starter.aop)
+    developmentOnly(libs.spring.boot.docker.compose)
     implementation(libs.jackson.module.kotlin)
     implementation(libs.reactor.kotlin.extensions)
 
