@@ -17,8 +17,14 @@ Content-Type: application/json
     client.global.set("username", response.body.username);
 %}
 
-### Get Token
-GET {{host}}/api/account/token?username=testuser&password=testpassword
+### Login and Get Token
+POST {{host}}/api/account/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "testpassword"
+}
 
 > {%
     client.global.set("auth_token", response.body.token);

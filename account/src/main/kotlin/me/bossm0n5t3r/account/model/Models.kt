@@ -17,3 +17,8 @@ data class RegisterRequest(
 data class TokenResponse(
     val token: String,
 )
+
+data class LoginRequest(
+    val username: String,
+    val password: String,
+)

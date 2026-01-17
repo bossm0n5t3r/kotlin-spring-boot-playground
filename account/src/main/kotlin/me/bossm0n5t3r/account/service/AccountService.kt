@@ -1,6 +1,7 @@
 package me.bossm0n5t3r.account.service
 
 import me.bossm0n5t3r.account.domain.UserAccount
+import me.bossm0n5t3r.account.model.LoginRequest
 import me.bossm0n5t3r.account.model.RegisterRequest
 import me.bossm0n5t3r.account.model.TokenResponse
 import me.bossm0n5t3r.account.model.UserAccountResponse
@@ -39,12 +40,9 @@ class AccountService(
             }
     }
 
-    suspend fun getToken(
-        username: String,
-        password: String,
-    ): TokenResponse {
-        val userAccount = userAccountRepository.findByUsername(username)
-        require(passwordEncoder.matches(password, userAccount.password)) { "Invalid password" }
+    suspend fun login(request: LoginRequest): TokenResponse {
+        val userAccount = userAccountRepository.findByUsername(request.username)
+        require(passwordEncoder.matches(request.password, userAccount.password)) { "Invalid password" }
         return TokenResponse(jwtProvider.createToken(userAccount.username))
     }
 

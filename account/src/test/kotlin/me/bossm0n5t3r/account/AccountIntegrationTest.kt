@@ -1,5 +1,6 @@
 package me.bossm0n5t3r.account
 
+import me.bossm0n5t3r.account.model.LoginRequest
 import me.bossm0n5t3r.account.model.RegisterRequest
 import me.bossm0n5t3r.account.model.TokenResponse
 import me.bossm0n5t3r.account.model.UserAccountResponse
@@ -49,17 +50,15 @@ class AccountIntegrationTest {
 
         assert(userResponse.username == "testuser")
 
-        // 2. 토큰 발급 (성공)
+        // 2. 로그인 (성공)
+        val loginRequest = LoginRequest(username = "testuser", password = "testpassword")
         val tokenResponse =
             webTestClient
-                .get()
-                .uri {
-                    it
-                        .path("/api/account/token")
-                        .queryParam("username", "testuser")
-                        .queryParam("password", "testpassword")
-                        .build()
-                }.exchange()
+                .post()
+                .uri("/api/account/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(loginRequest)
+                .exchange()
                 .expectStatus()
                 .isOk
                 .expectBody<TokenResponse>()
@@ -69,16 +68,14 @@ class AccountIntegrationTest {
         val token = tokenResponse.token
         assert(token.isNotBlank())
 
-        // 2-1. 토큰 발급 (실패 - 잘못된 비밀번호)
+        // 2-1. 로그인 (실패 - 잘못된 비밀번호)
+        val wrongLoginRequest = LoginRequest(username = "testuser", password = "wrongpassword")
         webTestClient
-            .get()
-            .uri {
-                it
-                    .path("/api/account/token")
-                    .queryParam("username", "testuser")
-                    .queryParam("password", "wrongpassword")
-                    .build()
-            }.exchange()
+            .post()
+            .uri("/api/account/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(wrongLoginRequest)
+            .exchange()
             .expectStatus()
             .is5xxServerError // require() 실패 시 500 에러 발생 (기본 설정 시)
 

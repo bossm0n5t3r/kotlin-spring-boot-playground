@@ -1,5 +1,6 @@
 package me.bossm0n5t3r.account.controller
 
+import me.bossm0n5t3r.account.model.LoginRequest
 import me.bossm0n5t3r.account.model.RegisterRequest
 import me.bossm0n5t3r.account.model.TokenResponse
 import me.bossm0n5t3r.account.model.UserAccountResponse
@@ -9,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -22,11 +22,10 @@ class AccountController(
         @RequestBody request: RegisterRequest,
     ): UserAccountResponse = accountService.register(request)
 
-    @GetMapping("/token")
-    suspend fun getToken(
-        @RequestParam username: String,
-        @RequestParam password: String,
-    ): TokenResponse = accountService.getToken(username, password)
+    @PostMapping("/login")
+    suspend fun login(
+        @RequestBody request: LoginRequest,
+    ): TokenResponse = accountService.login(request)
 
     @GetMapping("/me")
     suspend fun getMe(
