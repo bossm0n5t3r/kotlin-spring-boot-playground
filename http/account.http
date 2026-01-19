@@ -1,6 +1,6 @@
 ### Account API
 
-@host = http://localhost:8080
+@host = http://localhost:1009
 
 ### Register a new user
 POST {{host}}/api/account/register
