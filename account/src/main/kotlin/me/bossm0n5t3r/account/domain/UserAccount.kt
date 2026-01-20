@@ -1,5 +1,6 @@
 package me.bossm0n5t3r.account.domain
 
+import me.bossm0n5t3r.account.enumeration.UserRole
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
 
@@ -11,4 +12,5 @@ data class UserAccount(
     val nickname: String,
     val email: String,
     val password: String,
+    val role: UserRole,
 )

@@ -1,9 +1,11 @@
 package me.bossm0n5t3r.account.service
 
 import me.bossm0n5t3r.account.domain.UserAccount
+import me.bossm0n5t3r.account.enumeration.UserRole
 import me.bossm0n5t3r.account.model.LoginRequest
 import me.bossm0n5t3r.account.model.RegisterRequest
 import me.bossm0n5t3r.account.model.TokenResponse
+import me.bossm0n5t3r.account.model.UpdateRoleRequest
 import me.bossm0n5t3r.account.model.UserAccountResponse
 import me.bossm0n5t3r.account.repository.UserAccountRepository
 import me.bossm0n5t3r.account.util.JwtProvider
@@ -27,6 +29,7 @@ class AccountService(
                 nickname = request.nickname,
                 email = request.email,
                 password = encodedPassword,
+                role = UserRole.ANONYMOUS,
             )
         return userAccountRepository
             .save(userAccount)
@@ -36,6 +39,27 @@ class AccountService(
                     username = saved.username,
                     nickname = saved.nickname,
                     email = saved.email,
+                    role = saved.role,
+                )
+            }
+    }
+
+    @Transactional
+    suspend fun updateRole(
+        username: String,
+        request: UpdateRoleRequest,
+    ): UserAccountResponse {
+        val userAccount = userAccountRepository.findByUsername(username)
+        val updatedUserAccount = userAccount.copy(role = request.role)
+        return userAccountRepository
+            .save(updatedUserAccount)
+            .let { saved ->
+                UserAccountResponse(
+                    id = saved.id,
+                    username = saved.username,
+                    nickname = saved.nickname,
+                    email = saved.email,
+                    role = saved.role,
                 )
             }
     }
@@ -57,6 +81,7 @@ class AccountService(
                     username = it.username,
                     nickname = it.nickname,
                     email = it.email,
+                    role = it.role,
                 )
             }
     }

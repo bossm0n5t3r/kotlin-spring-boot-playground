@@ -1,8 +1,10 @@
 package me.bossm0n5t3r.account
 
+import me.bossm0n5t3r.account.enumeration.UserRole
 import me.bossm0n5t3r.account.model.LoginRequest
 import me.bossm0n5t3r.account.model.RegisterRequest
 import me.bossm0n5t3r.account.model.TokenResponse
+import me.bossm0n5t3r.account.model.UpdateRoleRequest
 import me.bossm0n5t3r.account.model.UserAccountResponse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -49,6 +51,7 @@ class AccountIntegrationTest {
                 .responseBody!!
 
         assert(userResponse.username == "testuser")
+        assert(userResponse.role == UserRole.ANONYMOUS)
 
         // 2. 로그인 (성공)
         val loginRequest = LoginRequest(username = "testuser", password = "testpassword")
@@ -92,5 +95,34 @@ class AccountIntegrationTest {
             .isEqualTo("testuser")
             .jsonPath("$.nickname")
             .isEqualTo("테스터")
+            .jsonPath("$.role")
+            .isEqualTo("ANONYMOUS")
+
+        // 4. Role 업데이트
+        val updateRoleRequest = UpdateRoleRequest(role = UserRole.ADMIN)
+        webTestClient
+            .patch()
+            .uri("/api/account/role")
+            .header("Authorization", "Bearer $token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(updateRoleRequest)
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody()
+            .jsonPath("$.role")
+            .isEqualTo("ADMIN")
+
+        // 5. 업데이트 후 정보 조회 확인
+        webTestClient
+            .get()
+            .uri("/api/account/me")
+            .header("Authorization", "Bearer $token")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody()
+            .jsonPath("$.role")
+            .isEqualTo("ADMIN")
     }
 }
