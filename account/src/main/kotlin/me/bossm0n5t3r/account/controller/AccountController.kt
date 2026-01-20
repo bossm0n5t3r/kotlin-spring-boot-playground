@@ -6,7 +6,9 @@ import me.bossm0n5t3r.account.model.TokenResponse
 import me.bossm0n5t3r.account.model.UpdateRoleRequest
 import me.bossm0n5t3r.account.model.UserAccountResponse
 import me.bossm0n5t3r.account.service.AccountService
+import me.bossm0n5t3r.account.util.Constants.BEARER_PREFIX
 import me.bossm0n5t3r.account.util.JwtProvider
+import org.springframework.http.HttpHeaders
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -33,18 +35,18 @@ class AccountController(
 
     @GetMapping("/me")
     suspend fun getMe(
-        @RequestHeader("Authorization") authHeader: String,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) authHeader: String,
     ): UserAccountResponse {
-        val token = authHeader.removePrefix("Bearer ").trim()
+        val token = authHeader.removePrefix(BEARER_PREFIX).trim()
         return accountService.getUserInfo(token)
     }
 
     @PatchMapping("/role")
     suspend fun updateRole(
-        @RequestHeader("Authorization") authHeader: String,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) authHeader: String,
         @RequestBody request: UpdateRoleRequest,
     ): UserAccountResponse {
-        val token = authHeader.removePrefix("Bearer ").trim()
+        val token = authHeader.removePrefix(BEARER_PREFIX).trim()
         val username = jwtProvider.getUsernameFromToken(token)
         return accountService.updateRole(username, request)
     }

@@ -6,11 +6,13 @@ import me.bossm0n5t3r.account.model.RegisterRequest
 import me.bossm0n5t3r.account.model.TokenResponse
 import me.bossm0n5t3r.account.model.UpdateRoleRequest
 import me.bossm0n5t3r.account.model.UserAccountResponse
+import me.bossm0n5t3r.account.util.Constants.BEARER_PREFIX
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.ApplicationContext
+import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
@@ -86,7 +88,7 @@ class AccountIntegrationTest {
         webTestClient
             .get()
             .uri("/api/account/me")
-            .header("Authorization", "Bearer $token")
+            .header(HttpHeaders.AUTHORIZATION, "$BEARER_PREFIX$token")
             .exchange()
             .expectStatus()
             .isOk
@@ -103,7 +105,7 @@ class AccountIntegrationTest {
         webTestClient
             .patch()
             .uri("/api/account/role")
-            .header("Authorization", "Bearer $token")
+            .header(HttpHeaders.AUTHORIZATION, "$BEARER_PREFIX$token")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(updateRoleRequest)
             .exchange()
@@ -117,7 +119,7 @@ class AccountIntegrationTest {
         webTestClient
             .get()
             .uri("/api/account/me")
-            .header("Authorization", "Bearer $token")
+            .header(HttpHeaders.AUTHORIZATION, "$BEARER_PREFIX$token")
             .exchange()
             .expectStatus()
             .isOk
