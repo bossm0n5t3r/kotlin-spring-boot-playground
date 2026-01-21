@@ -3,7 +3,7 @@ package me.bossm0n5t3r.security.webflux.dto
 import me.bossm0n5t3r.security.webflux.enumeration.UserRole
 
 data class UserAccountResponse(
-    val id: Long?,
+    val id: Long,
     val username: String,
     val nickname: String,
     val email: String,
