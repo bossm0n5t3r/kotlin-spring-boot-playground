@@ -1,2 +1,5 @@
 server:
   port: 1013
+
+account:
+  url: http://localhost:1009
