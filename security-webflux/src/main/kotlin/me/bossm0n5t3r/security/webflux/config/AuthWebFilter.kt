@@ -1,5 +1,6 @@
 package me.bossm0n5t3r.security.webflux.config
 
+import kotlinx.coroutines.reactor.mono
 import me.bossm0n5t3r.security.webflux.client.AccountClient
 import me.bossm0n5t3r.security.webflux.context.ReactiveUserContext
 import me.bossm0n5t3r.security.webflux.context.ReactiveUserContext.ATTR_START_MILLIS
@@ -27,8 +28,7 @@ class AuthWebFilter(
         val startMillis = System.currentTimeMillis()
         val userToken = exchange.request.headers.getFirst(HttpHeaders.AUTHORIZATION) ?: return chain.filter(exchange)
 
-        return accountClient
-            .getMe(userToken)
+        return mono { accountClient.getMe(userToken) }
             .flatMap { userAccount ->
                 val userDetail =
                     UserDetail(
@@ -42,7 +42,8 @@ class AuthWebFilter(
                 chain.filter(exchange).contextWrite { ctx ->
                     ReactiveUserContext.putAll(ctx, startMillis, userDetail, userToken)
                 }
-            }.doOnSuccess {
+            }.onErrorResume { chain.filter(exchange) }
+            .doOnSuccess {
                 val req = exchange.request
                 val res = exchange.response
                 val elapsedMillis = System.currentTimeMillis() - startMillis

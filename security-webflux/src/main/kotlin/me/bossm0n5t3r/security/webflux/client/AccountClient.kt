@@ -12,28 +12,27 @@ import org.springframework.web.service.annotation.GetExchange
 import org.springframework.web.service.annotation.HttpExchange
 import org.springframework.web.service.annotation.PatchExchange
 import org.springframework.web.service.annotation.PostExchange
-import reactor.core.publisher.Mono
 
 @HttpExchange("/api/account")
 interface AccountClient {
     @PostExchange("/register")
-    fun register(
+    suspend fun register(
         @RequestBody request: RegisterRequest,
-    ): Mono<UserAccountResponse>
+    ): UserAccountResponse
 
     @PostExchange("/login")
-    fun login(
+    suspend fun login(
         @RequestBody request: LoginRequest,
-    ): Mono<TokenResponse>
+    ): TokenResponse
 
     @GetExchange("/me")
-    fun getMe(
+    suspend fun getMe(
         @RequestHeader(HttpHeaders.AUTHORIZATION) authHeader: String,
-    ): Mono<UserAccountResponse>
+    ): UserAccountResponse
 
     @PatchExchange("/role")
-    fun updateRole(
+    suspend fun updateRole(
         @RequestHeader(HttpHeaders.AUTHORIZATION) authHeader: String,
         @RequestBody request: UpdateRoleRequest,
-    ): Mono<UserAccountResponse>
+    ): UserAccountResponse
 }
