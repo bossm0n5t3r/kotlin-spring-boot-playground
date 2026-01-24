@@ -13,7 +13,14 @@ class UserServiceTest {
     @Test
     fun `getCurrentUser - should return UserDetail when present in context`() =
         runBlocking {
-            val user = UserDetail(userId = "testUser", roles = listOf(UserRole.USER))
+            val user =
+                UserDetail(
+                    userId = "testUser",
+                    username = "testUser",
+                    nickname = "testNickname",
+                    email = "test@example.com",
+                    roles = listOf(UserRole.USER),
+                )
             val token = "testToken"
 
             val reactorContext =

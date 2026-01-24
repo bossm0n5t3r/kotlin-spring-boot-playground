@@ -32,7 +32,10 @@ class AuthWebFilter(
             .flatMap { userAccount ->
                 val userDetail =
                     UserDetail(
-                        userAccount.id.toString(),
+                        userId = userAccount.id.toString(),
+                        username = userAccount.username,
+                        nickname = userAccount.nickname,
+                        email = userAccount.email,
                         roles = listOf(userAccount.role),
                     )
                 exchange.attributes[ATTR_START_MILLIS] = startMillis

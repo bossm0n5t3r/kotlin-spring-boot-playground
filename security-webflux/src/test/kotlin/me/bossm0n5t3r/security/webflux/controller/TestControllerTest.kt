@@ -72,7 +72,8 @@ class TestControllerTest {
         every { authRole.requiredRoles } returns emptyArray()
         every { joinPoint.proceed() } returns Mono.just("Hello, Token Required!")
 
-        val user = UserDetail(userId = "1", roles = listOf(UserRole.USER))
+        val user =
+            UserDetail(userId = "1", username = "user", nickname = "일반사용자", email = "user@example.com", roles = listOf(UserRole.USER))
         val token = "valid-token"
 
         val result =
@@ -93,7 +94,8 @@ class TestControllerTest {
         every { authRole.requiredToken } returns true
         every { authRole.requiredRoles } returns arrayOf(UserRole.ADMIN)
 
-        val user = UserDetail(userId = "1", roles = listOf(UserRole.USER))
+        val user =
+            UserDetail(userId = "1", username = "user", nickname = "일반사용자", email = "user@example.com", roles = listOf(UserRole.USER))
         val token = "valid-token"
 
         val result =
@@ -110,7 +112,8 @@ class TestControllerTest {
     @Test
     fun `me - UserService를 통해 현재 사용자 정보를 가져와야 함`() =
         runTest {
-            val user = UserDetail(userId = "1", roles = listOf(UserRole.USER))
+            val user =
+                UserDetail(userId = "1", username = "user", nickname = "일반사용자", email = "user@example.com", roles = listOf(UserRole.USER))
             val token = "valid-token"
 
             coEvery { userService.getCurrentUser() } returns user
@@ -129,7 +132,8 @@ class TestControllerTest {
         every { authRole.requiredRoles } returns arrayOf(UserRole.USER)
         every { joinPoint.proceed() } returns Mono.just("Hello, User Only!")
 
-        val user = UserDetail(userId = "1", roles = listOf(UserRole.USER))
+        val user =
+            UserDetail(userId = "1", username = "user", nickname = "일반사용자", email = "user@example.com", roles = listOf(UserRole.USER))
         val token = "valid-token"
 
         val result =
@@ -151,7 +155,14 @@ class TestControllerTest {
         every { authRole.requiredRoles } returns arrayOf(UserRole.PREMIUM)
         every { joinPoint.proceed() } returns Mono.just("Hello, Premium Only!")
 
-        val user = UserDetail(userId = "1", roles = listOf(UserRole.PREMIUM))
+        val user =
+            UserDetail(
+                userId = "1",
+                username = "premium",
+                nickname = "프리미엄",
+                email = "premium@example.com",
+                roles = listOf(UserRole.PREMIUM),
+            )
         val token = "valid-token"
 
         val result =
@@ -173,7 +184,14 @@ class TestControllerTest {
         every { authRole.requiredRoles } returns arrayOf(UserRole.ANONYMOUS)
         every { joinPoint.proceed() } returns Mono.just("Hello, Anonymous Only!")
 
-        val user = UserDetail(userId = "1", roles = listOf(UserRole.ANONYMOUS))
+        val user =
+            UserDetail(
+                userId = "1",
+                username = "anonymous",
+                nickname = "익명사용자",
+                email = "anonymous@example.com",
+                roles = listOf(UserRole.ANONYMOUS),
+            )
         val token = "valid-token"
 
         val result =

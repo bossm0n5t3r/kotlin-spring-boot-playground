@@ -37,7 +37,14 @@ class AuthRoleAspectTest {
         every { authRole.requiredToken } returns true
         every { authRole.requiredRoles } returns arrayOf(UserRole.ADMIN)
 
-        val user = UserDetail(userId = "user1", roles = listOf(UserRole.USER, UserRole.PREMIUM))
+        val user =
+            UserDetail(
+                userId = "user1",
+                username = "user1",
+                nickname = "nickname1",
+                email = "user1@example.com",
+                roles = listOf(UserRole.USER, UserRole.PREMIUM),
+            )
         val token = "token1"
 
         val result =
@@ -56,7 +63,14 @@ class AuthRoleAspectTest {
         every { authRole.requiredToken } returns true
         every { authRole.requiredRoles } returns arrayOf(UserRole.ADMIN)
 
-        val user = UserDetail(userId = "premiumUser", roles = listOf(UserRole.PREMIUM))
+        val user =
+            UserDetail(
+                userId = "premiumUser",
+                username = "premiumUser",
+                nickname = "premiumNickname",
+                email = "premium@example.com",
+                roles = listOf(UserRole.PREMIUM),
+            )
         val token = "token1"
 
         val result =
@@ -75,7 +89,14 @@ class AuthRoleAspectTest {
         every { authRole.requiredToken } returns true
         every { authRole.requiredRoles } returns arrayOf(UserRole.PREMIUM)
 
-        val user = UserDetail(userId = "premiumUser", roles = listOf(UserRole.PREMIUM))
+        val user =
+            UserDetail(
+                userId = "premiumUser",
+                username = "premiumUser",
+                nickname = "premiumNickname",
+                email = "premium@example.com",
+                roles = listOf(UserRole.PREMIUM),
+            )
         val token = "token1"
         every { joinPoint.proceed() } returns Mono.just("Premium Success")
 
@@ -95,7 +116,14 @@ class AuthRoleAspectTest {
         every { authRole.requiredToken } returns true
         every { authRole.requiredRoles } returns arrayOf(UserRole.ANONYMOUS)
 
-        val user = UserDetail(userId = "anonymousUser", roles = listOf(UserRole.ANONYMOUS))
+        val user =
+            UserDetail(
+                userId = "anonymousUser",
+                username = "anonymousUser",
+                nickname = "anonymousNickname",
+                email = "anonymous@example.com",
+                roles = listOf(UserRole.ANONYMOUS),
+            )
         val token = "token1"
         every { joinPoint.proceed() } returns Mono.just("Anonymous Success")
 
@@ -115,7 +143,14 @@ class AuthRoleAspectTest {
         every { authRole.requiredToken } returns true
         every { authRole.requiredRoles } returns arrayOf(UserRole.USER)
 
-        val user = UserDetail(userId = "user1", roles = listOf(UserRole.USER))
+        val user =
+            UserDetail(
+                userId = "user1",
+                username = "user1",
+                nickname = "nickname1",
+                email = "user1@example.com",
+                roles = listOf(UserRole.USER),
+            )
         val token = "token1"
         every { joinPoint.proceed() } returns Mono.just("Success")
 
