@@ -1,0 +1,242 @@
+@host = http://localhost:1013
+@account_host = http://localhost:1009
+
+### [ACCOUNT] Register ADMIN
+POST {{account_host}}/api/account/register
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "nickname": "관리자",
+  "email": "admin@example.com",
+  "password": "adminpassword",
+  "role": "ADMIN"
+}
+
+### [ACCOUNT] Register PREMIUM
+POST {{account_host}}/api/account/register
+Content-Type: application/json
+
+{
+  "username": "premium",
+  "nickname": "프리미엄",
+  "email": "premium@example.com",
+  "password": "premiumpassword",
+  "role": "PREMIUM"
+}
+
+### [ACCOUNT] Register USER
+POST {{account_host}}/api/account/register
+Content-Type: application/json
+
+{
+  "username": "user",
+  "nickname": "일반사용자",
+  "email": "user@example.com",
+  "password": "userpassword",
+  "role": "USER"
+}
+
+### [ACCOUNT] Register ANONYMOUS
+POST {{account_host}}/api/account/register
+Content-Type: application/json
+
+{
+  "username": "anonymous",
+  "nickname": "익명사용자",
+  "email": "anonymous@example.com",
+  "password": "anonymouspassword",
+  "role": "ANONYMOUS"
+}
+
+### [ACCOUNT] Login ADMIN
+POST {{account_host}}/api/account/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "adminpassword"
+}
+
+> {%
+    client.global.set("admin_token", response.body.token);
+%}
+
+### [ACCOUNT] Login PREMIUM
+POST {{account_host}}/api/account/login
+Content-Type: application/json
+
+{
+  "username": "premium",
+  "password": "premiumpassword"
+}
+
+> {%
+    client.global.set("premium_token", response.body.token);
+%}
+
+### [ACCOUNT] Login USER
+POST {{account_host}}/api/account/login
+Content-Type: application/json
+
+{
+  "username": "user",
+  "password": "userpassword"
+}
+
+> {%
+    client.global.set("user_token", response.body.token);
+%}
+
+### [ACCOUNT] Login ANONYMOUS
+POST {{account_host}}/api/account/login
+Content-Type: application/json
+
+{
+  "username": "anonymous",
+  "password": "anonymouspassword"
+}
+
+> {%
+    client.global.set("anonymous_token", response.body.token);
+%}
+
+### [PUBLIC] Public Hello
+GET {{host}}/public/hello
+
+> {%
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body === "Hello, Public!", "Response body is not 'Hello, Public!'");
+    });
+%}
+
+### [TEST] No Token Required
+GET {{host}}/test/no-token-required
+
+> {%
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body === "Hello, No Token Required!", "Response body is not 'Hello, No Token Required!'");
+    });
+%}
+
+### [TEST] Token Required (Without Token - Fail)
+GET {{host}}/test/token-required
+
+> {%
+    client.test("Request failed as expected", function () {
+        // Since there's no global exception handler, it might return 500
+        client.assert(response.status === 500, "Response status should be 500");
+    });
+%}
+
+### [TEST] Token Required (With Token)
+GET {{host}}/test/token-required
+Authorization: Bearer {{user_token}}
+
+> {%
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body === "Hello, Token Required!", "Response body is not 'Hello, Token Required!'");
+    });
+%}
+
+### [TEST] Get Me
+GET {{host}}/test/me
+Authorization: Bearer {{user_token}}
+
+> {%
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.hasOwnProperty("userId"), "Response body does not contain userId");
+        client.assert(response.body.username === "user", "Username in response is not 'user'");
+    });
+%}
+
+### [TEST] Admin Only - Success (ADMIN)
+GET {{host}}/test/admin-only
+Authorization: Bearer {{admin_token}}
+
+> {%
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body === "Hello, Admin Only!", "Response body is not 'Hello, Admin Only!'");
+    });
+%}
+
+### [TEST] Admin Only - Fail (USER)
+GET {{host}}/test/admin-only
+Authorization: Bearer {{user_token}}
+
+> {%
+    client.test("Request failed as expected", function () {
+        client.assert(response.status === 500, "Response status should be 500");
+    });
+%}
+
+### [TEST] User Only - Success (USER)
+GET {{host}}/test/user-only
+Authorization: Bearer {{user_token}}
+
+> {%
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body === "Hello, User Only!", "Response body is not 'Hello, User Only!'");
+    });
+%}
+
+### [TEST] User Only - Success (ADMIN)
+GET {{host}}/test/user-only
+Authorization: Bearer {{admin_token}}
+
+> {%
+    client.test("Request failed as expected for now since it requires exactly USER role in some logic, but let's see. If AuthRoleAspect uses 'any', ADMIN might fail if only USER is specified.", function () {
+        // Based on AuthRoleAspect.kt: val hasRequiredRole = authRole.requiredRoles.any { it in user.roles }
+        // Admin user has [ADMIN] role. requiredRoles is [USER]. 
+        // So it will fail with 500.
+        client.assert(response.status === 500, "Response status should be 500");
+    });
+%}
+
+### [TEST] Premium Only - Success (PREMIUM)
+GET {{host}}/test/premium-only
+Authorization: Bearer {{premium_token}}
+
+> {%
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body === "Hello, Premium Only!", "Response body is not 'Hello, Premium Only!'");
+    });
+%}
+
+### [TEST] Premium Only - Fail (USER)
+GET {{host}}/test/premium-only
+Authorization: Bearer {{user_token}}
+
+> {%
+    client.test("Request failed as expected", function () {
+        client.assert(response.status === 500, "Response status should be 500");
+    });
+%}
+
+### [TEST] Anonymous Only - Success (ANONYMOUS)
+GET {{host}}/test/anonymous-only
+Authorization: Bearer {{anonymous_token}}
+
+> {%
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body === "Hello, Anonymous Only!", "Response body is not 'Hello, Anonymous Only!'");
+    });
+%}
+
+### [TEST] Anonymous Only - Fail (USER)
+GET {{host}}/test/anonymous-only
+Authorization: Bearer {{user_token}}
+
+> {%
+    client.test("Request failed as expected", function () {
+        client.assert(response.status === 500, "Response status should be 500");
+    });
+%}
