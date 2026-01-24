@@ -5,7 +5,11 @@ import org.springframework.security.core.AuthenticationException
 sealed class TokenException(
     message: String,
     cause: Throwable? = null,
-) : AuthenticationException(message, cause)
+) : AuthenticationException(message) {
+    init {
+        cause?.let { initCause(it) }
+    }
+}
 
 class TokenFormatInvalidException(
     message: String,
