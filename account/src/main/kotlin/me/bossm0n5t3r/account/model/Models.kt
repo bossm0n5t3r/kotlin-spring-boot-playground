@@ -19,6 +19,7 @@ data class RegisterRequest(
 )
 
 data class UpdateRoleRequest(
+    val username: String,
     val role: UserRole,
 )
 

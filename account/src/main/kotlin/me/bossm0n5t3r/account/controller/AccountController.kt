@@ -44,7 +44,6 @@ class AccountController(
 
     @PatchMapping("/role")
     suspend fun updateRole(
-        @AuthenticationPrincipal userAccount: UserAccount,
         @RequestBody request: UpdateRoleRequest,
-    ): UserAccountResponse = accountService.updateRole(userAccount.username, request)
+    ): UserAccountResponse = accountService.updateRole(request.username, request)
 }

@@ -108,17 +108,20 @@ class AccountIntegrationTest {
 
     @Test
     fun `Role 업데이트 테스트`() {
-        val registerRequest = createRegisterRequest(role = UserRole.ADMIN)
-        registerUser(registerRequest)
-        val loginRequest = LoginRequest(username = registerRequest.username, password = registerRequest.password)
-        val token = loginUser(loginRequest).token
+        val adminRegisterRequest = createRegisterRequest(username = "admin", role = UserRole.ADMIN)
+        registerUser(adminRegisterRequest)
+        val adminLoginRequest = LoginRequest(username = adminRegisterRequest.username, password = adminRegisterRequest.password)
+        val adminToken = loginUser(adminLoginRequest).token
+
+        val userRegisterRequest = createRegisterRequest(username = "testuser")
+        registerUser(userRegisterRequest)
 
         // Role 업데이트
-        val updateRoleRequest = UpdateRoleRequest(role = UserRole.PREMIUM)
+        val updateRoleRequest = UpdateRoleRequest(username = userRegisterRequest.username, role = UserRole.PREMIUM)
         webTestClient
             .patch()
             .uri("/api/account/role")
-            .header(HttpHeaders.AUTHORIZATION, "$BEARER_PREFIX$token")
+            .header(HttpHeaders.AUTHORIZATION, "$BEARER_PREFIX$adminToken")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(updateRoleRequest)
             .exchange()
@@ -128,11 +131,14 @@ class AccountIntegrationTest {
             .jsonPath("$.role")
             .isEqualTo(UserRole.PREMIUM.name)
 
-        // 업데이트 후 정보 조회 확인
+        // 업데이트 후 정보 조회 확인을 위해 유저 로그인
+        val userLoginRequest = LoginRequest(username = userRegisterRequest.username, password = userRegisterRequest.password)
+        val userToken = loginUser(userLoginRequest).token
+
         webTestClient
             .get()
             .uri("/api/account/me")
-            .header(HttpHeaders.AUTHORIZATION, "$BEARER_PREFIX$token")
+            .header(HttpHeaders.AUTHORIZATION, "$BEARER_PREFIX$userToken")
             .exchange()
             .expectStatus()
             .isOk
@@ -141,14 +147,16 @@ class AccountIntegrationTest {
             .isEqualTo(UserRole.PREMIUM.name)
     }
 
-    private fun createRegisterRequest(role: UserRole? = null) =
-        RegisterRequest(
-            username = "testuser",
-            nickname = "테스터",
-            email = "test@example.com",
-            password = "testpassword",
-            role = role,
-        )
+    private fun createRegisterRequest(
+        username: String = "testuser",
+        role: UserRole? = null,
+    ) = RegisterRequest(
+        username = username,
+        nickname = "테스터",
+        email = "$username@example.com",
+        password = "testpassword",
+        role = role,
+    )
 
     private fun registerUser(registerRequest: RegisterRequest): UserAccountResponse =
         webTestClient

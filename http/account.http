@@ -34,11 +34,41 @@ Content-Type: application/json
 GET {{host}}/api/account/me
 Authorization: Bearer {{auth_token}}
 
-### Update User Role
-PATCH {{host}}/api/account/role
-Authorization: Bearer {{auth_token}}
+### Register a new ADMIN user
+POST {{host}}/api/account/register
 Content-Type: application/json
 
 {
+  "username": "admin",
+  "nickname": "어드민",
+  "email": "admin@example.com",
+  "password": "adminpassword",
   "role": "ADMIN"
 }
+
+### Login and Get ADMIN Token
+POST {{host}}/api/account/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "adminpassword"
+}
+
+> {%
+    client.global.set("admin_auth_token", response.body.token);
+%}
+
+### Update User Role (using ADMIN token)
+PATCH {{host}}/api/account/role
+Authorization: Bearer {{admin_auth_token}}
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+  "role": "ADMIN"
+}
+
+### Get Updated User Info
+GET {{host}}/api/account/me
+Authorization: Bearer {{auth_token}}

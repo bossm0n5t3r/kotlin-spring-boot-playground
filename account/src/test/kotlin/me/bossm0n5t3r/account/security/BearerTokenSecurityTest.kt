@@ -111,7 +111,7 @@ class BearerTokenSecurityTest {
             .patch()
             .uri("/api/account/role")
             .header(HttpHeaders.AUTHORIZATION, "Bearer $userToken")
-            .bodyValue(UpdateRoleRequest(UserRole.ADMIN))
+            .bodyValue(UpdateRoleRequest("user", UserRole.ADMIN))
             .exchange()
             .expectStatus()
             .isForbidden
@@ -123,7 +123,7 @@ class BearerTokenSecurityTest {
             .patch()
             .uri("/api/account/role")
             .header(HttpHeaders.AUTHORIZATION, "Bearer $adminToken")
-            .bodyValue(UpdateRoleRequest(UserRole.PREMIUM))
+            .bodyValue(UpdateRoleRequest("user", UserRole.PREMIUM))
             .exchange()
             .expectStatus()
             .isOk
