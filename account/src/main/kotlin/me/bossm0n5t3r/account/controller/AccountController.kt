@@ -1,19 +1,17 @@
 package me.bossm0n5t3r.account.controller
 
+import me.bossm0n5t3r.account.domain.UserAccount
 import me.bossm0n5t3r.account.model.LoginRequest
 import me.bossm0n5t3r.account.model.RegisterRequest
 import me.bossm0n5t3r.account.model.TokenResponse
 import me.bossm0n5t3r.account.model.UpdateRoleRequest
 import me.bossm0n5t3r.account.model.UserAccountResponse
 import me.bossm0n5t3r.account.service.AccountService
-import me.bossm0n5t3r.account.util.Constants.BEARER_PREFIX
-import me.bossm0n5t3r.account.util.JwtProvider
-import org.springframework.http.HttpHeaders
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/account")
 class AccountController(
     private val accountService: AccountService,
-    private val jwtProvider: JwtProvider,
 ) {
     @PostMapping("/register")
     suspend fun register(
@@ -35,19 +32,19 @@ class AccountController(
 
     @GetMapping("/me")
     suspend fun getMe(
-        @RequestHeader(HttpHeaders.AUTHORIZATION) authHeader: String,
-    ): UserAccountResponse {
-        val token = authHeader.removePrefix(BEARER_PREFIX).trim()
-        return accountService.getUserInfo(token)
-    }
+        @AuthenticationPrincipal userAccount: UserAccount,
+    ): UserAccountResponse =
+        UserAccountResponse(
+            id = userAccount.id,
+            username = userAccount.username,
+            nickname = userAccount.nickname,
+            email = userAccount.email,
+            role = userAccount.role,
+        )
 
     @PatchMapping("/role")
     suspend fun updateRole(
-        @RequestHeader(HttpHeaders.AUTHORIZATION) authHeader: String,
+        @AuthenticationPrincipal userAccount: UserAccount,
         @RequestBody request: UpdateRoleRequest,
-    ): UserAccountResponse {
-        val token = authHeader.removePrefix(BEARER_PREFIX).trim()
-        val username = jwtProvider.getUsernameFromToken(token)
-        return accountService.updateRole(username, request)
-    }
+    ): UserAccountResponse = accountService.updateRole(userAccount.username, request)
 }
