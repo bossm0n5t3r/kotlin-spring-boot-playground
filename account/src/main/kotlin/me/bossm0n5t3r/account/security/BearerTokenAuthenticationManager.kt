@@ -21,6 +21,7 @@ class BearerTokenAuthenticationManager(
             val token = authentication.credentials as String
             val username = jwtProvider.getUsernameFromToken(token)
             val userAccount = userAccountRepository.findByUsername(username)
+            requireNotNull(userAccount) { "User not found" }
             val authorities = listOf(SimpleGrantedAuthority("$ROLE_PREFIX${userAccount.role}"))
 
             UsernamePasswordAuthenticationToken(userAccount, token, authorities)

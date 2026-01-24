@@ -50,6 +50,7 @@ class AccountService(
         request: UpdateRoleRequest,
     ): UserAccountResponse {
         val userAccount = userAccountRepository.findByUsername(username)
+        requireNotNull(userAccount) { "User not found" }
         val updatedUserAccount = userAccount.copy(role = request.role)
         return userAccountRepository
             .save(updatedUserAccount)
@@ -66,6 +67,7 @@ class AccountService(
 
     suspend fun login(request: LoginRequest): TokenResponse {
         val userAccount = userAccountRepository.findByUsername(request.username)
+        requireNotNull(userAccount) { "User not found" }
         require(passwordEncoder.matches(request.password, userAccount.password)) { "Invalid password" }
         return TokenResponse(jwtProvider.createToken(userAccount.username))
     }
