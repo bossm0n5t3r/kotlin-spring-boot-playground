@@ -69,20 +69,4 @@ class AccountService(
         require(passwordEncoder.matches(request.password, userAccount.password)) { "Invalid password" }
         return TokenResponse(jwtProvider.createToken(userAccount.username))
     }
-
-    suspend fun getUserInfo(token: String): UserAccountResponse {
-        require(jwtProvider.validateToken(token)) { "Invalid token" }
-        val username = jwtProvider.getUsernameFromToken(token)
-        return userAccountRepository
-            .findByUsername(username)
-            .let {
-                UserAccountResponse(
-                    id = it.id,
-                    username = it.username,
-                    nickname = it.nickname,
-                    email = it.email,
-                    role = it.role,
-                )
-            }
-    }
 }
