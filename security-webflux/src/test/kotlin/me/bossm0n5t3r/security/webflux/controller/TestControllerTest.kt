@@ -186,4 +186,19 @@ class TestControllerTest {
             .expectNext("Hello, Anonymous Only!")
             .verifyComplete()
     }
+
+    @Test
+    fun `requiredRoles가 비어있지 않을 때 토큰이 없으면 AuthTokenRequiredException 발생해야 함`() {
+        val joinPoint = mockk<ProceedingJoinPoint>()
+        val authRole = mockk<AuthRole>()
+        every { authRole.requiredToken } returns false
+        every { authRole.requiredRoles } returns arrayOf(UserRole.USER)
+
+        val result = aspect.checkAuthRole(joinPoint, authRole)
+
+        StepVerifier
+            .create(result)
+            .expectErrorMatches { it is me.bossm0n5t3r.security.webflux.exception.AuthTokenRequiredException }
+            .verify()
+    }
 }

@@ -22,7 +22,7 @@ class AuthRoleAspect {
             val user = ReactiveUserContext.userFrom(ctxView)
             val token = ReactiveUserContext.tokenFrom(ctxView)
 
-            if (authRole.requiredToken) {
+            if (authRole.requiredToken || authRole.requiredRoles.isNotEmpty()) {
                 if (token == null || user == null) {
                     return@deferContextual Mono.error(AuthTokenRequiredException())
                 }
