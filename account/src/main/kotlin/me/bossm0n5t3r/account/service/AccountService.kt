@@ -29,7 +29,7 @@ class AccountService(
                 nickname = request.nickname,
                 email = request.email,
                 password = encodedPassword,
-                role = UserRole.ANONYMOUS,
+                role = request.role ?: UserRole.ANONYMOUS,
             )
         return userAccountRepository
             .save(userAccount)

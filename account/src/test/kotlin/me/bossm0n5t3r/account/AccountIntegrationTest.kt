@@ -47,6 +47,16 @@ class AccountIntegrationTest {
     }
 
     @Test
+    fun `유저 등록 테스트 - Role 지정`() {
+        val registerRequest = createRegisterRequest(role = UserRole.ADMIN)
+
+        val userResponse = registerUser(registerRequest)
+
+        assert(userResponse.username == registerRequest.username)
+        assert(userResponse.role == UserRole.ADMIN)
+    }
+
+    @Test
     fun `로그인 성공 테스트`() {
         val registerRequest = createRegisterRequest()
         registerUser(registerRequest)
@@ -98,13 +108,13 @@ class AccountIntegrationTest {
 
     @Test
     fun `Role 업데이트 테스트`() {
-        val registerRequest = createRegisterRequest()
+        val registerRequest = createRegisterRequest(role = UserRole.ADMIN)
         registerUser(registerRequest)
         val loginRequest = LoginRequest(username = registerRequest.username, password = registerRequest.password)
         val token = loginUser(loginRequest).token
 
         // Role 업데이트
-        val updateRoleRequest = UpdateRoleRequest(role = UserRole.ADMIN)
+        val updateRoleRequest = UpdateRoleRequest(role = UserRole.PREMIUM)
         webTestClient
             .patch()
             .uri("/api/account/role")
@@ -116,7 +126,7 @@ class AccountIntegrationTest {
             .isOk
             .expectBody()
             .jsonPath("$.role")
-            .isEqualTo(UserRole.ADMIN.name)
+            .isEqualTo(UserRole.PREMIUM.name)
 
         // 업데이트 후 정보 조회 확인
         webTestClient
@@ -128,15 +138,16 @@ class AccountIntegrationTest {
             .isOk
             .expectBody()
             .jsonPath("$.role")
-            .isEqualTo(UserRole.ADMIN.name)
+            .isEqualTo(UserRole.PREMIUM.name)
     }
 
-    private fun createRegisterRequest() =
+    private fun createRegisterRequest(role: UserRole? = null) =
         RegisterRequest(
             username = "testuser",
             nickname = "테스터",
             email = "test@example.com",
             password = "testpassword",
+            role = role,
         )
 
     private fun registerUser(registerRequest: RegisterRequest): UserAccountResponse =

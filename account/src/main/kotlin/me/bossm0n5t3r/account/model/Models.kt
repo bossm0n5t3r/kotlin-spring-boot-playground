@@ -15,6 +15,7 @@ data class RegisterRequest(
     val nickname: String,
     val email: String,
     val password: String,
+    val role: UserRole? = null,
 )
 
 data class UpdateRoleRequest(
