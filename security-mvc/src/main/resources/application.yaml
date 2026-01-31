@@ -1,0 +1,5 @@
+server:
+  port: 1019
+
+account:
+  url: http://localhost:1009
