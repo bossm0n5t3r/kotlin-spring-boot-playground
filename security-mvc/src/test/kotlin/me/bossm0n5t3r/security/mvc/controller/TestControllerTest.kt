@@ -4,7 +4,6 @@ import io.mockk.every
 import io.mockk.mockk
 import me.bossm0n5t3r.security.mvc.annotation.AuthRole
 import me.bossm0n5t3r.security.mvc.aop.AuthRoleAspect
-import me.bossm0n5t3r.security.mvc.context.UserContext
 import me.bossm0n5t3r.security.mvc.dto.UserDetail
 import me.bossm0n5t3r.security.mvc.enumeration.UserRole
 import me.bossm0n5t3r.security.mvc.exception.AuthTokenRequiredException
@@ -15,6 +14,8 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.context.SecurityContextHolder
 
 class TestControllerTest {
     private val userService: UserService = mockk()
@@ -23,7 +24,7 @@ class TestControllerTest {
 
     @AfterEach
     fun tearDown() {
-        UserContext.clear()
+        SecurityContextHolder.clearContext()
     }
 
     @Test
@@ -67,8 +68,7 @@ class TestControllerTest {
         val user =
             UserDetail(userId = "1", username = "user", nickname = "일반사용자", email = "user@example.com", roles = listOf(UserRole.USER))
         val token = "valid-token"
-        UserContext.setUserDetail(user)
-        UserContext.setAuthToken(token)
+        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, token, user.authorities)
 
         val result = aspect.checkAuthRole(joinPoint, authRole)
         assertEquals("Hello, Token Required!", result)
@@ -84,8 +84,7 @@ class TestControllerTest {
         val user =
             UserDetail(userId = "1", username = "user", nickname = "일반사용자", email = "user@example.com", roles = listOf(UserRole.USER))
         val token = "valid-token"
-        UserContext.setUserDetail(user)
-        UserContext.setAuthToken(token)
+        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, token, user.authorities)
 
         assertThrows(UserRoleRestrictedException::class.java) {
             aspect.checkAuthRole(joinPoint, authRole)
@@ -96,7 +95,7 @@ class TestControllerTest {
     fun `me - UserService를 통해 현재 사용자 정보를 가져와야 함`() {
         val user =
             UserDetail(userId = "1", username = "user", nickname = "일반사용자", email = "user@example.com", roles = listOf(UserRole.USER))
-        UserContext.setUserDetail(user)
+        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, null, user.authorities)
 
         every { userService.getCurrentUser() } returns user
 
@@ -115,8 +114,7 @@ class TestControllerTest {
         val user =
             UserDetail(userId = "1", username = "user", nickname = "일반사용자", email = "user@example.com", roles = listOf(UserRole.USER))
         val token = "valid-token"
-        UserContext.setUserDetail(user)
-        UserContext.setAuthToken(token)
+        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, token, user.authorities)
 
         val result = aspect.checkAuthRole(joinPoint, authRole)
         assertEquals("Hello, User Only!", result)
@@ -139,8 +137,7 @@ class TestControllerTest {
                 roles = listOf(UserRole.PREMIUM),
             )
         val token = "valid-token"
-        UserContext.setUserDetail(user)
-        UserContext.setAuthToken(token)
+        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, token, user.authorities)
 
         val result = aspect.checkAuthRole(joinPoint, authRole)
         assertEquals("Hello, Premium Only!", result)
@@ -163,8 +160,7 @@ class TestControllerTest {
                 roles = listOf(UserRole.ANONYMOUS),
             )
         val token = "valid-token"
-        UserContext.setUserDetail(user)
-        UserContext.setAuthToken(token)
+        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, token, user.authorities)
 
         val result = aspect.checkAuthRole(joinPoint, authRole)
         assertEquals("Hello, Anonymous Only!", result)
