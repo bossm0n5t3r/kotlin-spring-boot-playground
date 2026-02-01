@@ -1,28 +1,26 @@
 package me.bossm0n5t3r.security.mvc.config
 
+import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import me.bossm0n5t3r.security.mvc.client.AccountClient
-import me.bossm0n5t3r.security.mvc.config.LOGGER
 import me.bossm0n5t3r.security.mvc.dto.UserDetail
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
-import org.springframework.web.servlet.HandlerInterceptor
-import org.springframework.web.servlet.ModelAndView
+import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
-class AuthInterceptor(
+class AuthFilter(
     private val accountClient: AccountClient,
-) : HandlerInterceptor {
-    override fun preHandle(
+) : OncePerRequestFilter() {
+    override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        handler: Any,
-    ): Boolean {
+        filterChain: FilterChain,
+    ) {
         val startMillis = System.currentTimeMillis()
-        request.setAttribute(START_MILLIS_ATTR, startMillis)
 
         val userToken = request.getHeader(HttpHeaders.AUTHORIZATION)
         if (userToken != null) {
@@ -43,37 +41,19 @@ class AuthInterceptor(
                 LOGGER.error("Failed to fetch user account", e)
             }
         }
-        return true
-    }
 
-    override fun postHandle(
-        request: HttpServletRequest,
-        response: HttpServletResponse,
-        handler: Any,
-        modelAndView: ModelAndView?,
-    ) {
-        val startMillis = request.getAttribute(START_MILLIS_ATTR) as? Long ?: System.currentTimeMillis()
-        val elapsedMillis = System.currentTimeMillis() - startMillis
-
-        LOGGER.info(
-            "method: {}, path: {}, status: {}, elapsedMillis: {}",
-            request.method,
-            request.requestURI,
-            response.status,
-            elapsedMillis,
-        )
-    }
-
-    override fun afterCompletion(
-        request: HttpServletRequest,
-        response: HttpServletResponse,
-        handler: Any,
-        ex: Exception?,
-    ) {
-        SecurityContextHolder.clearContext()
-    }
-
-    companion object {
-        private const val START_MILLIS_ATTR = "START_MILLIS"
+        try {
+            filterChain.doFilter(request, response)
+        } finally {
+            val elapsedMillis = System.currentTimeMillis() - startMillis
+            LOGGER.info(
+                "method: {}, path: {}, status: {}, elapsedMillis: {}",
+                request.method,
+                request.requestURI,
+                response.status,
+                elapsedMillis,
+            )
+            SecurityContextHolder.clearContext()
+        }
     }
 }
