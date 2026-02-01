@@ -3,7 +3,6 @@ package me.bossm0n5t3r.security.mvc.aop
 import io.mockk.every
 import io.mockk.mockk
 import me.bossm0n5t3r.security.mvc.annotation.AuthRole
-import me.bossm0n5t3r.security.mvc.context.UserContext
 import me.bossm0n5t3r.security.mvc.dto.UserDetail
 import me.bossm0n5t3r.security.mvc.enumeration.ResponseStatus
 import me.bossm0n5t3r.security.mvc.enumeration.UserRole
@@ -14,6 +13,8 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.context.SecurityContextHolder
 
 class AuthRoleAspectTest {
     private val aspect = AuthRoleAspect()
@@ -21,7 +22,7 @@ class AuthRoleAspectTest {
 
     @AfterEach
     fun tearDown() {
-        UserContext.clear()
+        SecurityContextHolder.clearContext()
     }
 
     @Test
@@ -52,8 +53,7 @@ class AuthRoleAspectTest {
                 roles = listOf(UserRole.USER, UserRole.PREMIUM),
             )
         val token = "token1"
-        UserContext.setUserDetail(user)
-        UserContext.setAuthToken(token)
+        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, token, user.authorities)
 
         val exception =
             assertThrows(UserRoleRestrictedException::class.java) {
@@ -77,8 +77,7 @@ class AuthRoleAspectTest {
                 roles = listOf(UserRole.PREMIUM),
             )
         val token = "token1"
-        UserContext.setUserDetail(user)
-        UserContext.setAuthToken(token)
+        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, token, user.authorities)
 
         val exception =
             assertThrows(UserRoleRestrictedException::class.java) {
@@ -102,8 +101,7 @@ class AuthRoleAspectTest {
                 roles = listOf(UserRole.PREMIUM),
             )
         val token = "token1"
-        UserContext.setUserDetail(user)
-        UserContext.setAuthToken(token)
+        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, token, user.authorities)
 
         every { joinPoint.proceed() } returns "Premium Success"
 
@@ -126,8 +124,7 @@ class AuthRoleAspectTest {
                 roles = listOf(UserRole.ANONYMOUS),
             )
         val token = "token1"
-        UserContext.setUserDetail(user)
-        UserContext.setAuthToken(token)
+        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, token, user.authorities)
 
         every { joinPoint.proceed() } returns "Anonymous Success"
 
@@ -150,8 +147,7 @@ class AuthRoleAspectTest {
                 roles = listOf(UserRole.USER),
             )
         val token = "token1"
-        UserContext.setUserDetail(user)
-        UserContext.setAuthToken(token)
+        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, token, user.authorities)
 
         every { joinPoint.proceed() } returns "Success"
 
