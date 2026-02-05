@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.jdbc.core.JdbcTemplate
 import javax.sql.DataSource
+import org.springframework.jdbc.core.queryForObject
 
 @SpringBootTest(classes = [TxRoutingDatasourceApplication::class])
 class UserServiceTest {
@@ -44,15 +45,14 @@ class UserServiceTest {
 
         // Verify Master
         val masterCount =
-            masterJdbc().queryForObject(
+            masterJdbc().queryForObject<Int>(
                 "SELECT COUNT(*) FROM users WHERE name = ?",
-                Int::class.java,
                 name,
             )
         assertThat(masterCount).isEqualTo(1)
 
         // Slave should be empty
-        val slaveCount = slaveJdbc().queryForObject("SELECT COUNT(*) FROM users", Int::class.java)
+        val slaveCount = slaveJdbc().queryForObject<Int>("SELECT COUNT(*) FROM users")
         assertThat(slaveCount).isEqualTo(0)
     }
 
@@ -73,7 +73,7 @@ class UserServiceTest {
         assertThat(user?.name).isEqualTo(name)
 
         // Master should be empty
-        val masterCount = masterJdbc().queryForObject("SELECT COUNT(*) FROM users", Int::class.java)
+        val masterCount = masterJdbc().queryForObject<Int>("SELECT COUNT(*) FROM users")
         assertThat(masterCount).isEqualTo(0)
     }
 
@@ -89,9 +89,8 @@ class UserServiceTest {
 
         // then
         val updatedName =
-            masterJdbc().queryForObject(
+            masterJdbc().queryForObject<String>(
                 "SELECT name FROM users WHERE id = ?",
-                String::class.java,
                 created.id,
             )
         assertThat(updatedName).isEqualTo("After Update")
@@ -107,9 +106,8 @@ class UserServiceTest {
 
         // then
         val count =
-            masterJdbc().queryForObject(
+            masterJdbc().queryForObject<Int>(
                 "SELECT COUNT(*) FROM users WHERE id = ?",
-                Int::class.java,
                 created.id,
             )
         assertThat(count).isEqualTo(0)
