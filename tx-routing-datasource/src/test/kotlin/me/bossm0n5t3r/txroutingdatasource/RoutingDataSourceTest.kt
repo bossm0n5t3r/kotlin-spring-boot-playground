@@ -4,6 +4,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import me.bossm0n5t3r.txroutingdatasource.config.DataSourceType
 import me.bossm0n5t3r.txroutingdatasource.config.RoutingDataSource
 import me.bossm0n5t3r.txroutingdatasource.config.RoutingDataSourceConfig
 import org.assertj.core.api.Assertions.assertThat
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
 import org.springframework.data.jpa.repository.JpaRepository
@@ -21,6 +21,8 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.support.TransactionTemplate
 import javax.sql.DataSource
 
 @SpringBootTest(
@@ -75,6 +77,12 @@ class RoutingDataSourceTest {
     @Qualifier("slaveDataSource")
     lateinit var slaveDataSource: DataSource
 
+    @Autowired
+    lateinit var routingDataSource: RoutingDataSource
+
+    @Autowired
+    lateinit var transactionManager: PlatformTransactionManager
+
     @BeforeEach
     fun setup() {
         masterJdbc().execute("DELETE FROM test_entity")
@@ -100,19 +108,34 @@ class RoutingDataSourceTest {
 
     @Test
     fun `should route to slave when transactional readOnly is true`() {
-        // Manually insert into master
-        masterJdbc().execute("INSERT INTO test_entity (name) VALUES ('master-data')")
-        
-        // Manually insert into slave
-        slaveJdbc().execute("INSERT INTO test_entity (name) VALUES ('slave-data')")
-        
-        // Read (should go to slave)
-        // Note: Using findById(1) might be tricky with auto-increment, but since we cleared it, it should be 1.
+        masterJdbc().execute("INSERT INTO test_entity (id, name) VALUES (1, 'master-data')")
+        slaveJdbc().execute("INSERT INTO test_entity (id, name) VALUES (1, 'slave-data')")
+
         val entity = testService.read(1L)
-        
-        // This is a minimal check. In a real test, we'd verify it actually went to slave.
-        // If it returns 'slave-data', it means it read from slave.
+
         assertThat(entity?.name).isEqualTo("slave-data")
+    }
+
+    @Test
+    fun `should determine routing key by transaction readOnly flag`() {
+        val readOnlyKey =
+            TransactionTemplate(transactionManager)
+                .apply { isReadOnly = true }
+                .execute { routingDataSource.currentLookupKey() }
+
+        val writeKey =
+            TransactionTemplate(transactionManager)
+                .apply { isReadOnly = false }
+                .execute { routingDataSource.currentLookupKey() }
+
+        assertThat(readOnlyKey).isEqualTo(DataSourceType.SLAVE)
+        assertThat(writeKey).isEqualTo(DataSourceType.MASTER)
+    }
+
+    private fun RoutingDataSource.currentLookupKey(): Any {
+        val method = RoutingDataSource::class.java.getDeclaredMethod("determineCurrentLookupKey")
+        method.isAccessible = true
+        return method.invoke(this)
     }
 
     private fun masterJdbc(): JdbcTemplate = JdbcTemplate(masterDataSource)

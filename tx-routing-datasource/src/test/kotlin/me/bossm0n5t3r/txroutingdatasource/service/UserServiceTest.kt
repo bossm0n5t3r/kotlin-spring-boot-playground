@@ -51,7 +51,7 @@ class UserServiceTest {
             )
         assertThat(masterCount).isEqualTo(1)
 
-        // Verify Slave (should be 0)
+        // Slave should be empty
         val slaveCount = slaveJdbc().queryForObject("SELECT COUNT(*) FROM users", Int::class.java)
         assertThat(slaveCount).isEqualTo(0)
     }
@@ -72,7 +72,7 @@ class UserServiceTest {
         assertThat(user).isNotNull
         assertThat(user?.name).isEqualTo(name)
 
-        // Verify Master (should be 0)
+        // Master should be empty
         val masterCount = masterJdbc().queryForObject("SELECT COUNT(*) FROM users", Int::class.java)
         assertThat(masterCount).isEqualTo(0)
     }
