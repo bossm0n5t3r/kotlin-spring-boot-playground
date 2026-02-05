@@ -7,7 +7,9 @@ Content-Type: application/json
   "email": "master@example.com"
 }
 
-> {% client.global.set("tx-user-id", response.body['id']); %}
+> {%
+    client.global.set("tx-user-id", response.body['id']);
+%}
 
 ### Find User By ID
 GET {{host}}/api/v1/users/{{tx-user-id}}
