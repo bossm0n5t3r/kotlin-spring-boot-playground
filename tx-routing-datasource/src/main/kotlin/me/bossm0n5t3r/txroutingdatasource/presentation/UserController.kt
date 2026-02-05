@@ -1,5 +1,6 @@
 package me.bossm0n5t3r.txroutingdatasource.presentation
 
+import java.net.URI
 import me.bossm0n5t3r.txroutingdatasource.exception.NotFoundException
 import me.bossm0n5t3r.txroutingdatasource.presentation.dto.UserCreateRequest
 import me.bossm0n5t3r.txroutingdatasource.presentation.dto.UserCreateResponse
@@ -8,6 +9,7 @@ import me.bossm0n5t3r.txroutingdatasource.presentation.dto.UserUpdateRequest
 import me.bossm0n5t3r.txroutingdatasource.presentation.dto.toUserResponse
 import me.bossm0n5t3r.txroutingdatasource.service.UserService
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -32,16 +34,17 @@ class UserController(
             ?: throw NotFoundException("id: $id")
 
     @PostMapping
-    @ResponseStatus(HttpStatus.OK)
     fun create(
         @RequestBody request: UserCreateRequest,
-    ): UserCreateResponse {
-        val saved = userService.createUser(request.name, request.email)
-        return UserCreateResponse(id = requireNotNull(saved.id))
+    ): ResponseEntity<UserCreateResponse> {
+        val result = userService.createUser(request.name, request.email)
+        return ResponseEntity
+            .created(URI.create(result.location))
+            .body(UserCreateResponse(id = result.id))
     }
 
     @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     fun update(
         @PathVariable id: Long,
         @RequestBody request: UserUpdateRequest,
