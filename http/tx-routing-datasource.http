@@ -8,12 +8,24 @@ Content-Type: application/json
 }
 
 > {%
+    client.test("create status 201", function () {
+        client.assert(response.status === 201);
+    });
     client.global.set("tx-user-id", response.body['id']);
 %}
 
 ### Find User By ID
 GET {{host}}/api/v1/users/{{tx-user-id}}
 Content-Type: application/json
+
+> {%
+    client.test("get status 200", function () {
+        client.assert(response.status === 200);
+    });
+    client.test("get has id", function () {
+        client.assert(response.body['id'] === client.global.get("tx-user-id"));
+    });
+%}
 
 ### Update User
 PUT {{host}}/api/v1/users/{{tx-user-id}}
@@ -23,5 +35,17 @@ Content-Type: application/json
   "name": "Updated User"
 }
 
+> {%
+    client.test("update status 204", function () {
+        client.assert(response.status === 204);
+    });
+%}
+
 ### Delete User
 DELETE {{host}}/api/v1/users/{{tx-user-id}}
+
+> {%
+    client.test("delete status 204", function () {
+        client.assert(response.status === 204);
+    });
+%}
