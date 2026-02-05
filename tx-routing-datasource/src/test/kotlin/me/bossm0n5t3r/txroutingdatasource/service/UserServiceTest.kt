@@ -37,10 +37,10 @@ class UserServiceTest {
         val email = "master@example.com"
 
         // when
-        val savedUser = userService.createUser(name, email)
+        val created = userService.createUser(name, email)
 
         // then
-        assertThat(savedUser.id).isNotNull
+        assertThat(created.id).isNotNull
 
         // Verify Master
         val masterCount =
@@ -82,17 +82,17 @@ class UserServiceTest {
         // given
         val name = "Before Update"
         val email = "before@example.com"
-        val savedUser = userService.createUser(name, email)
+        val created = userService.createUser(name, email)
 
         // when
-        userService.updateUser(savedUser.id!!, "After Update", null)
+        userService.updateUser(created.id, "After Update", null)
 
         // then
         val updatedName =
             masterJdbc().queryForObject(
                 "SELECT name FROM users WHERE id = ?",
                 String::class.java,
-                savedUser.id,
+                created.id,
             )
         assertThat(updatedName).isEqualTo("After Update")
     }
@@ -100,17 +100,17 @@ class UserServiceTest {
     @Test
     fun `should delete user on master datasource`() {
         // given
-        val savedUser = userService.createUser("Delete User", "delete@example.com")
+        val created = userService.createUser("Delete User", "delete@example.com")
 
         // when
-        userService.deleteUser(savedUser.id!!)
+        userService.deleteUser(created.id)
 
         // then
         val count =
             masterJdbc().queryForObject(
                 "SELECT COUNT(*) FROM users WHERE id = ?",
                 Int::class.java,
-                savedUser.id,
+                created.id,
             )
         assertThat(count).isEqualTo(0)
     }
