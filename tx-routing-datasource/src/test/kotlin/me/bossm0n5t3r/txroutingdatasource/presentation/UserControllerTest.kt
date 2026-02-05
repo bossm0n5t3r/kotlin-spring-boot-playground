@@ -27,9 +27,12 @@ class UserControllerTest {
 
     @Test
     fun `should create user`() {
-        val user = User(name = "master", email = "master@example.com")
-        ReflectionTestUtils.setField(user, "id", 1L)
-        every { userService.createUser("master", "master@example.com") } returns user
+        val result =
+            UserService.UserCreateResult(
+                id = 1L,
+                location = "/api/v1/users/1",
+            )
+        every { userService.createUser("master", "master@example.com") } returns result
 
         mockMvc
             .perform(
@@ -40,7 +43,7 @@ class UserControllerTest {
                         {"name":"master","email":"master@example.com"}
                         """.trimIndent(),
                     ),
-            ).andExpect(status().isOk)
+            ).andExpect(status().isCreated)
             .andExpect(jsonPath("$.id").value(1))
     }
 
@@ -69,9 +72,7 @@ class UserControllerTest {
 
     @Test
     fun `should update user`() {
-        val updated = User(name = "updated", email = "master@example.com")
-        ReflectionTestUtils.setField(updated, "id", 1L)
-        every { userService.updateUser(1L, "updated", null) } returns updated
+        every { userService.updateUser(1L, "updated", null) } returns User(name = "updated", email = "master@example.com")
 
         mockMvc
             .perform(
@@ -82,7 +83,7 @@ class UserControllerTest {
                         {"name":"updated"}
                         """.trimIndent(),
                     ),
-            ).andExpect(status().isOk)
+            ).andExpect(status().isNoContent)
     }
 
     @Test
