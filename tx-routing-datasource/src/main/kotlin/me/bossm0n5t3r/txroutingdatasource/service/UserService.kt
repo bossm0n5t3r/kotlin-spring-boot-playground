@@ -10,14 +10,24 @@ import org.springframework.transaction.annotation.Transactional
 class UserService(
     private val userRepository: UserRepository,
 ) {
+    data class UserCreateResult(
+        val id: Long,
+        val location: String,
+    )
+
     @Transactional(readOnly = true)
     fun getUser(id: Long): User? {
         return userRepository.findById(id).orElse(null)
     }
 
     @Transactional
-    fun createUser(name: String, email: String): User {
-        return userRepository.save(User(name = name, email = email))
+    fun createUser(name: String, email: String): UserCreateResult {
+        val saved = userRepository.save(User(name = name, email = email))
+        val id = requireNotNull(saved.id)
+        return UserCreateResult(
+            id = id,
+            location = "/api/v1/users/$id",
+        )
     }
 
     @Transactional
