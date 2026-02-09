@@ -44,7 +44,7 @@ class RoutingDataSourceConfig(
         @Qualifier("slaveDataSource") slaveDataSource: DataSource,
     ): RoutingDataSource {
         val routingDataSource = RoutingDataSource()
-        val dataSourceMap = mutableMapOf<Any, Any>(
+        val dataSourceMap = mapOf<Any, Any>(
             DataSourceType.MASTER to masterDataSource,
             DataSourceType.SLAVE to slaveDataSource,
         )
