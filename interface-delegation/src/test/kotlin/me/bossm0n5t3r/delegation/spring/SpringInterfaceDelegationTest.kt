@@ -1,5 +1,9 @@
-package me.bossm0n5t3r.delegation
+package me.bossm0n5t3r.delegation.spring
 
+import me.bossm0n5t3r.delegation.spring.annotation.CustomService
+import me.bossm0n5t3r.delegation.spring.annotation.ServiceType
+import me.bossm0n5t3r.delegation.spring.service.ServiceA
+import me.bossm0n5t3r.delegation.spring.service.ServiceB
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest

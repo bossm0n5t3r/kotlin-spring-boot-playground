@@ -1,4 +1,4 @@
-package me.bossm0n5t3r.delegation
+package me.bossm0n5t3r.delegation.standard
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

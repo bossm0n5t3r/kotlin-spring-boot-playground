@@ -59,10 +59,16 @@ class ServiceA(
 
 다음 경로에서 인터페이스 위임 기능이 정상적으로 동작하는지 확인하는 테스트 코드를 찾아볼 수 있습니다.
 
-- **기본 예제 테스트**: `src/test/kotlin/me/bossm0n5t3r/delegation/InterfaceDelegationTest.kt`
-- **Spring Boot 예제 테스트**: `src/test/kotlin/me/bossm0n5t3r/delegation/SpringInterfaceDelegationTest.kt`
+- **기본 예제 테스트**: `src/test/kotlin/me/bossm0n5t3r/delegation/standard/InterfaceDelegationTest.kt`
+- **Spring Boot 예제 테스트**: `src/test/kotlin/me/bossm0n5t3r/delegation/spring/SpringInterfaceDelegationTest.kt`
+
+Spring Boot 환경의 구체적인 패키지 구조:
+
+- **Annotation**: `me.bossm0n5t3r.delegation.spring.annotation`
+- **Service**: `me.bossm0n5t3r.delegation.spring.service`
 
 위임 기능이 정상적으로 동작하는지 다음과 같이 검증합니다:
+
 - 위임된 메서드가 정상적으로 호출되는지 확인
 - 일부 메서드를 명시적으로 오버라이드했을 때의 동작 확인
 - Spring Context 내에서 어노테이션 기반 빈 조회 및 동작 확인
