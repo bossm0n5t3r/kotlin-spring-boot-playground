@@ -8,10 +8,7 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(name = "users")
-open class User(
-    var name: String = "",
-    var email: String = "",
-) {
+open class User(var name: String = "", var email: String = "") {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null

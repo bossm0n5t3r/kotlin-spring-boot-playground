@@ -7,13 +7,8 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class UserService(
-    private val userRepository: UserRepository,
-) {
-    data class UserCreateResult(
-        val id: Long,
-        val location: String,
-    )
+class UserService(private val userRepository: UserRepository) {
+    data class UserCreateResult(val id: Long, val location: String)
 
     @Transactional(readOnly = true)
     fun getUser(id: Long): User? {
@@ -24,22 +19,12 @@ class UserService(
     fun createUser(name: String, email: String): UserCreateResult {
         val saved = userRepository.save(User(name = name, email = email))
         val id = requireNotNull(saved.id)
-        return UserCreateResult(
-            id = id,
-            location = "/api/v1/users/$id",
-        )
+        return UserCreateResult(id = id, location = "/api/v1/users/$id")
     }
 
     @Transactional
-    fun updateUser(
-        id: Long,
-        name: String?,
-        email: String?,
-    ): User {
-        val user =
-            userRepository.findById(id).orElseThrow {
-                NotFoundException("id: $id")
-            }
+    fun updateUser(id: Long, name: String?, email: String?): User {
+        val user = userRepository.findById(id).orElseThrow { NotFoundException("id: $id") }
         if (name != null) {
             user.name = name
         }
@@ -51,10 +36,7 @@ class UserService(
 
     @Transactional
     fun deleteUser(id: Long) {
-        val user =
-            userRepository.findById(id).orElseThrow {
-                NotFoundException("id: $id")
-            }
+        val user = userRepository.findById(id).orElseThrow { NotFoundException("id: $id") }
         userRepository.delete(user)
     }
 }

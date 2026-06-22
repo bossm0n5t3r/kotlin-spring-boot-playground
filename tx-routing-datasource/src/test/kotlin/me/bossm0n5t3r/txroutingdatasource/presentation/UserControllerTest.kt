@@ -20,18 +20,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 class UserControllerTest {
     private val userService: UserService = mockk()
     private val mockMvc: MockMvc =
-        MockMvcBuilders
-            .standaloneSetup(UserController(userService))
+        MockMvcBuilders.standaloneSetup(UserController(userService))
             .setControllerAdvice(ExceptionHandler())
             .build()
 
     @Test
     fun `should create user`() {
-        val result =
-            UserService.UserCreateResult(
-                id = 1L,
-                location = "/api/v1/users/1",
-            )
+        val result = UserService.UserCreateResult(id = 1L, location = "/api/v1/users/1")
         every { userService.createUser("master", "master@example.com") } returns result
 
         mockMvc
@@ -41,9 +36,11 @@ class UserControllerTest {
                     .content(
                         """
                         {"name":"master","email":"master@example.com"}
-                        """.trimIndent(),
-                    ),
-            ).andExpect(status().isCreated)
+                        """
+                            .trimIndent()
+                    )
+            )
+            .andExpect(status().isCreated)
             .andExpect(jsonPath("$.id").value(1))
     }
 
@@ -65,14 +62,13 @@ class UserControllerTest {
     fun `should return 404 when user not found`() {
         every { userService.getUser(999L) } returns null
 
-        mockMvc
-            .perform(get("/api/v1/users/999"))
-            .andExpect(status().isNotFound)
+        mockMvc.perform(get("/api/v1/users/999")).andExpect(status().isNotFound)
     }
 
     @Test
     fun `should update user`() {
-        every { userService.updateUser(1L, "updated", null) } returns User(name = "updated", email = "master@example.com")
+        every { userService.updateUser(1L, "updated", null) } returns
+            User(name = "updated", email = "master@example.com")
 
         mockMvc
             .perform(
@@ -81,17 +77,17 @@ class UserControllerTest {
                     .content(
                         """
                         {"name":"updated"}
-                        """.trimIndent(),
-                    ),
-            ).andExpect(status().isNoContent)
+                        """
+                            .trimIndent()
+                    )
+            )
+            .andExpect(status().isNoContent)
     }
 
     @Test
     fun `should delete user`() {
         every { userService.deleteUser(1L) } returns Unit
 
-        mockMvc
-            .perform(delete("/api/v1/users/1"))
-            .andExpect(status().isNoContent)
+        mockMvc.perform(delete("/api/v1/users/1")).andExpect(status().isNoContent)
     }
 }

@@ -22,45 +22,28 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/users")
-class UserController(
-    private val userService: UserService,
-) {
+class UserController(private val userService: UserService) {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    fun findUserById(
-        @PathVariable id: Long,
-    ): UserResponse =
-        userService.getUser(id)?.toUserResponse()
-            ?: throw NotFoundException("id: $id")
+    fun findUserById(@PathVariable id: Long): UserResponse =
+        userService.getUser(id)?.toUserResponse() ?: throw NotFoundException("id: $id")
 
     @PostMapping
-    fun create(
-        @RequestBody request: UserCreateRequest,
-    ): ResponseEntity<UserCreateResponse> {
+    fun create(@RequestBody request: UserCreateRequest): ResponseEntity<UserCreateResponse> {
         val result = userService.createUser(request.name, request.email)
-        return ResponseEntity
-            .created(URI.create(result.location))
+        return ResponseEntity.created(URI.create(result.location))
             .body(UserCreateResponse(id = result.id))
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun update(
-        @PathVariable id: Long,
-        @RequestBody request: UserUpdateRequest,
-    ) {
-        userService.updateUser(
-            id = id,
-            name = request.name,
-            email = request.email,
-        )
+    fun update(@PathVariable id: Long, @RequestBody request: UserUpdateRequest) {
+        userService.updateUser(id = id, name = request.name, email = request.email)
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun delete(
-        @PathVariable id: Long,
-    ) {
+    fun delete(@PathVariable id: Long) {
         userService.deleteUser(id)
     }
 }

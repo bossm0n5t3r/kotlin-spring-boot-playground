@@ -1,20 +1,19 @@
 package me.bossm0n5t3r.txroutingdatasource.config
 
 import com.zaxxer.hikari.HikariDataSource
+import javax.sql.DataSource
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.jdbc.DataSourceBuilder
+import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
-import org.springframework.context.ApplicationContext
 import org.springframework.core.io.Resource
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy
 import org.springframework.jdbc.datasource.init.DataSourceInitializer
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator
-import org.springframework.beans.factory.annotation.Value
-import javax.sql.DataSource
 
 @Configuration
 class RoutingDataSourceConfig(
@@ -44,10 +43,11 @@ class RoutingDataSourceConfig(
         @Qualifier("slaveDataSource") slaveDataSource: DataSource,
     ): RoutingDataSource {
         val routingDataSource = RoutingDataSource()
-        val dataSourceMap = mapOf<Any, Any>(
-            DataSourceType.MASTER to masterDataSource,
-            DataSourceType.SLAVE to slaveDataSource,
-        )
+        val dataSourceMap =
+            mapOf<Any, Any>(
+                DataSourceType.MASTER to masterDataSource,
+                DataSourceType.SLAVE to slaveDataSource,
+            )
 
         routingDataSource.setTargetDataSources(dataSourceMap)
         routingDataSource.setDefaultTargetDataSource(masterDataSource)
@@ -63,7 +63,7 @@ class RoutingDataSourceConfig(
 
     @Bean
     fun masterDataSourceInitializer(
-        @Qualifier("masterDataSource") dataSource: DataSource,
+        @Qualifier("masterDataSource") dataSource: DataSource
     ): DataSourceInitializer {
         val initializer = DataSourceInitializer()
         initializer.setDataSource(dataSource)
@@ -73,7 +73,7 @@ class RoutingDataSourceConfig(
 
     @Bean
     fun slaveDataSourceInitializer(
-        @Qualifier("slaveDataSource") dataSource: DataSource,
+        @Qualifier("slaveDataSource") dataSource: DataSource
     ): DataSourceInitializer {
         val initializer = DataSourceInitializer()
         initializer.setDataSource(dataSource)

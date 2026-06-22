@@ -1,5 +1,6 @@
 package me.bossm0n5t3r.txroutingdatasource.service
 
+import javax.sql.DataSource
 import me.bossm0n5t3r.txroutingdatasource.TxRoutingDatasourceApplication
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -8,22 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.jdbc.core.JdbcTemplate
-import javax.sql.DataSource
 import org.springframework.jdbc.core.queryForObject
 
 @SpringBootTest(classes = [TxRoutingDatasourceApplication::class])
 class UserServiceTest {
 
-    @Autowired
-    lateinit var userService: UserService
+    @Autowired lateinit var userService: UserService
 
-    @Autowired
-    @Qualifier("masterDataSource")
-    lateinit var masterDataSource: DataSource
+    @Autowired @Qualifier("masterDataSource") lateinit var masterDataSource: DataSource
 
-    @Autowired
-    @Qualifier("slaveDataSource")
-    lateinit var slaveDataSource: DataSource
+    @Autowired @Qualifier("slaveDataSource") lateinit var slaveDataSource: DataSource
 
     @BeforeEach
     fun setup() {
@@ -45,10 +40,7 @@ class UserServiceTest {
 
         // Verify Master
         val masterCount =
-            masterJdbc().queryForObject<Int>(
-                "SELECT COUNT(*) FROM users WHERE name = ?",
-                name,
-            )
+            masterJdbc().queryForObject<Int>("SELECT COUNT(*) FROM users WHERE name = ?", name)
         assertThat(masterCount).isEqualTo(1)
 
         // Slave should be empty
@@ -89,10 +81,7 @@ class UserServiceTest {
 
         // then
         val updatedName =
-            masterJdbc().queryForObject<String>(
-                "SELECT name FROM users WHERE id = ?",
-                created.id,
-            )
+            masterJdbc().queryForObject<String>("SELECT name FROM users WHERE id = ?", created.id)
         assertThat(updatedName).isEqualTo("After Update")
     }
 
@@ -106,10 +95,7 @@ class UserServiceTest {
 
         // then
         val count =
-            masterJdbc().queryForObject<Int>(
-                "SELECT COUNT(*) FROM users WHERE id = ?",
-                created.id,
-            )
+            masterJdbc().queryForObject<Int>("SELECT COUNT(*) FROM users WHERE id = ?", created.id)
         assertThat(count).isEqualTo(0)
     }
 
