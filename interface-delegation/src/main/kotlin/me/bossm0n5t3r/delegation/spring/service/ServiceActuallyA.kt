@@ -6,8 +6,6 @@ import org.springframework.stereotype.Component
 
 @Component
 @CustomService(ServiceType.TYPE_ACTUALLY_A)
-class ServiceActuallyA(
-    private val service: ServiceA
-) : BusinessService, CommonLogic by service {
+class ServiceActuallyA(private val service: ServiceA) : BusinessService, CommonLogic by service {
     override fun execute(): String = service.execute()
 }

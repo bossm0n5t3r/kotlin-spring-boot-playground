@@ -7,8 +7,7 @@ import org.springframework.stereotype.Component
 
 @Component
 @CustomService(ServiceType.TYPE_A)
-class ServiceA(
-    @param:Qualifier("commonLogicImpl") private val commonLogic: CommonLogic
-) : BusinessService, CommonLogic by commonLogic {
+class ServiceA(@param:Qualifier("commonLogicImpl") private val commonLogic: CommonLogic) :
+    BusinessService, CommonLogic by commonLogic {
     override fun execute(): String = "Service A executing with ${commonProcess()}"
 }
