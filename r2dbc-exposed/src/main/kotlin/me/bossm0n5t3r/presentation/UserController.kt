@@ -20,24 +20,16 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/users")
-class UserController(
-    private val userService: UserService,
-) {
+class UserController(private val userService: UserService) {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    suspend fun findUserById(
-        @PathVariable id: Long,
-    ): UserResponse =
-        userService
-            .findUserById(UserId(id))
-            .toUserResponse()
+    suspend fun findUserById(@PathVariable id: Long): UserResponse =
+        userService.findUserById(UserId(id)).toUserResponse()
 
     // Create User
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
-    suspend fun create(
-        @RequestBody form: UserCreateRequest,
-    ): UserCreateResponse {
+    suspend fun create(@RequestBody form: UserCreateRequest): UserCreateResponse {
         val userId = userService.create(form)
         return UserCreateResponse(id = userId.value)
     }
@@ -45,22 +37,14 @@ class UserController(
     // Update User
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    suspend fun update(
-        @PathVariable id: Long,
-        @RequestBody form: UserUpdateRequest,
-    ) {
-        userService.update(
-            id = id,
-            request = form,
-        )
+    suspend fun update(@PathVariable id: Long, @RequestBody form: UserUpdateRequest) {
+        userService.update(id = id, request = form)
     }
 
     // Delete User
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    suspend fun delete(
-        @PathVariable id: Long,
-    ) {
+    suspend fun delete(@PathVariable id: Long) {
         userService.delete(UserId(id))
     }
 }

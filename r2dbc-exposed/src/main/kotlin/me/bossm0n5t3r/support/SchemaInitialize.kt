@@ -12,14 +12,12 @@ import org.springframework.boot.ApplicationRunner
 import org.springframework.stereotype.Component
 
 @Component
-class SchemaInitialize(
-    @Qualifier("masterDatabase") private val masterDatabase: R2dbcDatabase,
-) : ApplicationRunner {
-    override fun run(args: ApplicationArguments) =
-        runBlocking {
-            suspendTransaction(masterDatabase) {
-                addLogger(StdOutSqlLogger)
-                SchemaUtils.create(UserEntity)
-            }
+class SchemaInitialize(@Qualifier("masterDatabase") private val masterDatabase: R2dbcDatabase) :
+    ApplicationRunner {
+    override fun run(args: ApplicationArguments) = runBlocking {
+        suspendTransaction(masterDatabase) {
+            addLogger(StdOutSqlLogger)
+            SchemaUtils.create(UserEntity)
         }
+    }
 }

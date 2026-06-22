@@ -16,10 +16,7 @@ import org.springframework.web.service.invoker.createClient
 class HttpClientsConfiguration {
     @Bean
     fun jsonPlaceholderWebClient(props: JsonPlaceholderProperties): WebClient =
-        WebClient
-            .builder()
-            .baseUrl(props.baseUrl)
-            .build()
+        WebClient.builder().baseUrl(props.baseUrl).build()
 
     @Bean
     fun jsonPlaceholderClient(webClient: WebClient): JsonPlaceholderWebClient {
@@ -30,10 +27,7 @@ class HttpClientsConfiguration {
 
     @Bean
     fun jsonPlaceholderRestClient(props: JsonPlaceholderProperties): RestClient =
-        RestClient
-            .builder()
-            .baseUrl(props.baseUrl)
-            .build()
+        RestClient.builder().baseUrl(props.baseUrl).build()
 
     @Bean
     fun jsonPlaceholderRestExchangeClient(restClient: RestClient): JsonPlaceholderRestClient {

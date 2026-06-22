@@ -5,7 +5,5 @@ import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
 class R2dbcExposedApplicationTests {
-    @Test
-    fun contextLoads() {
-    }
+    @Test fun contextLoads() {}
 }

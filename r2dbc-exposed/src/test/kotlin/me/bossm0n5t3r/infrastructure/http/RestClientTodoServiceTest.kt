@@ -18,8 +18,7 @@ import org.springframework.test.context.DynamicPropertySource
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RestClientTodoServiceTest {
     companion object {
-        @JvmStatic
-        val server: MockWebServer = MockWebServer().apply { start() }
+        @JvmStatic val server: MockWebServer = MockWebServer().apply { start() }
 
         @JvmStatic
         @AfterAll
@@ -30,12 +29,13 @@ class RestClientTodoServiceTest {
         @JvmStatic
         @DynamicPropertySource
         fun registerProps(registry: DynamicPropertyRegistry) {
-            registry.add("clients.jsonplaceholder.base-url") { server.url("/").toString().removeSuffix("/") }
+            registry.add("clients.jsonplaceholder.base-url") {
+                server.url("/").toString().removeSuffix("/")
+            }
         }
     }
 
-    @Autowired
-    private lateinit var todoService: RestClientTodoService
+    @Autowired private lateinit var todoService: RestClientTodoService
 
     @Test
     fun `getTodo should call external api with correct path and parse response`() {
@@ -48,8 +48,14 @@ class RestClientTodoServiceTest {
               "title": "delectus aut autem",
               "completed": false
             }
-            """.trimIndent()
-        server.enqueue(MockResponse().setResponseCode(200).setBody(body).addHeader("Content-Type", "application/json"))
+            """
+                .trimIndent()
+        server.enqueue(
+            MockResponse()
+                .setResponseCode(200)
+                .setBody(body)
+                .addHeader("Content-Type", "application/json")
+        )
 
         // when
         val todo = todoService.getTodo(1)
@@ -75,29 +81,28 @@ class RestClientTodoServiceTest {
               "title": "new item",
               "completed": true
             }
-            """.trimIndent()
+            """
+                .trimIndent()
         server.enqueue(
             MockResponse()
                 .setResponseCode(201)
                 .setBody(responseBody)
-                .addHeader("Content-Type", "application/json"),
+                .addHeader("Content-Type", "application/json")
         )
 
         // when
-        val created = todoService.create(CreateTodoRequest(userId = 99, title = "new item", completed = true))
+        val created =
+            todoService.create(CreateTodoRequest(userId = 99, title = "new item", completed = true))
 
         // then
         val recorded = server.takeRequest()
         assertThat(recorded.method).isEqualTo("POST")
         assertThat(recorded.path).isEqualTo("/todos")
         assertThat(recorded.getHeader("Content-Type")).contains("application/json")
-        assertThat(recorded.body.readUtf8()).isEqualTo(
-            "{" +
-                "\"userId\":99," +
-                "\"title\":\"new item\"," +
-                "\"completed\":true" +
-                "}",
-        )
+        assertThat(recorded.body.readUtf8())
+            .isEqualTo(
+                "{" + "\"userId\":99," + "\"title\":\"new item\"," + "\"completed\":true" + "}"
+            )
         assertThat(created.id).isEqualTo(201)
         assertThat(created.userId).isEqualTo(99)
         assertThat(created.title).isEqualTo("new item")
@@ -115,28 +120,26 @@ class RestClientTodoServiceTest {
               "title": "updated item",
               "completed": false
             }
-            """.trimIndent()
+            """
+                .trimIndent()
         server.enqueue(
             MockResponse()
                 .setResponseCode(200)
                 .setBody(responseBody)
-                .addHeader("Content-Type", "application/json"),
+                .addHeader("Content-Type", "application/json")
         )
 
         // when
-        val updated = todoService.update(201, UpdateTodoRequest(title = "updated item", completed = false))
+        val updated =
+            todoService.update(201, UpdateTodoRequest(title = "updated item", completed = false))
 
         // then
         val recorded = server.takeRequest()
         assertThat(recorded.method).isEqualTo("PUT")
         assertThat(recorded.path).isEqualTo("/todos/201")
         assertThat(recorded.getHeader("Content-Type")).contains("application/json")
-        assertThat(recorded.body.readUtf8()).isEqualTo(
-            "{" +
-                "\"title\":\"updated item\"," +
-                "\"completed\":false" +
-                "}",
-        )
+        assertThat(recorded.body.readUtf8())
+            .isEqualTo("{" + "\"title\":\"updated item\"," + "\"completed\":false" + "}")
         assertThat(updated.id).isEqualTo(201)
         assertThat(updated.userId).isEqualTo(99)
         assertThat(updated.title).isEqualTo("updated item")
@@ -146,10 +149,7 @@ class RestClientTodoServiceTest {
     @Test
     fun `delete should send DELETE to external api`() {
         // given
-        server.enqueue(
-            MockResponse()
-                .setResponseCode(204),
-        )
+        server.enqueue(MockResponse().setResponseCode(204))
 
         // when
         todoService.delete(123)

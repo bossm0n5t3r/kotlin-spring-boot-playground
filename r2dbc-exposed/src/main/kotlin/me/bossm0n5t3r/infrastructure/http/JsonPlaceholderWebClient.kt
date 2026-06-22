@@ -12,29 +12,17 @@ import org.springframework.web.service.annotation.PostExchange
 import org.springframework.web.service.annotation.PutExchange
 
 /**
- * Declarative HTTP client interface backed by WebClient via HttpServiceProxyFactory.
- * Mirrors the endpoints used by WebTodoService for /todos resources.
+ * Declarative HTTP client interface backed by WebClient via HttpServiceProxyFactory. Mirrors the
+ * endpoints used by WebTodoService for /todos resources.
  */
 @HttpExchange(url = "/todos")
 interface JsonPlaceholderWebClient {
-    @GetExchange("/{id}")
-    suspend fun getTodo(
-        @PathVariable id: Long,
-    ): TodoDto
+    @GetExchange("/{id}") suspend fun getTodo(@PathVariable id: Long): TodoDto
 
-    @PostExchange
-    suspend fun createTodo(
-        @RequestBody request: CreateTodoRequest,
-    ): TodoDto
+    @PostExchange suspend fun createTodo(@RequestBody request: CreateTodoRequest): TodoDto
 
     @PutExchange("/{id}")
-    suspend fun updateTodo(
-        @PathVariable id: Long,
-        @RequestBody request: UpdateTodoRequest,
-    ): TodoDto
+    suspend fun updateTodo(@PathVariable id: Long, @RequestBody request: UpdateTodoRequest): TodoDto
 
-    @DeleteExchange("/{id}")
-    suspend fun deleteTodo(
-        @PathVariable id: Long,
-    )
+    @DeleteExchange("/{id}") suspend fun deleteTodo(@PathVariable id: Long)
 }

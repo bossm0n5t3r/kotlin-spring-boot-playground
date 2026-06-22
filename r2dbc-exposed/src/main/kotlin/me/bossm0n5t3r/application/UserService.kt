@@ -27,14 +27,14 @@ class UserService(
 ) {
     suspend fun findUserById(id: UserId): UserDto =
         suspendTransaction(slaveDatabase) {
-            addLogger(StdOutSqlLogger)
-            UserEntity
-                .selectAll()
-                .where { UserEntity.id eq id.value }
-                .toList()
-                .firstOrNull()
-                ?.let { User.wrapRow(it) }
-        }?.toUserDto() ?: throw NotFoundException("id: $id")
+                addLogger(StdOutSqlLogger)
+                UserEntity.selectAll()
+                    .where { UserEntity.id eq id.value }
+                    .toList()
+                    .firstOrNull()
+                    ?.let { User.wrapRow(it) }
+            }
+            ?.toUserDto() ?: throw NotFoundException("id: $id")
 
     suspend fun create(request: UserCreateRequest): UserId {
         val id =
@@ -49,16 +49,14 @@ class UserService(
         return UserId(id.value)
     }
 
-    suspend fun update(
-        id: Long,
-        request: UserUpdateRequest,
-    ) = suspendTransaction(masterDatabase) {
-        addLogger(StdOutSqlLogger)
-        UserEntity.update({ UserEntity.id eq id }) {
-            request.name?.let { name -> it[UserEntity.name] = name }
-            request.age?.let { age -> it[UserEntity.age] = age }
+    suspend fun update(id: Long, request: UserUpdateRequest) =
+        suspendTransaction(masterDatabase) {
+            addLogger(StdOutSqlLogger)
+            UserEntity.update({ UserEntity.id eq id }) {
+                request.name?.let { name -> it[UserEntity.name] = name }
+                request.age?.let { age -> it[UserEntity.age] = age }
+            }
         }
-    }
 
     suspend fun delete(id: UserId) =
         suspendTransaction(masterDatabase) {
