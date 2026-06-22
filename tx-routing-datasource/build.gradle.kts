@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.plugin.allopen)
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependency.management)
+    alias(libs.plugins.ktfmt)
 }
 
 allOpen {
@@ -13,20 +14,9 @@ allOpen {
     annotation("jakarta.persistence.MappedSuperclass")
 }
 
-java {
-    toolchain {
-        languageVersion =
-            JavaLanguageVersion.of(
-                libs.versions.jdk
-                    .get()
-                    .toInt(),
-            )
-    }
-}
+java { toolchain { languageVersion = JavaLanguageVersion.of(libs.versions.jdk.get().toInt()) } }
 
-repositories {
-    mavenCentral()
-}
+repositories { mavenCentral() }
 
 dependencies {
     implementation(libs.kotlin.stdlib)
@@ -41,6 +31,6 @@ dependencies {
     testImplementation(libs.mockk)
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
+tasks.withType<Test> { useJUnitPlatform() }
+
+ktfmt { kotlinLangStyle() }

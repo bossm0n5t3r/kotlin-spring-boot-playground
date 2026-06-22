@@ -5,27 +5,17 @@ plugins {
     alias(libs.plugins.kotlin.plugin.spring)
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependency.management)
-    alias(libs.plugins.ktlint)
+    alias(libs.plugins.ktfmt)
     alias(libs.plugins.protobuf)
 }
 
 group = "me.bossm0n5t3r"
+
 version = "0.0.1-SNAPSHOT"
 
-java {
-    toolchain {
-        languageVersion =
-            JavaLanguageVersion.of(
-                libs.versions.jdk
-                    .get()
-                    .toInt(),
-            )
-    }
-}
+java { toolchain { languageVersion = JavaLanguageVersion.of(libs.versions.jdk.get().toInt()) } }
 
-repositories {
-    mavenCentral()
-}
+repositories { mavenCentral() }
 
 dependencies {
     implementation(libs.kotlin.reflect)
@@ -41,36 +31,16 @@ dependencies {
     testRuntimeOnly(libs.junit.platform.launcher)
 }
 
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.addAll("-Xjsr305=strict")
-    }
-}
+kotlin { compilerOptions { freeCompilerArgs.addAll("-Xjsr305=strict") } }
 
 tasks.withType<Test> {
     useJUnitPlatform()
     workingDir = rootProject.projectDir
 }
 
-ktlint {
-    version.set(
-        libs.versions.pinterest.ktlint
-            .get(),
-    )
-    filter {
-        exclude { it.file.path.contains("/build/") }
-    }
-}
+ktfmt { kotlinLangStyle() }
 
 protobuf {
-    protoc {
-        artifact = "com.google.protobuf:protoc:${libs.versions.google.protobuf.get()}"
-    }
-    generateProtoTasks {
-        all().forEach { task ->
-            task.builtins {
-                id("kotlin")
-            }
-        }
-    }
+    protoc { artifact = "com.google.protobuf:protoc:${libs.versions.google.protobuf.get()}" }
+    generateProtoTasks { all().forEach { task -> task.builtins { id("kotlin") } } }
 }

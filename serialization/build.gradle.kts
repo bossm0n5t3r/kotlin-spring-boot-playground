@@ -1,26 +1,19 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.plugin.serialization)
-    alias(libs.plugins.ktlint)
+    alias(libs.plugins.spring.dependency.management)
+    alias(libs.plugins.ktfmt)
 }
 
 group = "me.bossm0n5t3r"
+
 version = "0.0.1-SNAPSHOT"
 
-java {
-    toolchain {
-        languageVersion =
-            JavaLanguageVersion.of(
-                libs.versions.jdk
-                    .get()
-                    .toInt(),
-            )
-    }
-}
+java { toolchain { languageVersion = JavaLanguageVersion.of(libs.versions.jdk.get().toInt()) } }
 
-repositories {
-    mavenCentral()
-}
+repositories { mavenCentral() }
+
+dependencyManagement { imports { mavenBom(libs.spring.boot.dependencies.get().toString()) } }
 
 dependencies {
     testImplementation(libs.jackson.module.kotlin)
@@ -36,19 +29,8 @@ dependencies {
     testImplementation(libs.kotlin.test.junit5)
 }
 
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.addAll("-Xjsr305=strict")
-    }
-}
+kotlin { compilerOptions { freeCompilerArgs.addAll("-Xjsr305=strict") } }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
+tasks.withType<Test> { useJUnitPlatform() }
 
-ktlint {
-    version.set(
-        libs.versions.pinterest.ktlint
-            .get(),
-    )
-}
+ktfmt { kotlinLangStyle() }

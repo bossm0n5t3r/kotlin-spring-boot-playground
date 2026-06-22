@@ -3,25 +3,16 @@ plugins {
     alias(libs.plugins.kotlin.plugin.spring)
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependency.management)
+    alias(libs.plugins.ktfmt)
 }
 
 group = "me.bossm0n5t3r"
+
 version = "0.0.1-SNAPSHOT"
 
-java {
-    toolchain {
-        languageVersion =
-            JavaLanguageVersion.of(
-                libs.versions.jdk
-                    .get()
-                    .toInt(),
-            )
-    }
-}
+java { toolchain { languageVersion = JavaLanguageVersion.of(libs.versions.jdk.get().toInt()) } }
 
-repositories {
-    mavenCentral()
-}
+repositories { mavenCentral() }
 
 dependencies {
     implementation(libs.spring.boot.starter.web) // Component 사용을 위해 추가
@@ -31,12 +22,8 @@ dependencies {
     testImplementation(libs.kotlin.test.junit5)
 }
 
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.addAll("-Xjsr305=strict")
-    }
-}
+kotlin { compilerOptions { freeCompilerArgs.addAll("-Xjsr305=strict") } }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
+tasks.withType<Test> { useJUnitPlatform() }
+
+ktfmt { kotlinLangStyle() }

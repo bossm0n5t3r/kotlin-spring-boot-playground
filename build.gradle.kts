@@ -6,3 +6,9 @@ plugins {
     alias(libs.plugins.spring.boot) apply false
     alias(libs.plugins.spring.dependency.management) apply false
 }
+
+val kotlinxCoroutinesVersion = libs.versions.kotlinx.coroutines.get()
+
+subprojects {
+    extra["kotlin-coroutines.version"] = kotlinxCoroutinesVersion
+}
