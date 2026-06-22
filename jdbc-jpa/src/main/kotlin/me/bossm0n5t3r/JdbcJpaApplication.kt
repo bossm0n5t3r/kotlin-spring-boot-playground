@@ -4,9 +4,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.runApplication
 
-@SpringBootApplication
-@ConfigurationPropertiesScan
-class JdbcJpaApplication
+@SpringBootApplication @ConfigurationPropertiesScan class JdbcJpaApplication
 
 fun main(args: Array<String>) {
     runApplication<JdbcJpaApplication>(*args)

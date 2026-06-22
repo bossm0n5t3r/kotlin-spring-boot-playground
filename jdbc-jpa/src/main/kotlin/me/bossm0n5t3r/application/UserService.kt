@@ -25,23 +25,14 @@ class UserService(
 
     @Transactional
     fun create(request: UserCreateRequest): UserId {
-        val user =
-            User(
-                name = request.name,
-                age = request.age,
-            )
+        val user = User(name = request.name, age = request.age)
         val saved = userWriteRepository.save(user)
         return UserId(requireNotNull(saved.id))
     }
 
     @Transactional
-    fun update(
-        id: Long,
-        request: UserUpdateRequest,
-    ) {
-        val user =
-            userWriteRepository.findByIdOrNull(id)
-                ?: throw NotFoundException("id: $id")
+    fun update(id: Long, request: UserUpdateRequest) {
+        val user = userWriteRepository.findByIdOrNull(id) ?: throw NotFoundException("id: $id")
         user.name = request.name ?: user.name
         user.age = request.age ?: user.age
         userWriteRepository.save(user)
@@ -49,7 +40,5 @@ class UserService(
 
     @Transactional
     fun delete(id: UserId) =
-        userReadRepository.findByIdOrNull(id.value)?.let {
-            userWriteRepository.delete(it)
-        }
+        userReadRepository.findByIdOrNull(id.value)?.let { userWriteRepository.delete(it) }
 }

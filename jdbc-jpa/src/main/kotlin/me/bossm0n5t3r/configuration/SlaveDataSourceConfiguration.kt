@@ -3,6 +3,7 @@ package me.bossm0n5t3r.configuration
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import jakarta.persistence.EntityManagerFactory
+import javax.sql.DataSource
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.jpa.EntityManagerFactoryBuilder
@@ -13,7 +14,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.transaction.PlatformTransactionManager
-import javax.sql.DataSource
 
 @Configuration
 @EnableJpaRepositories(
@@ -35,9 +35,8 @@ class SlaveDataSourceConfiguration {
     fun slaveHikariConfig(): HikariConfig = HikariConfig()
 
     @Bean
-    fun slaveDataSource(
-        @Qualifier("slaveHikariConfig") slaveHikariConfig: HikariConfig,
-    ) = HikariDataSource(slaveHikariConfig)
+    fun slaveDataSource(@Qualifier("slaveHikariConfig") slaveHikariConfig: HikariConfig) =
+        HikariDataSource(slaveHikariConfig)
 
     @Bean(name = [ENTITY_MANAGER_FACTORY])
     fun slaveEntityManagerFactory(
@@ -54,6 +53,6 @@ class SlaveDataSourceConfiguration {
 
     @Bean(name = [TRANSACTION_MANAGER])
     fun slaveTransactionManager(
-        @Qualifier("slaveEntityManagerFactory") emf: EntityManagerFactory,
+        @Qualifier("slaveEntityManagerFactory") emf: EntityManagerFactory
     ): PlatformTransactionManager = JpaTransactionManager(emf)
 }

@@ -3,6 +3,7 @@ package me.bossm0n5t3r.configuration
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import jakarta.persistence.EntityManagerFactory
+import javax.sql.DataSource
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.jpa.EntityManagerFactoryBuilder
@@ -15,7 +16,6 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.transaction.PlatformTransactionManager
-import javax.sql.DataSource
 
 @Configuration
 @EnableJpaRepositories(
@@ -39,7 +39,7 @@ class MasterDatabaseConfiguration {
     @Primary
     @Bean
     fun masterDataSource(
-        @Qualifier("masterHikariConfig") masterHikariConfig: HikariConfig,
+        @Qualifier("masterHikariConfig") masterHikariConfig: HikariConfig
     ): DataSource = HikariDataSource(masterHikariConfig)
 
     @Primary
@@ -59,12 +59,11 @@ class MasterDatabaseConfiguration {
     @Primary
     @Bean(name = [TRANSACTION_MANAGER])
     fun masterTransactionManager(
-        @Qualifier("masterEntityManagerFactory") emf: EntityManagerFactory,
+        @Qualifier("masterEntityManagerFactory") emf: EntityManagerFactory
     ): PlatformTransactionManager = JpaTransactionManager(emf)
 
     @Primary
     @Bean
-    fun masterJdbcTemplate(
-        @Qualifier("masterDataSource") dataSource: DataSource,
-    ): JdbcTemplate = JdbcTemplate(dataSource)
+    fun masterJdbcTemplate(@Qualifier("masterDataSource") dataSource: DataSource): JdbcTemplate =
+        JdbcTemplate(dataSource)
 }

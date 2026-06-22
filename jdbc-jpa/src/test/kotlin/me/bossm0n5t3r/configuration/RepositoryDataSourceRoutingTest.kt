@@ -14,11 +14,9 @@ import org.springframework.test.util.AopTestUtils
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RepositoryDataSourceRoutingTest {
-    @Autowired
-    private lateinit var userReadRepository: UserReadRepository
+    @Autowired private lateinit var userReadRepository: UserReadRepository
 
-    @Autowired
-    private lateinit var userWriteRepository: UserWriteRepository
+    @Autowired private lateinit var userWriteRepository: UserWriteRepository
 
     @Autowired
     @Qualifier("masterEntityManagerFactory")
@@ -56,16 +54,22 @@ class RepositoryDataSourceRoutingTest {
     private fun extractEntityManagerFromRepository(repoImpl: Any): EntityManager {
         // Find a field named "em" or "entityManager" reflectively
         val possibleFields = listOf("em", "entityManager")
-        val field =
-            possibleFields.firstNotNullOfOrNull { name ->
-                runCatching { repoImpl.javaClass.getDeclaredField(name) }.getOrNull()
-            }
-        requireNotNull(field) { "Could not find EntityManager field in repository implementation: ${repoImpl.javaClass.name}" }
+        val field = possibleFields.firstNotNullOfOrNull { name ->
+            runCatching { repoImpl.javaClass.getDeclaredField(name) }.getOrNull()
+        }
+        requireNotNull(field) {
+            "Could not find EntityManager field in repository implementation: ${repoImpl.javaClass.name}"
+        }
 
         field.isAccessible = true
 
-        val value = requireNotNull(field.get(repoImpl)) { "EntityManager field was null in ${repoImpl.javaClass.name}" }
-        require(value is EntityManager) { "Field ${field.name} is not an EntityManager in ${repoImpl.javaClass.name}" }
+        val value =
+            requireNotNull(field.get(repoImpl)) {
+                "EntityManager field was null in ${repoImpl.javaClass.name}"
+            }
+        require(value is EntityManager) {
+            "Field ${field.name} is not an EntityManager in ${repoImpl.javaClass.name}"
+        }
 
         return value
     }
