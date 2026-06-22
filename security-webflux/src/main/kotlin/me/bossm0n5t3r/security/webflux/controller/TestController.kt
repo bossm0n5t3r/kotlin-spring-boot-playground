@@ -8,11 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class TestController(
-    private val userService: UserService,
-) {
-    @GetMapping("/public/hello")
-    suspend fun publicHello(): String = "Hello, Public!"
+class TestController(private val userService: UserService) {
+    @GetMapping("/public/hello") suspend fun publicHello(): String = "Hello, Public!"
 
     @AuthRole(requiredToken = true)
     @GetMapping("/test/me")

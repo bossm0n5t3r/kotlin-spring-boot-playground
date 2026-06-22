@@ -18,15 +18,12 @@ import reactor.core.publisher.Mono
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-class AuthWebFilter(
-    private val accountClient: AccountClient,
-) : WebFilter {
-    override fun filter(
-        exchange: ServerWebExchange,
-        chain: WebFilterChain,
-    ): Mono<Void> {
+class AuthWebFilter(private val accountClient: AccountClient) : WebFilter {
+    override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
         val startMillis = System.currentTimeMillis()
-        val userToken = exchange.request.headers.getFirst(HttpHeaders.AUTHORIZATION) ?: return chain.filter(exchange)
+        val userToken =
+            exchange.request.headers.getFirst(HttpHeaders.AUTHORIZATION)
+                ?: return chain.filter(exchange)
 
         return mono { accountClient.getMe(userToken) }
             .flatMap { userAccount ->
@@ -45,7 +42,8 @@ class AuthWebFilter(
                 chain.filter(exchange).contextWrite { ctx ->
                     ReactiveUserContext.putAll(ctx, startMillis, userDetail, userToken)
                 }
-            }.onErrorResume { chain.filter(exchange) }
+            }
+            .onErrorResume { chain.filter(exchange) }
             .doOnSuccess {
                 val req = exchange.request
                 val res = exchange.response

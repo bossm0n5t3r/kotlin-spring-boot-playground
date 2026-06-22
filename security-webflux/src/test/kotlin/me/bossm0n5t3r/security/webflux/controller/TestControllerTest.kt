@@ -25,11 +25,10 @@ class TestControllerTest {
     private val testController = TestController(userService)
 
     @Test
-    fun `publicHello - 직접 호출 시 성공해야 함`() =
-        runTest {
-            val result = testController.publicHello()
-            assertEquals("Hello, Public!", result)
-        }
+    fun `publicHello - 직접 호출 시 성공해야 함`() = runTest {
+        val result = testController.publicHello()
+        assertEquals("Hello, Public!", result)
+    }
 
     @Test
     fun `noTokenRequired - AuthRole 검증 통과 후 성공해야 함`() {
@@ -43,10 +42,7 @@ class TestControllerTest {
 
         val result = aspect.checkAuthRole(joinPoint, authRole)
 
-        StepVerifier
-            .create(result)
-            .expectNext("Hello, No Token Required!")
-            .verifyComplete()
+        StepVerifier.create(result).expectNext("Hello, No Token Required!").verifyComplete()
     }
 
     @Test
@@ -58,9 +54,10 @@ class TestControllerTest {
 
         val result = aspect.checkAuthRole(joinPoint, authRole)
 
-        StepVerifier
-            .create(result)
-            .expectErrorMatches { it is me.bossm0n5t3r.security.webflux.exception.AuthTokenRequiredException }
+        StepVerifier.create(result)
+            .expectErrorMatches {
+                it is me.bossm0n5t3r.security.webflux.exception.AuthTokenRequiredException
+            }
             .verify()
     }
 
@@ -73,18 +70,21 @@ class TestControllerTest {
         every { joinPoint.proceed() } returns Mono.just("Hello, Token Required!")
 
         val user =
-            UserDetail(userId = "1", username = "user", nickname = "일반사용자", email = "user@example.com", roles = listOf(UserRole.USER))
+            UserDetail(
+                userId = "1",
+                username = "user",
+                nickname = "일반사용자",
+                email = "user@example.com",
+                roles = listOf(UserRole.USER),
+            )
         val token = "valid-token"
 
         val result =
-            aspect
-                .checkAuthRole(joinPoint, authRole)
-                .contextWrite { ctx -> ReactiveUserContext.putAll(ctx, user = user, token = token) }
+            aspect.checkAuthRole(joinPoint, authRole).contextWrite { ctx ->
+                ReactiveUserContext.putAll(ctx, user = user, token = token)
+            }
 
-        StepVerifier
-            .create(result)
-            .expectNext("Hello, Token Required!")
-            .verifyComplete()
+        StepVerifier.create(result).expectNext("Hello, Token Required!").verifyComplete()
     }
 
     @Test
@@ -95,34 +95,47 @@ class TestControllerTest {
         every { authRole.requiredRoles } returns arrayOf(UserRole.ADMIN)
 
         val user =
-            UserDetail(userId = "1", username = "user", nickname = "일반사용자", email = "user@example.com", roles = listOf(UserRole.USER))
+            UserDetail(
+                userId = "1",
+                username = "user",
+                nickname = "일반사용자",
+                email = "user@example.com",
+                roles = listOf(UserRole.USER),
+            )
         val token = "valid-token"
 
         val result =
-            aspect
-                .checkAuthRole(joinPoint, authRole)
-                .contextWrite { ctx -> ReactiveUserContext.putAll(ctx, user = user, token = token) }
+            aspect.checkAuthRole(joinPoint, authRole).contextWrite { ctx ->
+                ReactiveUserContext.putAll(ctx, user = user, token = token)
+            }
 
-        StepVerifier
-            .create(result)
-            .expectErrorMatches { it is me.bossm0n5t3r.security.webflux.exception.UserRoleRestrictedException }
+        StepVerifier.create(result)
+            .expectErrorMatches {
+                it is me.bossm0n5t3r.security.webflux.exception.UserRoleRestrictedException
+            }
             .verify()
     }
 
     @Test
-    fun `me - UserService를 통해 현재 사용자 정보를 가져와야 함`() =
-        runTest {
-            val user =
-                UserDetail(userId = "1", username = "user", nickname = "일반사용자", email = "user@example.com", roles = listOf(UserRole.USER))
-            val token = "valid-token"
+    fun `me - UserService를 통해 현재 사용자 정보를 가져와야 함`() = runTest {
+        val user =
+            UserDetail(
+                userId = "1",
+                username = "user",
+                nickname = "일반사용자",
+                email = "user@example.com",
+                roles = listOf(UserRole.USER),
+            )
+        val token = "valid-token"
 
-            coEvery { userService.getCurrentUser() } returns user
-            val reactorContext = Context.empty().let { ReactiveUserContext.putAll(it, user = user, token = token) }
+        coEvery { userService.getCurrentUser() } returns user
+        val reactorContext =
+            Context.empty().let { ReactiveUserContext.putAll(it, user = user, token = token) }
 
-            val result = withContext(ReactorContext(reactorContext)) { testController.me() }
+        val result = withContext(ReactorContext(reactorContext)) { testController.me() }
 
-            assertEquals(user, result)
-        }
+        assertEquals(user, result)
+    }
 
     @Test
     fun `userOnly - USER 권한으로 접근 시 성공해야 함`() {
@@ -133,18 +146,21 @@ class TestControllerTest {
         every { joinPoint.proceed() } returns Mono.just("Hello, User Only!")
 
         val user =
-            UserDetail(userId = "1", username = "user", nickname = "일반사용자", email = "user@example.com", roles = listOf(UserRole.USER))
+            UserDetail(
+                userId = "1",
+                username = "user",
+                nickname = "일반사용자",
+                email = "user@example.com",
+                roles = listOf(UserRole.USER),
+            )
         val token = "valid-token"
 
         val result =
-            aspect
-                .checkAuthRole(joinPoint, authRole)
-                .contextWrite { ctx -> ReactiveUserContext.putAll(ctx, user = user, token = token) }
+            aspect.checkAuthRole(joinPoint, authRole).contextWrite { ctx ->
+                ReactiveUserContext.putAll(ctx, user = user, token = token)
+            }
 
-        StepVerifier
-            .create(result)
-            .expectNext("Hello, User Only!")
-            .verifyComplete()
+        StepVerifier.create(result).expectNext("Hello, User Only!").verifyComplete()
     }
 
     @Test
@@ -166,14 +182,11 @@ class TestControllerTest {
         val token = "valid-token"
 
         val result =
-            aspect
-                .checkAuthRole(joinPoint, authRole)
-                .contextWrite { ctx -> ReactiveUserContext.putAll(ctx, user = user, token = token) }
+            aspect.checkAuthRole(joinPoint, authRole).contextWrite { ctx ->
+                ReactiveUserContext.putAll(ctx, user = user, token = token)
+            }
 
-        StepVerifier
-            .create(result)
-            .expectNext("Hello, Premium Only!")
-            .verifyComplete()
+        StepVerifier.create(result).expectNext("Hello, Premium Only!").verifyComplete()
     }
 
     @Test
@@ -195,14 +208,11 @@ class TestControllerTest {
         val token = "valid-token"
 
         val result =
-            aspect
-                .checkAuthRole(joinPoint, authRole)
-                .contextWrite { ctx -> ReactiveUserContext.putAll(ctx, user = user, token = token) }
+            aspect.checkAuthRole(joinPoint, authRole).contextWrite { ctx ->
+                ReactiveUserContext.putAll(ctx, user = user, token = token)
+            }
 
-        StepVerifier
-            .create(result)
-            .expectNext("Hello, Anonymous Only!")
-            .verifyComplete()
+        StepVerifier.create(result).expectNext("Hello, Anonymous Only!").verifyComplete()
     }
 
     @Test
@@ -214,9 +224,10 @@ class TestControllerTest {
 
         val result = aspect.checkAuthRole(joinPoint, authRole)
 
-        StepVerifier
-            .create(result)
-            .expectErrorMatches { it is me.bossm0n5t3r.security.webflux.exception.AuthTokenRequiredException }
+        StepVerifier.create(result)
+            .expectErrorMatches {
+                it is me.bossm0n5t3r.security.webflux.exception.AuthTokenRequiredException
+            }
             .verify()
     }
 }

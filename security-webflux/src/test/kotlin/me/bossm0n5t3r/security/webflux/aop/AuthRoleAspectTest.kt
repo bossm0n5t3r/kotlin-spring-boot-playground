@@ -25,9 +25,10 @@ class AuthRoleAspectTest {
 
         val result = aspect.checkAuthRole(joinPoint, authRole) as Mono<*>
 
-        StepVerifier
-            .create(result)
-            .expectErrorMatches { it is AuthTokenRequiredException && it.status == ResponseStatus.AUTH_TOKEN_REQUIRED }
+        StepVerifier.create(result)
+            .expectErrorMatches {
+                it is AuthTokenRequiredException && it.status == ResponseStatus.AUTH_TOKEN_REQUIRED
+            }
             .verify()
     }
 
@@ -48,12 +49,15 @@ class AuthRoleAspectTest {
         val token = "token1"
 
         val result =
-            (aspect.checkAuthRole(joinPoint, authRole) as Mono<*>)
-                .contextWrite { ctx -> ReactiveUserContext.putAll(ctx, user = user, token = token) }
+            (aspect.checkAuthRole(joinPoint, authRole) as Mono<*>).contextWrite { ctx ->
+                ReactiveUserContext.putAll(ctx, user = user, token = token)
+            }
 
-        StepVerifier
-            .create(result)
-            .expectErrorMatches { it is UserRoleRestrictedException && it.status == ResponseStatus.USER_ROLE_RESTRICTED }
+        StepVerifier.create(result)
+            .expectErrorMatches {
+                it is UserRoleRestrictedException &&
+                    it.status == ResponseStatus.USER_ROLE_RESTRICTED
+            }
             .verify()
     }
 
@@ -74,12 +78,15 @@ class AuthRoleAspectTest {
         val token = "token1"
 
         val result =
-            (aspect.checkAuthRole(joinPoint, authRole) as Mono<*>)
-                .contextWrite { ctx -> ReactiveUserContext.putAll(ctx, user = user, token = token) }
+            (aspect.checkAuthRole(joinPoint, authRole) as Mono<*>).contextWrite { ctx ->
+                ReactiveUserContext.putAll(ctx, user = user, token = token)
+            }
 
-        StepVerifier
-            .create(result)
-            .expectErrorMatches { it is UserRoleRestrictedException && it.status == ResponseStatus.USER_ROLE_RESTRICTED }
+        StepVerifier.create(result)
+            .expectErrorMatches {
+                it is UserRoleRestrictedException &&
+                    it.status == ResponseStatus.USER_ROLE_RESTRICTED
+            }
             .verify()
     }
 
@@ -101,13 +108,11 @@ class AuthRoleAspectTest {
         every { joinPoint.proceed() } returns Mono.just("Premium Success")
 
         val result =
-            (aspect.checkAuthRole(joinPoint, authRole) as Mono<*>)
-                .contextWrite { ctx -> ReactiveUserContext.putAll(ctx, user = user, token = token) }
+            (aspect.checkAuthRole(joinPoint, authRole) as Mono<*>).contextWrite { ctx ->
+                ReactiveUserContext.putAll(ctx, user = user, token = token)
+            }
 
-        StepVerifier
-            .create(result)
-            .expectNext("Premium Success")
-            .verifyComplete()
+        StepVerifier.create(result).expectNext("Premium Success").verifyComplete()
     }
 
     @Test
@@ -128,13 +133,11 @@ class AuthRoleAspectTest {
         every { joinPoint.proceed() } returns Mono.just("Anonymous Success")
 
         val result =
-            (aspect.checkAuthRole(joinPoint, authRole) as Mono<*>)
-                .contextWrite { ctx -> ReactiveUserContext.putAll(ctx, user = user, token = token) }
+            (aspect.checkAuthRole(joinPoint, authRole) as Mono<*>).contextWrite { ctx ->
+                ReactiveUserContext.putAll(ctx, user = user, token = token)
+            }
 
-        StepVerifier
-            .create(result)
-            .expectNext("Anonymous Success")
-            .verifyComplete()
+        StepVerifier.create(result).expectNext("Anonymous Success").verifyComplete()
     }
 
     @Test
@@ -155,13 +158,11 @@ class AuthRoleAspectTest {
         every { joinPoint.proceed() } returns Mono.just("Success")
 
         val result =
-            (aspect.checkAuthRole(joinPoint, authRole) as Mono<*>)
-                .contextWrite { ctx -> ReactiveUserContext.putAll(ctx, user = user, token = token) }
+            (aspect.checkAuthRole(joinPoint, authRole) as Mono<*>).contextWrite { ctx ->
+                ReactiveUserContext.putAll(ctx, user = user, token = token)
+            }
 
-        StepVerifier
-            .create(result)
-            .expectNext("Success")
-            .verifyComplete()
+        StepVerifier.create(result).expectNext("Success").verifyComplete()
     }
 
     @Test
@@ -174,9 +175,6 @@ class AuthRoleAspectTest {
 
         val result = (aspect.checkAuthRole(joinPoint, authRole) as Mono<*>)
 
-        StepVerifier
-            .create(result)
-            .expectNext("Direct Result")
-            .verifyComplete()
+        StepVerifier.create(result).expectNext("Direct Result").verifyComplete()
     }
 }

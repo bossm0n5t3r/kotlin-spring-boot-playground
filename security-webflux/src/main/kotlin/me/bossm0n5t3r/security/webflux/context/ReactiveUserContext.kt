@@ -22,9 +22,11 @@ object ReactiveUserContext {
         startMillis: Long = System.currentTimeMillis(),
         user: UserDetail,
         token: String,
-    ): Context = ctx.put(CTX_START_MILLIS, startMillis).put(CTX_USER_KEY, user).put(CTX_TOKEN_KEY, token)
+    ): Context =
+        ctx.put(CTX_START_MILLIS, startMillis).put(CTX_USER_KEY, user).put(CTX_TOKEN_KEY, token)
 
-    fun userFrom(ctxView: ContextView): UserDetail? = ctxView.getOrDefault<UserDetail>(CTX_USER_KEY, null)
+    fun userFrom(ctxView: ContextView): UserDetail? =
+        ctxView.getOrDefault<UserDetail>(CTX_USER_KEY, null)
 
     fun tokenFrom(ctxView: ContextView): String? = ctxView.getOrDefault<String>(CTX_TOKEN_KEY, null)
 

@@ -14,10 +14,7 @@ import reactor.core.publisher.Mono
 @Component
 class AuthRoleAspect {
     @Around("@annotation(authRole)")
-    fun checkAuthRole(
-        joinPoint: ProceedingJoinPoint,
-        authRole: AuthRole,
-    ): Mono<*> {
+    fun checkAuthRole(joinPoint: ProceedingJoinPoint, authRole: AuthRole): Mono<*> {
         return Mono.deferContextual { ctxView ->
             val user = ReactiveUserContext.userFrom(ctxView)
             val token = ReactiveUserContext.tokenFrom(ctxView)

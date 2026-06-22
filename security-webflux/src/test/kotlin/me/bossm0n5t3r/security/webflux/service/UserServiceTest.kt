@@ -11,33 +11,31 @@ class UserServiceTest {
     private val userService = UserService()
 
     @Test
-    fun `getCurrentUser - should return UserDetail when present in context`() =
-        runBlocking {
-            val user =
-                UserDetail(
-                    userId = "testUser",
-                    username = "testUser",
-                    nickname = "testNickname",
-                    email = "test@example.com",
-                    roles = listOf(UserRole.USER),
-                )
-            val token = "testToken"
+    fun `getCurrentUser - should return UserDetail when present in context`() = runBlocking {
+        val user =
+            UserDetail(
+                userId = "testUser",
+                username = "testUser",
+                nickname = "testNickname",
+                email = "test@example.com",
+                roles = listOf(UserRole.USER),
+            )
+        val token = "testToken"
 
-            val reactorContext =
-                reactor.util.context.Context
-                    .empty()
-                    .let { ReactiveUserContext.putAll(it, user = user, token = token) }
-
-            kotlinx.coroutines.withContext(kotlinx.coroutines.reactor.ReactorContext(reactorContext)) {
-                val currentUser = userService.getCurrentUser()
-                assertEquals(user, currentUser)
+        val reactorContext =
+            reactor.util.context.Context.empty().let {
+                ReactiveUserContext.putAll(it, user = user, token = token)
             }
+
+        kotlinx.coroutines.withContext(kotlinx.coroutines.reactor.ReactorContext(reactorContext)) {
+            val currentUser = userService.getCurrentUser()
+            assertEquals(user, currentUser)
         }
+    }
 
     @Test
-    fun `getCurrentUser - should return null when not present in context`() =
-        runBlocking {
-            val currentUser = userService.getCurrentUser()
-            assertEquals(null, currentUser)
-        }
+    fun `getCurrentUser - should return null when not present in context`() = runBlocking {
+        val currentUser = userService.getCurrentUser()
+        assertEquals(null, currentUser)
+    }
 }
