@@ -14,27 +14,18 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/web-client")
-class WebClientTodoController(
-    private val webClientTodoService: WebClientTodoService,
-) {
+class WebClientTodoController(private val webClientTodoService: WebClientTodoService) {
     @GetMapping("/todos/{id}")
-    suspend fun getTodo(
-        @PathVariable id: Long,
-    ) = webClientTodoService.getTodo(id)
+    suspend fun getTodo(@PathVariable id: Long) = webClientTodoService.getTodo(id)
 
     @PostMapping("/todos")
-    suspend fun createTodo(
-        @RequestBody request: CreateTodoRequest,
-    ) = webClientTodoService.create(request)
+    suspend fun createTodo(@RequestBody request: CreateTodoRequest) =
+        webClientTodoService.create(request)
 
     @PutMapping("/todos/{id}")
-    suspend fun updateTodo(
-        @PathVariable id: Long,
-        @RequestBody request: UpdateTodoRequest,
-    ) = webClientTodoService.update(id, request)
+    suspend fun updateTodo(@PathVariable id: Long, @RequestBody request: UpdateTodoRequest) =
+        webClientTodoService.update(id, request)
 
     @DeleteMapping("/todos/{id}")
-    suspend fun deleteTodo(
-        @PathVariable id: Long,
-    ) = webClientTodoService.delete(id)
+    suspend fun deleteTodo(@PathVariable id: Long) = webClientTodoService.delete(id)
 }

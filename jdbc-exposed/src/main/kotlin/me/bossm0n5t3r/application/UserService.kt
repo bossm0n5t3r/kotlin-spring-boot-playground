@@ -26,14 +26,12 @@ class UserService(
 ) {
     fun findUserById(id: UserId): UserDto =
         transaction(slaveDatabase) {
-            addLogger(StdOutSqlLogger)
-            val query =
-                UserEntity
-                    .selectAll()
-                    .where { UserEntity.id eq id.value }
+                addLogger(StdOutSqlLogger)
+                val query = UserEntity.selectAll().where { UserEntity.id eq id.value }
 
-            User.wrapRows(query).toList().firstOrNull()
-        }?.toUserDto() ?: throw NotFoundException("id: $id")
+                User.wrapRows(query).toList().firstOrNull()
+            }
+            ?.toUserDto() ?: throw NotFoundException("id: $id")
 
     fun create(request: UserCreateRequest): UserId {
         val id =
@@ -48,16 +46,14 @@ class UserService(
         return UserId(id.value)
     }
 
-    fun update(
-        id: Long,
-        request: UserUpdateRequest,
-    ) = transaction(masterDatabase) {
-        addLogger(StdOutSqlLogger)
-        UserEntity.update({ UserEntity.id eq id }) {
-            request.name?.let { name -> it[UserEntity.name] = name }
-            request.age?.let { age -> it[UserEntity.age] = age }
+    fun update(id: Long, request: UserUpdateRequest) =
+        transaction(masterDatabase) {
+            addLogger(StdOutSqlLogger)
+            UserEntity.update({ UserEntity.id eq id }) {
+                request.name?.let { name -> it[UserEntity.name] = name }
+                request.age?.let { age -> it[UserEntity.age] = age }
+            }
         }
-    }
 
     fun delete(id: UserId) =
         transaction(masterDatabase) {

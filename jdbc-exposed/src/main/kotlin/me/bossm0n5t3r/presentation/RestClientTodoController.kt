@@ -14,27 +14,17 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/rest-client")
-class RestClientTodoController(
-    private val restClientTodoService: RestClientTodoService,
-) {
+class RestClientTodoController(private val restClientTodoService: RestClientTodoService) {
     @GetMapping("/todos/{id}")
-    fun getTodo(
-        @PathVariable id: Long,
-    ) = restClientTodoService.getTodo(id)
+    fun getTodo(@PathVariable id: Long) = restClientTodoService.getTodo(id)
 
     @PostMapping("/todos")
-    fun createTodo(
-        @RequestBody request: CreateTodoRequest,
-    ) = restClientTodoService.create(request)
+    fun createTodo(@RequestBody request: CreateTodoRequest) = restClientTodoService.create(request)
 
     @PutMapping("/todos/{id}")
-    fun updateTodo(
-        @PathVariable id: Long,
-        @RequestBody request: UpdateTodoRequest,
-    ) = restClientTodoService.update(id, request)
+    fun updateTodo(@PathVariable id: Long, @RequestBody request: UpdateTodoRequest) =
+        restClientTodoService.update(id, request)
 
     @DeleteMapping("/todos/{id}")
-    fun deleteTodo(
-        @PathVariable id: Long,
-    ) = restClientTodoService.delete(id)
+    fun deleteTodo(@PathVariable id: Long) = restClientTodoService.delete(id)
 }

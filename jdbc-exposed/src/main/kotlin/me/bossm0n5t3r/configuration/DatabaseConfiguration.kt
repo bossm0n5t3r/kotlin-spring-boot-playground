@@ -17,16 +17,14 @@ class DatabaseConfiguration {
 
     @Bean
     @Primary
-    fun masterDatabase(
-        @Qualifier("masterDataSource") dataSource: HikariDataSource,
-    ): Database = Database.connect(dataSource)
+    fun masterDatabase(@Qualifier("masterDataSource") dataSource: HikariDataSource): Database =
+        Database.connect(dataSource)
 
     @Bean
     @ConfigurationProperties("app.datasource.slave.hikari")
     fun slaveDataSource() = HikariDataSource()
 
     @Bean
-    fun slaveDatabase(
-        @Qualifier("slaveDataSource") dataSource: HikariDataSource,
-    ): Database = Database.connect(dataSource)
+    fun slaveDatabase(@Qualifier("slaveDataSource") dataSource: HikariDataSource): Database =
+        Database.connect(dataSource)
 }
