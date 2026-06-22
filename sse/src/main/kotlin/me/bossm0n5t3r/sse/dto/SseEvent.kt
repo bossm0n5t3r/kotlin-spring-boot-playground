@@ -1,11 +1,11 @@
 package me.bossm0n5t3r.sse.dto
 
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import me.bossm0n5t3r.sse.utility.JsonUtil.JSON
-import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 
 @OptIn(ExperimentalTime::class)
 @Serializable
@@ -24,10 +24,5 @@ fun String.toSseEvent(offset: String): SseEvent {
     val message = node["message"]?.jsonPrimitive?.content.toString()
     val createdAt = Instant.parse(node["createdAt"]?.jsonPrimitive?.content.toString())
 
-    return SseEvent(
-        streamId = offset,
-        ulid = ulid,
-        message = message,
-        createdAt = createdAt,
-    )
+    return SseEvent(streamId = offset, ulid = ulid, message = message, createdAt = createdAt)
 }

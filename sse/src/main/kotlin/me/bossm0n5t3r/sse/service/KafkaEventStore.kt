@@ -1,5 +1,10 @@
 package me.bossm0n5t3r.sse.service
 
+import java.time.Duration
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 import me.bossm0n5t3r.sse.configuration.LOGGER
 import me.bossm0n5t3r.sse.dto.SseEvent
 import me.bossm0n5t3r.sse.dto.toSseEvent
@@ -14,11 +19,6 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.publisher.Sinks
 import ulid.ULID
-import java.time.Duration
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalTime::class, ExperimentalUuidApi::class)
 @Component
@@ -28,8 +28,7 @@ class KafkaEventStore(
 ) : EventStore {
     private val topic = "sse-events"
 
-    private val sink: Sinks.Many<SseEvent> =
-        Sinks.many().multicast().onBackpressureBuffer()
+    private val sink: Sinks.Many<SseEvent> = Sinks.many().multicast().onBackpressureBuffer()
 
     override fun publish(message: String): Mono<SseEvent> {
         val createdAt = Clock.System.now()
@@ -37,18 +36,13 @@ class KafkaEventStore(
 
         // JSON payload
         val payload =
-            mapOf(
-                "ulid" to ulid,
-                "message" to message,
-                "createdAt" to createdAt.toString(),
-            )
+            mapOf("ulid" to ulid, "message" to message, "createdAt" to createdAt.toString())
         val json = JSON.encodeToString(payload)
 
         // KafkaProducerRecord
         val future = kafkaTemplate.send(topic, ulid, json)
 
-        return Mono
-            .fromFuture { future }
+        return Mono.fromFuture { future }
             .map { sendResult ->
                 val offset = sendResult.recordMetadata.offset().toString()
 

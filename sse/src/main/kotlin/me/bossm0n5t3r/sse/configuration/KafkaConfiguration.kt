@@ -12,15 +12,17 @@ import org.springframework.kafka.core.ProducerFactory
 
 @Configuration
 @EnableKafka
-class KafkaConfiguration(
-    private val kafkaProperties: KafkaProperties,
-) {
+class KafkaConfiguration(private val kafkaProperties: KafkaProperties) {
     @Bean
-    fun kafkaTemplate(producerFactory: ProducerFactory<String, String>): KafkaTemplate<String, String> = KafkaTemplate(producerFactory)
+    fun kafkaTemplate(
+        producerFactory: ProducerFactory<String, String>
+    ): KafkaTemplate<String, String> = KafkaTemplate(producerFactory)
 
     @Bean
-    fun producerFactory(): ProducerFactory<String, String> = DefaultKafkaProducerFactory(kafkaProperties.buildProducerProperties())
+    fun producerFactory(): ProducerFactory<String, String> =
+        DefaultKafkaProducerFactory(kafkaProperties.buildProducerProperties())
 
     @Bean
-    fun consumerFactory(): ConsumerFactory<String, String> = DefaultKafkaConsumerFactory(kafkaProperties.buildConsumerProperties())
+    fun consumerFactory(): ConsumerFactory<String, String> =
+        DefaultKafkaConsumerFactory(kafkaProperties.buildConsumerProperties())
 }

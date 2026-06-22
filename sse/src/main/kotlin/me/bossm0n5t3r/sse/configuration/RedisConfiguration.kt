@@ -14,5 +14,6 @@ class RedisConfiguration {
     fun redisConnectionFactory(): RedisConnectionFactory = LettuceConnectionFactory()
 
     @Bean
-    fun stringRedisTemplate(connectionFactory: RedisConnectionFactory): StringRedisTemplate = StringRedisTemplate(connectionFactory)
+    fun stringRedisTemplate(connectionFactory: RedisConnectionFactory): StringRedisTemplate =
+        StringRedisTemplate(connectionFactory)
 }

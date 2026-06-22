@@ -8,9 +8,7 @@ import reactor.kafka.sender.KafkaSender
 import reactor.kafka.sender.SenderOptions
 
 @Configuration
-class ReactorKafkaConfiguration(
-    private val kafkaProperties: KafkaProperties,
-) {
+class ReactorKafkaConfiguration(private val kafkaProperties: KafkaProperties) {
     @Bean
     fun senderOptions(): SenderOptions<String, String> {
         val producerProps = kafkaProperties.buildProducerProperties()
@@ -18,7 +16,8 @@ class ReactorKafkaConfiguration(
     }
 
     @Bean
-    fun kafkaSender(senderOptions: SenderOptions<String, String>): KafkaSender<String, String> = KafkaSender.create(senderOptions)
+    fun kafkaSender(senderOptions: SenderOptions<String, String>): KafkaSender<String, String> =
+        KafkaSender.create(senderOptions)
 
     @Bean
     fun receiverOptions(): ReceiverOptions<String, String> {
