@@ -16,14 +16,13 @@ class BearerTokenAuthenticationManager(
     private val jwtProvider: JwtProvider,
     private val userAccountRepository: UserAccountRepository,
 ) : ReactiveAuthenticationManager {
-    override fun authenticate(authentication: Authentication): Mono<Authentication> =
-        mono {
-            val token = authentication.credentials as String
-            val username = jwtProvider.getUsernameFromToken(token)
-            val userAccount = userAccountRepository.findByUsername(username)
-            requireNotNull(userAccount) { "User not found" }
-            val authorities = listOf(SimpleGrantedAuthority("$ROLE_PREFIX${userAccount.role}"))
+    override fun authenticate(authentication: Authentication): Mono<Authentication> = mono {
+        val token = authentication.credentials as String
+        val username = jwtProvider.getUsernameFromToken(token)
+        val userAccount = userAccountRepository.findByUsername(username)
+        requireNotNull(userAccount) { "User not found" }
+        val authorities = listOf(SimpleGrantedAuthority("$ROLE_PREFIX${userAccount.role}"))
 
-            UsernamePasswordAuthenticationToken(userAccount, token, authorities)
-        }
+        UsernamePasswordAuthenticationToken(userAccount, token, authorities)
+    }
 }

@@ -5,22 +5,18 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.MalformedJwtException
 import io.jsonwebtoken.UnsupportedJwtException
 import io.jsonwebtoken.security.SignatureException
-import me.bossm0n5t3r.account.security.TokenValidationFailedException
-import org.springframework.stereotype.Component
 import java.security.KeyPair
 import java.util.Date
+import me.bossm0n5t3r.account.security.TokenValidationFailedException
+import org.springframework.stereotype.Component
 
 @Component
-class JwtProvider(
-    private val ecdsaKeyPair: KeyPair,
-    private val expiration: Long,
-) {
+class JwtProvider(private val ecdsaKeyPair: KeyPair, private val expiration: Long) {
     fun createToken(username: String): String {
         val now = Date()
         val expiryDate = Date(now.time + expiration * 1000)
 
-        return Jwts
-            .builder()
+        return Jwts.builder()
             .subject(username)
             .issuedAt(now)
             .expiration(expiryDate)
@@ -30,8 +26,7 @@ class JwtProvider(
 
     fun getUsernameFromToken(token: String): String =
         try {
-            Jwts
-                .parser()
+            Jwts.parser()
                 .verifyWith(ecdsaKeyPair.public)
                 .build()
                 .parseSignedClaims(token)
@@ -43,11 +38,7 @@ class JwtProvider(
 
     fun validateToken(token: String): Boolean =
         try {
-            Jwts
-                .parser()
-                .verifyWith(ecdsaKeyPair.public)
-                .build()
-                .parseSignedClaims(token)
+            Jwts.parser().verifyWith(ecdsaKeyPair.public).build().parseSignedClaims(token)
             true
         } catch (e: Exception) {
             throw handleException(e)
@@ -59,7 +50,8 @@ class JwtProvider(
             is MalformedJwtException -> TokenValidationFailedException("Invalid JWT token", e)
             is ExpiredJwtException -> TokenValidationFailedException("Expired JWT token", e)
             is UnsupportedJwtException -> TokenValidationFailedException("Unsupported JWT token", e)
-            is IllegalArgumentException -> TokenValidationFailedException("JWT claims string is empty", e)
+            is IllegalArgumentException ->
+                TokenValidationFailedException("JWT claims string is empty", e)
             else -> TokenValidationFailedException("JWT validation failed", e)
         }
 }

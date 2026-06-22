@@ -23,17 +23,12 @@ import org.springframework.test.web.reactive.server.expectBody
 class AccountIntegrationTest {
     private lateinit var webTestClient: WebTestClient
 
-    @Autowired
-    private lateinit var userAccountRepository: UserAccountRepository
+    @Autowired private lateinit var userAccountRepository: UserAccountRepository
 
     @BeforeEach
-    fun setUp(
-        @Autowired applicationContext: ApplicationContext,
-    ) {
+    fun setUp(@Autowired applicationContext: ApplicationContext) {
         webTestClient = WebTestClient.bindToApplicationContext(applicationContext).build()
-        runBlocking {
-            userAccountRepository.deleteAll()
-        }
+        runBlocking { userAccountRepository.deleteAll() }
     }
 
     @Test
@@ -61,7 +56,8 @@ class AccountIntegrationTest {
         val registerRequest = createRegisterRequest()
         registerUser(registerRequest)
 
-        val loginRequest = LoginRequest(username = registerRequest.username, password = registerRequest.password)
+        val loginRequest =
+            LoginRequest(username = registerRequest.username, password = registerRequest.password)
         val tokenResponse = loginUser(loginRequest)
 
         assert(tokenResponse.token.isNotBlank())
@@ -72,7 +68,8 @@ class AccountIntegrationTest {
         val registerRequest = createRegisterRequest()
         registerUser(registerRequest)
 
-        val wrongLoginRequest = LoginRequest(username = registerRequest.username, password = "wrongpassword")
+        val wrongLoginRequest =
+            LoginRequest(username = registerRequest.username, password = "wrongpassword")
         webTestClient
             .post()
             .uri("/api/account/login")
@@ -87,7 +84,8 @@ class AccountIntegrationTest {
     fun `정보 조회 테스트`() {
         val registerRequest = createRegisterRequest()
         registerUser(registerRequest)
-        val loginRequest = LoginRequest(username = registerRequest.username, password = registerRequest.password)
+        val loginRequest =
+            LoginRequest(username = registerRequest.username, password = registerRequest.password)
         val token = loginUser(loginRequest).token
 
         webTestClient
@@ -110,14 +108,19 @@ class AccountIntegrationTest {
     fun `Role 업데이트 테스트`() {
         val adminRegisterRequest = createRegisterRequest(username = "admin", role = UserRole.ADMIN)
         registerUser(adminRegisterRequest)
-        val adminLoginRequest = LoginRequest(username = adminRegisterRequest.username, password = adminRegisterRequest.password)
+        val adminLoginRequest =
+            LoginRequest(
+                username = adminRegisterRequest.username,
+                password = adminRegisterRequest.password,
+            )
         val adminToken = loginUser(adminLoginRequest).token
 
         val userRegisterRequest = createRegisterRequest(username = "testuser")
         registerUser(userRegisterRequest)
 
         // Role 업데이트
-        val updateRoleRequest = UpdateRoleRequest(username = userRegisterRequest.username, role = UserRole.PREMIUM)
+        val updateRoleRequest =
+            UpdateRoleRequest(username = userRegisterRequest.username, role = UserRole.PREMIUM)
         webTestClient
             .patch()
             .uri("/api/account/role")
@@ -132,7 +135,11 @@ class AccountIntegrationTest {
             .isEqualTo(UserRole.PREMIUM.name)
 
         // 업데이트 후 정보 조회 확인을 위해 유저 로그인
-        val userLoginRequest = LoginRequest(username = userRegisterRequest.username, password = userRegisterRequest.password)
+        val userLoginRequest =
+            LoginRequest(
+                username = userRegisterRequest.username,
+                password = userRegisterRequest.password,
+            )
         val userToken = loginUser(userLoginRequest).token
 
         webTestClient
@@ -147,16 +154,14 @@ class AccountIntegrationTest {
             .isEqualTo(UserRole.PREMIUM.name)
     }
 
-    private fun createRegisterRequest(
-        username: String = "testuser",
-        role: UserRole? = null,
-    ) = RegisterRequest(
-        username = username,
-        nickname = "테스터",
-        email = "$username@example.com",
-        password = "testpassword",
-        role = role,
-    )
+    private fun createRegisterRequest(username: String = "testuser", role: UserRole? = null) =
+        RegisterRequest(
+            username = username,
+            nickname = "테스터",
+            email = "$username@example.com",
+            password = "testpassword",
+            role = role,
+        )
 
     private fun registerUser(registerRequest: RegisterRequest): UserAccountResponse =
         webTestClient

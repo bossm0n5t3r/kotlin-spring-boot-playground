@@ -9,10 +9,7 @@ import reactor.core.publisher.Mono
 
 @Component
 class BearerTokenAccessDeniedHandler : ServerAccessDeniedHandler {
-    override fun handle(
-        exchange: ServerWebExchange,
-        denied: AccessDeniedException,
-    ): Mono<Void> =
+    override fun handle(exchange: ServerWebExchange, denied: AccessDeniedException): Mono<Void> =
         with(exchange.response) {
             statusCode = HttpStatus.FORBIDDEN
             setComplete()

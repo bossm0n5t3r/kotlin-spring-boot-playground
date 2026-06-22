@@ -22,8 +22,7 @@ class SecurityConfig(
     private val entryPoint: BearerTokenAuthenticationEntryPoint,
     private val accessDeniedHandler: BearerTokenAccessDeniedHandler,
 ) {
-    @Bean
-    fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
+    @Bean fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
     @Bean
     fun springSecurityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
@@ -43,10 +42,12 @@ class SecurityConfig(
                 it.pathMatchers("/api/account/register", "/api/account/login").permitAll()
                 it.pathMatchers("/api/account/role").hasRole("ADMIN")
                 it.anyExchange().authenticated()
-            }.addFilterAt(authenticationWebFilter, SecurityWebFiltersOrder.AUTHENTICATION)
+            }
+            .addFilterAt(authenticationWebFilter, SecurityWebFiltersOrder.AUTHENTICATION)
             .exceptionHandling {
                 it.authenticationEntryPoint(entryPoint)
                 it.accessDeniedHandler(accessDeniedHandler)
-            }.build()
+            }
+            .build()
     }
 }

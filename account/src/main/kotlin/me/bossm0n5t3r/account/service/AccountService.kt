@@ -31,44 +31,39 @@ class AccountService(
                 password = encodedPassword,
                 role = request.role ?: UserRole.ANONYMOUS,
             )
-        return userAccountRepository
-            .save(userAccount)
-            .let { saved ->
-                UserAccountResponse(
-                    id = saved.id,
-                    username = saved.username,
-                    nickname = saved.nickname,
-                    email = saved.email,
-                    role = saved.role,
-                )
-            }
+        return userAccountRepository.save(userAccount).let { saved ->
+            UserAccountResponse(
+                id = saved.id,
+                username = saved.username,
+                nickname = saved.nickname,
+                email = saved.email,
+                role = saved.role,
+            )
+        }
     }
 
     @Transactional
-    suspend fun updateRole(
-        username: String,
-        request: UpdateRoleRequest,
-    ): UserAccountResponse {
+    suspend fun updateRole(username: String, request: UpdateRoleRequest): UserAccountResponse {
         val userAccount = userAccountRepository.findByUsername(username)
         requireNotNull(userAccount) { "User not found" }
         val updatedUserAccount = userAccount.copy(role = request.role)
-        return userAccountRepository
-            .save(updatedUserAccount)
-            .let { saved ->
-                UserAccountResponse(
-                    id = saved.id,
-                    username = saved.username,
-                    nickname = saved.nickname,
-                    email = saved.email,
-                    role = saved.role,
-                )
-            }
+        return userAccountRepository.save(updatedUserAccount).let { saved ->
+            UserAccountResponse(
+                id = saved.id,
+                username = saved.username,
+                nickname = saved.nickname,
+                email = saved.email,
+                role = saved.role,
+            )
+        }
     }
 
     suspend fun login(request: LoginRequest): TokenResponse {
         val userAccount = userAccountRepository.findByUsername(request.username)
         requireNotNull(userAccount) { "User not found" }
-        require(passwordEncoder.matches(request.password, userAccount.password)) { "Invalid password" }
+        require(passwordEncoder.matches(request.password, userAccount.password)) {
+            "Invalid password"
+        }
         return TokenResponse(jwtProvider.createToken(userAccount.username))
     }
 }

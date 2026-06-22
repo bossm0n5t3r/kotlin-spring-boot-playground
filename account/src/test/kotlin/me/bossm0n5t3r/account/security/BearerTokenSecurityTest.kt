@@ -18,8 +18,7 @@ import org.springframework.test.web.reactive.server.expectBody
 class BearerTokenSecurityTest {
     private lateinit var webTestClient: WebTestClient
 
-    @Autowired
-    private lateinit var applicationContext: ApplicationContext
+    @Autowired private lateinit var applicationContext: ApplicationContext
 
     private var userToken: String? = null
     private var adminToken: String? = null
@@ -27,24 +26,18 @@ class BearerTokenSecurityTest {
     @BeforeEach
     fun setUp() {
         webTestClient =
-            WebTestClient
-                .bindToApplicationContext(applicationContext)
-                .configureClient()
-                .build()
+            WebTestClient.bindToApplicationContext(applicationContext).configureClient().build()
 
         val user = RegisterRequest("user", "user_nick", "user@test.com", "password", UserRole.USER)
-        val admin = RegisterRequest("admin", "admin_nick", "admin@test.com", "password", UserRole.ADMIN)
+        val admin =
+            RegisterRequest("admin", "admin_nick", "admin@test.com", "password", UserRole.ADMIN)
 
         registerAndLogin(user)
         registerAndLogin(admin)
     }
 
     private fun registerAndLogin(request: RegisterRequest) {
-        webTestClient
-            .post()
-            .uri("/api/account/register")
-            .bodyValue(request)
-            .exchange()
+        webTestClient.post().uri("/api/account/register").bodyValue(request).exchange()
 
         val tokenResponse =
             webTestClient
@@ -64,12 +57,7 @@ class BearerTokenSecurityTest {
 
     @Test
     fun `401 - Authorization header missing`() {
-        webTestClient
-            .get()
-            .uri("/api/account/me")
-            .exchange()
-            .expectStatus()
-            .isUnauthorized
+        webTestClient.get().uri("/api/account/me").exchange().expectStatus().isUnauthorized
     }
 
     @Test

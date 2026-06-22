@@ -10,16 +10,13 @@ import reactor.core.publisher.Mono
 
 @Component
 class BearerTokenAuthenticationEntryPoint : ServerAuthenticationEntryPoint {
-    override fun commence(
-        exchange: ServerWebExchange,
-        e: AuthenticationException,
-    ): Mono<Void> {
+    override fun commence(exchange: ServerWebExchange, e: AuthenticationException): Mono<Void> {
         val (status, wwwAuthenticate) =
             when (e) {
                 is TokenFormatInvalidException ->
-                    HttpStatus.BAD_REQUEST to """Bearer error="invalid_request", error_description="Malformed authorization token""""
-                else ->
-                    HttpStatus.UNAUTHORIZED to """Bearer error="invalid_token""""
+                    HttpStatus.BAD_REQUEST to
+                        """Bearer error="invalid_request", error_description="Malformed authorization token""""
+                else -> HttpStatus.UNAUTHORIZED to """Bearer error="invalid_token""""
             }
 
         val response = exchange.response

@@ -17,23 +17,17 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/account")
-class AccountController(
-    private val accountService: AccountService,
-) {
+class AccountController(private val accountService: AccountService) {
     @PostMapping("/register")
-    suspend fun register(
-        @RequestBody request: RegisterRequest,
-    ): UserAccountResponse = accountService.register(request)
+    suspend fun register(@RequestBody request: RegisterRequest): UserAccountResponse =
+        accountService.register(request)
 
     @PostMapping("/login")
-    suspend fun login(
-        @RequestBody request: LoginRequest,
-    ): TokenResponse = accountService.login(request)
+    suspend fun login(@RequestBody request: LoginRequest): TokenResponse =
+        accountService.login(request)
 
     @GetMapping("/me")
-    suspend fun getMe(
-        @AuthenticationPrincipal userAccount: UserAccount,
-    ): UserAccountResponse =
+    suspend fun getMe(@AuthenticationPrincipal userAccount: UserAccount): UserAccountResponse =
         UserAccountResponse(
             id = userAccount.id,
             username = userAccount.username,
@@ -43,7 +37,6 @@ class AccountController(
         )
 
     @PatchMapping("/role")
-    suspend fun updateRole(
-        @RequestBody request: UpdateRoleRequest,
-    ): UserAccountResponse = accountService.updateRole(request.username, request)
+    suspend fun updateRole(@RequestBody request: UpdateRoleRequest): UserAccountResponse =
+        accountService.updateRole(request.username, request)
 }
