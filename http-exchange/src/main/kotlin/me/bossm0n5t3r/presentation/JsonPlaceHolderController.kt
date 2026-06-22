@@ -7,15 +7,10 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/http-exchange")
-class JsonPlaceHolderController(
-    private val jsonPlaceHolderRestClient: JsonPlaceHolderRestClient,
-) {
-    @GetMapping("/posts")
-    fun getPosts() = jsonPlaceHolderRestClient.getPosts()
+class JsonPlaceHolderController(private val jsonPlaceHolderRestClient: JsonPlaceHolderRestClient) {
+    @GetMapping("/posts") fun getPosts() = jsonPlaceHolderRestClient.getPosts()
 
-    @GetMapping("/users")
-    fun getUsers() = jsonPlaceHolderRestClient.getUsers()
+    @GetMapping("/users") fun getUsers() = jsonPlaceHolderRestClient.getUsers()
 
-    @GetMapping("/todos")
-    fun getTodos() = jsonPlaceHolderRestClient.getTodos()
+    @GetMapping("/todos") fun getTodos() = jsonPlaceHolderRestClient.getTodos()
 }

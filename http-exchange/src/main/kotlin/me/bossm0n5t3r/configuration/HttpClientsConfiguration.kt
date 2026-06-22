@@ -13,10 +13,7 @@ import org.springframework.web.service.invoker.createClient
 class HttpClientsConfiguration {
     @Bean
     fun jsonPlaceholderRestClient(props: JsonPlaceHolderProperties): RestClient =
-        RestClient
-            .builder()
-            .baseUrl(props.baseUrl)
-            .build()
+        RestClient.builder().baseUrl(props.baseUrl).build()
 
     @Bean
     fun jsonPlaceholderRestExchangeClient(restClient: RestClient): JsonPlaceHolderRestClient {

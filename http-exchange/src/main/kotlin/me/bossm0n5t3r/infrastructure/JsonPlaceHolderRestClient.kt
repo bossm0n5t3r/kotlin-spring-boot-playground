@@ -5,12 +5,9 @@ import org.springframework.web.service.annotation.HttpExchange
 
 @HttpExchange
 interface JsonPlaceHolderRestClient {
-    @GetExchange("/posts")
-    fun getPosts(): String
+    @GetExchange("/posts") fun getPosts(): String
 
-    @GetExchange("/users")
-    fun getUsers(): String
+    @GetExchange("/users") fun getUsers(): String
 
-    @GetExchange("/todos")
-    fun getTodos(): String
+    @GetExchange("/todos") fun getTodos(): String
 }
