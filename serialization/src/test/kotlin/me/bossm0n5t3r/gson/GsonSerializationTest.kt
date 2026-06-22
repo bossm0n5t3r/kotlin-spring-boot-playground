@@ -8,16 +8,16 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
+import java.lang.reflect.Type
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import me.bossm0n5t3r.dto.DateTimeDto
 import me.bossm0n5t3r.dto.OFFSET_DATE_TIME_PATTERN
 import me.bossm0n5t3r.dto.PersonDto
 import me.bossm0n5t3r.dto.SerializationTestData
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.lang.reflect.Type
-import java.time.LocalDateTime
-import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
 
 class GsonSerializationTest {
     private val gson: Gson =
@@ -81,8 +81,7 @@ class GsonSerializationTest {
     }
 
     private class LocalDateTimeAdapter :
-        JsonSerializer<LocalDateTime>,
-        JsonDeserializer<LocalDateTime> {
+        JsonSerializer<LocalDateTime>, JsonDeserializer<LocalDateTime> {
         private val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
 
         override fun serialize(
@@ -99,8 +98,7 @@ class GsonSerializationTest {
     }
 
     private class OffsetDateTimeAdapter :
-        JsonSerializer<OffsetDateTime>,
-        JsonDeserializer<OffsetDateTime> {
+        JsonSerializer<OffsetDateTime>, JsonDeserializer<OffsetDateTime> {
         private val formatter = DateTimeFormatter.ofPattern(OFFSET_DATE_TIME_PATTERN)
 
         override fun serialize(

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import kotlin.test.assertNotEquals
 import me.bossm0n5t3r.dto.DateTimeDto
 import me.bossm0n5t3r.dto.PersonDto
 import me.bossm0n5t3r.dto.SerializationTestData
@@ -13,12 +14,9 @@ import me.bossm0n5t3r.dto.SerializationTestData.weirdDto
 import me.bossm0n5t3r.dto.WeirdDto
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import kotlin.test.assertNotEquals
 
 class LegacyJacksonSerializationTest {
-    private val mapper =
-        jacksonObjectMapper()
-            .registerModule(JavaTimeModule())
+    private val mapper = jacksonObjectMapper().registerModule(JavaTimeModule())
 
     @Test
     fun `Jackson serialization and deserialization test`() {
@@ -56,7 +54,10 @@ class LegacyJacksonSerializationTest {
 
         assertEquals(dateTimeDto.name, deserializedDateTimeDto.name)
         assertEquals(dateTimeDto.createdAt, deserializedDateTimeDto.createdAt)
-        assertEquals(dateTimeDto.updatedAt.toInstant(), deserializedDateTimeDto.updatedAt.toInstant())
+        assertEquals(
+            dateTimeDto.updatedAt.toInstant(),
+            deserializedDateTimeDto.updatedAt.toInstant(),
+        )
     }
 
     @Test
@@ -67,7 +68,10 @@ class LegacyJacksonSerializationTest {
 
         assertEquals(SerializationTestData.dateTimeDto.name, deserializedDateTimeDto.name)
         assertEquals(SerializationTestData.dateTimeDto.createdAt, deserializedDateTimeDto.createdAt)
-        assertEquals(SerializationTestData.dateTimeDto.updatedAt.toInstant(), deserializedDateTimeDto.updatedAt.toInstant())
+        assertEquals(
+            SerializationTestData.dateTimeDto.updatedAt.toInstant(),
+            deserializedDateTimeDto.updatedAt.toInstant(),
+        )
     }
 
     @Test
@@ -80,9 +84,8 @@ class LegacyJacksonSerializationTest {
         assertEquals(weirdDto, deserialized)
 
         val rightObjectMapper =
-            jacksonObjectMapper {
-                enable(KotlinFeature.KotlinPropertyNameAsImplicitName)
-            }.registerModule(JavaTimeModule())
+            jacksonObjectMapper { enable(KotlinFeature.KotlinPropertyNameAsImplicitName) }
+                .registerModule(JavaTimeModule())
 
         val rightSerialized = rightObjectMapper.writeValueAsString(weirdDto)
         assertEquals(WEIRD_DTO_RIGHT_JSON, rightSerialized)

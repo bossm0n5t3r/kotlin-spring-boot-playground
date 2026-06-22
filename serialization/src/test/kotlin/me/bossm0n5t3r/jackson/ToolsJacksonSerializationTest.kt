@@ -50,7 +50,10 @@ class ToolsJacksonSerializationTest {
 
         assertEquals(dateTimeDto.name, deserializedDateTimeDto.name)
         assertEquals(dateTimeDto.createdAt, deserializedDateTimeDto.createdAt)
-        assertEquals(dateTimeDto.updatedAt.toInstant(), deserializedDateTimeDto.updatedAt.toInstant())
+        assertEquals(
+            dateTimeDto.updatedAt.toInstant(),
+            deserializedDateTimeDto.updatedAt.toInstant(),
+        )
     }
 
     @Test
@@ -61,7 +64,10 @@ class ToolsJacksonSerializationTest {
 
         assertEquals(SerializationTestData.dateTimeDto.name, deserializedDateTimeDto.name)
         assertEquals(SerializationTestData.dateTimeDto.createdAt, deserializedDateTimeDto.createdAt)
-        assertEquals(SerializationTestData.dateTimeDto.updatedAt.toInstant(), deserializedDateTimeDto.updatedAt.toInstant())
+        assertEquals(
+            SerializationTestData.dateTimeDto.updatedAt.toInstant(),
+            deserializedDateTimeDto.updatedAt.toInstant(),
+        )
     }
 
     @Test

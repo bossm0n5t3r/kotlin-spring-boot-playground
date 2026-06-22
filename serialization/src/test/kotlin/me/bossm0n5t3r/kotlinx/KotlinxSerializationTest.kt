@@ -9,12 +9,11 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class KotlinxSerializationTest {
-    private val json =
-        Json {
-            ignoreUnknownKeys = true
-            coerceInputValues = true
-            encodeDefaults = true
-        }
+    private val json = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+        encodeDefaults = true
+    }
 
     @Test
     fun `kotlinx-serialization serialization and deserialization test`() {
@@ -72,9 +71,13 @@ class KotlinxSerializationTest {
         val jsonString = SerializationTestData.DATE_TIME_JSON
 
         val deserializedDateTimeDto = json.decodeFromString<DateTimeDto>(jsonString)
-        val deserializedDateTimeDtoUsingLibrary = json.decodeFromString<DateTimeDtoUsingLibrary>(jsonString)
+        val deserializedDateTimeDtoUsingLibrary =
+            json.decodeFromString<DateTimeDtoUsingLibrary>(jsonString)
 
         assertEquals(SerializationTestData.dateTimeDto, deserializedDateTimeDto)
-        assertEquals(SerializationTestData.dateTimeDtoUsingLibrary, deserializedDateTimeDtoUsingLibrary)
+        assertEquals(
+            SerializationTestData.dateTimeDtoUsingLibrary,
+            deserializedDateTimeDtoUsingLibrary,
+        )
     }
 }

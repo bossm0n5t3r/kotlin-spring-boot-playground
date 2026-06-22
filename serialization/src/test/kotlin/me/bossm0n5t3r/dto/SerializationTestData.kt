@@ -16,12 +16,7 @@ object SerializationTestData {
     const val PERSON_JSON = """{"name":"John","age":25}"""
 
     val personWithDefaultValues =
-        PersonDto(
-            name = "John",
-            age = 25,
-            email = null,
-            hobbies = emptyList(),
-        )
+        PersonDto(name = "John", age = 25, email = null, hobbies = emptyList())
 
     val dateTimeDto =
         DateTimeDto(
