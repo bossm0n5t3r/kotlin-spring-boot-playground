@@ -7,8 +7,10 @@ import org.springframework.http.converter.protobuf.ProtobufHttpMessageConverter
 @Configuration
 class WebConfig {
     @Bean
-    fun protobufHttpMessageConverter(): ProtobufHttpMessageConverter = ProtobufHttpMessageConverter()
+    fun protobufHttpMessageConverter(): ProtobufHttpMessageConverter =
+        ProtobufHttpMessageConverter()
 
     @Bean
-    fun messagePackHttpMessageConverter(): MessagePackHttpMessageConverter = MessagePackHttpMessageConverter()
+    fun messagePackHttpMessageConverter(): MessagePackHttpMessageConverter =
+        MessagePackHttpMessageConverter()
 }

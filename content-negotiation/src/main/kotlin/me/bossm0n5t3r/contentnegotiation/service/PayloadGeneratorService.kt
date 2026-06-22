@@ -7,10 +7,7 @@ import org.springframework.stereotype.Service
 @Service
 class PayloadGeneratorService {
     fun generateSmall(): PayloadData =
-        PayloadData(
-            id = Constants.FIXED_ID_FOR_TESTING,
-            content = "Small payload content",
-        )
+        PayloadData(id = Constants.FIXED_ID_FOR_TESTING, content = "Small payload content")
 
     fun generateMedium(): PayloadData {
         val repeatedContent = "This is a repeated string for medium payload. ".repeat(20)

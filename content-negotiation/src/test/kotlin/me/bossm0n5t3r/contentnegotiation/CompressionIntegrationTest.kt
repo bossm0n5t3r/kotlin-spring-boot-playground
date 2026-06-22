@@ -2,6 +2,10 @@ package me.bossm0n5t3r.contentnegotiation
 
 import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import java.io.File
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
+import java.util.zip.GZIPInputStream
 import me.bossm0n5t3r.contentnegotiation.configuration.Constants
 import org.apache.hc.client5.http.classic.methods.HttpGet
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient
@@ -15,22 +19,16 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
-import java.io.File
-import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
-import java.util.zip.GZIPInputStream
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CompressionIntegrationTest {
-    @LocalServerPort
-    private var port: Int = 0
+    @LocalServerPort private var port: Int = 0
 
-    private val mapper =
-        jacksonObjectMapper {
-            enable(KotlinFeature.KotlinPropertyNameAsImplicitName)
-        }
+    private val mapper = jacksonObjectMapper {
+        enable(KotlinFeature.KotlinPropertyNameAsImplicitName)
+    }
 
     private val results = mutableListOf<TestResult>()
 
@@ -79,9 +77,7 @@ class CompressionIntegrationTest {
                 addHeader(Constants.ACCEPT_ENCODING_HEADER, Constants.IDENTITY_ENCODING)
             }
         val identityBytes =
-            client.execute(identityRequest) { response ->
-                EntityUtils.toByteArray(response.entity)
-            }
+            client.execute(identityRequest) { response -> EntityUtils.toByteArray(response.entity) }
 
         // 2. Gzip
         val gzipRequest =
@@ -105,8 +101,13 @@ class CompressionIntegrationTest {
 
         // Verify decompressed content matches identity
         if (gzipApplied) {
-            val decompressedBytes = GZIPInputStream(gzipBytes.inputStream()).use { it.readAllBytes() }
-            assertArrayEquals(identityBytes, decompressedBytes, "Decompressed bytes for $format $endpoint should match identity bytes")
+            val decompressedBytes =
+                GZIPInputStream(gzipBytes.inputStream()).use { it.readAllBytes() }
+            assertArrayEquals(
+                identityBytes,
+                decompressedBytes,
+                "Decompressed bytes for $format $endpoint should match identity bytes",
+            )
         } else {
             assertArrayEquals(
                 identityBytes,
@@ -124,7 +125,7 @@ class CompressionIntegrationTest {
                 gzipBytes = gzipBytes.size.toLong(),
                 ratio = ratio,
                 gzipApplied = gzipApplied,
-            ),
+            )
         )
     }
 
@@ -141,7 +142,9 @@ class CompressionIntegrationTest {
         sb.append("| :--- | :--- | :--- | :--- | :--- | :--- |\n")
         results.sortedWith(compareBy({ it.format }, { it.endpoint })).forEach {
             val ratioStr = it.ratio?.toString() ?: "-"
-            sb.append("| ${it.format} | ${it.endpoint} | ${it.identityBytes} | ${it.gzipBytes} | $ratioStr | ${it.gzipApplied} |\n")
+            sb.append(
+                "| ${it.format} | ${it.endpoint} | ${it.identityBytes} | ${it.gzipBytes} | $ratioStr | ${it.gzipApplied} |\n"
+            )
         }
         return sb.toString()
     }
@@ -185,7 +188,8 @@ class CompressionIntegrationTest {
 
         val report =
             mapOf(
-                "generatedAt" to OffsetDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME),
+                "generatedAt" to
+                    OffsetDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME),
                 "cases" to results,
             )
 
