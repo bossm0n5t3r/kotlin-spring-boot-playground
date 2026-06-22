@@ -26,7 +26,8 @@ class UserServiceTest {
                 email = "test@example.com",
                 roles = listOf(UserRole.USER),
             )
-        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, null, user.authorities)
+        SecurityContextHolder.getContext().authentication =
+            UsernamePasswordAuthenticationToken(user, null, user.authorities)
 
         val currentUser = userService.getCurrentUser()
         assertEquals(user, currentUser)

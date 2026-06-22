@@ -14,10 +14,7 @@ import org.springframework.stereotype.Component
 @Component
 class AuthRoleAspect {
     @Around("@annotation(authRole)")
-    fun checkAuthRole(
-        joinPoint: ProceedingJoinPoint,
-        authRole: AuthRole,
-    ): Any? {
+    fun checkAuthRole(joinPoint: ProceedingJoinPoint, authRole: AuthRole): Any? {
         val authentication = SecurityContextHolder.getContext().authentication
         val user = authentication?.principal as? UserDetail
         val token = authentication?.credentials as? String

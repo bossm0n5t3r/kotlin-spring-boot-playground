@@ -17,15 +17,8 @@ data class RegisterRequest(
     val password: String,
 )
 
-data class UpdateRoleRequest(
-    val role: UserRole,
-)
+data class UpdateRoleRequest(val role: UserRole)
 
-data class TokenResponse(
-    val token: String,
-)
+data class TokenResponse(val token: String)
 
-data class LoginRequest(
-    val username: String,
-    val password: String,
-)
+data class LoginRequest(val username: String, val password: String)

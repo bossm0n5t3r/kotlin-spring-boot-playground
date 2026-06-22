@@ -4,9 +4,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.runApplication
 
-@ConfigurationPropertiesScan
-@SpringBootApplication
-class SecurityMvcApplication
+@ConfigurationPropertiesScan @SpringBootApplication class SecurityMvcApplication
 
 fun main(args: Array<String>) {
     runApplication<SecurityMvcApplication>(*args)

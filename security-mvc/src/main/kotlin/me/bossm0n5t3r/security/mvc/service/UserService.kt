@@ -6,5 +6,6 @@ import org.springframework.stereotype.Service
 
 @Service
 class UserService {
-    fun getCurrentUser(): UserDetail? = SecurityContextHolder.getContext().authentication?.principal as? UserDetail
+    fun getCurrentUser(): UserDetail? =
+        SecurityContextHolder.getContext().authentication?.principal as? UserDetail
 }

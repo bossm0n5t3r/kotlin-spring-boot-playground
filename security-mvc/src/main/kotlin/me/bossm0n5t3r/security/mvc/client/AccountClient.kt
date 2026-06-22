@@ -16,19 +16,12 @@ import org.springframework.web.service.annotation.PostExchange
 @HttpExchange("/api/account")
 interface AccountClient {
     @PostExchange("/register")
-    fun register(
-        @RequestBody request: RegisterRequest,
-    ): UserAccountResponse
+    fun register(@RequestBody request: RegisterRequest): UserAccountResponse
 
-    @PostExchange("/login")
-    fun login(
-        @RequestBody request: LoginRequest,
-    ): TokenResponse
+    @PostExchange("/login") fun login(@RequestBody request: LoginRequest): TokenResponse
 
     @GetExchange("/me")
-    fun getMe(
-        @RequestHeader(HttpHeaders.AUTHORIZATION) authHeader: String,
-    ): UserAccountResponse
+    fun getMe(@RequestHeader(HttpHeaders.AUTHORIZATION) authHeader: String): UserAccountResponse
 
     @PatchExchange("/role")
     fun updateRole(

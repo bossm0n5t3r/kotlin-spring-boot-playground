@@ -12,7 +12,9 @@ data class UserDetail(
     val email: String,
     val roles: List<UserRole>,
 ) : UserDetails {
-    override fun getAuthorities(): Collection<GrantedAuthority> = roles.map { SimpleGrantedAuthority("ROLE_${it.name}") }
+    override fun getAuthorities(): Collection<GrantedAuthority> = roles.map {
+        SimpleGrantedAuthority("ROLE_${it.name}")
+    }
 
     override fun getPassword(): String = ""
 

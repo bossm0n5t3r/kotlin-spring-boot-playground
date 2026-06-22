@@ -10,9 +10,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig(
-    private val authFilter: AuthFilter,
-) {
+class SecurityConfig(private val authFilter: AuthFilter) {
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http
@@ -21,9 +19,7 @@ class SecurityConfig(
             .httpBasic { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter::class.java)
-            .authorizeHttpRequests {
-                it.anyRequest().permitAll()
-            }
+            .authorizeHttpRequests { it.anyRequest().permitAll() }
         return http.build()
     }
 }

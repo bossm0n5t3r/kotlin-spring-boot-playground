@@ -66,9 +66,16 @@ class TestControllerTest {
         every { joinPoint.proceed() } returns "Hello, Token Required!"
 
         val user =
-            UserDetail(userId = "1", username = "user", nickname = "일반사용자", email = "user@example.com", roles = listOf(UserRole.USER))
+            UserDetail(
+                userId = "1",
+                username = "user",
+                nickname = "일반사용자",
+                email = "user@example.com",
+                roles = listOf(UserRole.USER),
+            )
         val token = "valid-token"
-        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, token, user.authorities)
+        SecurityContextHolder.getContext().authentication =
+            UsernamePasswordAuthenticationToken(user, token, user.authorities)
 
         val result = aspect.checkAuthRole(joinPoint, authRole)
         assertEquals("Hello, Token Required!", result)
@@ -82,9 +89,16 @@ class TestControllerTest {
         every { authRole.requiredRoles } returns arrayOf(UserRole.ADMIN)
 
         val user =
-            UserDetail(userId = "1", username = "user", nickname = "일반사용자", email = "user@example.com", roles = listOf(UserRole.USER))
+            UserDetail(
+                userId = "1",
+                username = "user",
+                nickname = "일반사용자",
+                email = "user@example.com",
+                roles = listOf(UserRole.USER),
+            )
         val token = "valid-token"
-        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, token, user.authorities)
+        SecurityContextHolder.getContext().authentication =
+            UsernamePasswordAuthenticationToken(user, token, user.authorities)
 
         assertThrows(UserRoleRestrictedException::class.java) {
             aspect.checkAuthRole(joinPoint, authRole)
@@ -94,8 +108,15 @@ class TestControllerTest {
     @Test
     fun `me - UserService를 통해 현재 사용자 정보를 가져와야 함`() {
         val user =
-            UserDetail(userId = "1", username = "user", nickname = "일반사용자", email = "user@example.com", roles = listOf(UserRole.USER))
-        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, null, user.authorities)
+            UserDetail(
+                userId = "1",
+                username = "user",
+                nickname = "일반사용자",
+                email = "user@example.com",
+                roles = listOf(UserRole.USER),
+            )
+        SecurityContextHolder.getContext().authentication =
+            UsernamePasswordAuthenticationToken(user, null, user.authorities)
 
         every { userService.getCurrentUser() } returns user
 
@@ -112,9 +133,16 @@ class TestControllerTest {
         every { joinPoint.proceed() } returns "Hello, User Only!"
 
         val user =
-            UserDetail(userId = "1", username = "user", nickname = "일반사용자", email = "user@example.com", roles = listOf(UserRole.USER))
+            UserDetail(
+                userId = "1",
+                username = "user",
+                nickname = "일반사용자",
+                email = "user@example.com",
+                roles = listOf(UserRole.USER),
+            )
         val token = "valid-token"
-        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, token, user.authorities)
+        SecurityContextHolder.getContext().authentication =
+            UsernamePasswordAuthenticationToken(user, token, user.authorities)
 
         val result = aspect.checkAuthRole(joinPoint, authRole)
         assertEquals("Hello, User Only!", result)
@@ -137,7 +165,8 @@ class TestControllerTest {
                 roles = listOf(UserRole.PREMIUM),
             )
         val token = "valid-token"
-        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, token, user.authorities)
+        SecurityContextHolder.getContext().authentication =
+            UsernamePasswordAuthenticationToken(user, token, user.authorities)
 
         val result = aspect.checkAuthRole(joinPoint, authRole)
         assertEquals("Hello, Premium Only!", result)
@@ -160,7 +189,8 @@ class TestControllerTest {
                 roles = listOf(UserRole.ANONYMOUS),
             )
         val token = "valid-token"
-        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, token, user.authorities)
+        SecurityContextHolder.getContext().authentication =
+            UsernamePasswordAuthenticationToken(user, token, user.authorities)
 
         val result = aspect.checkAuthRole(joinPoint, authRole)
         assertEquals("Hello, Anonymous Only!", result)

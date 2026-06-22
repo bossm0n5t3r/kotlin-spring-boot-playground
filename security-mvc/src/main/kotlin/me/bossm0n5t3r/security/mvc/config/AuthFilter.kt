@@ -12,9 +12,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
-class AuthFilter(
-    private val accountClient: AccountClient,
-) : OncePerRequestFilter() {
+class AuthFilter(private val accountClient: AccountClient) : OncePerRequestFilter() {
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
@@ -34,7 +32,12 @@ class AuthFilter(
                         email = userAccount.email,
                         roles = listOf(userAccount.role),
                     )
-                val authentication = UsernamePasswordAuthenticationToken(userDetail, userToken, userDetail.authorities)
+                val authentication =
+                    UsernamePasswordAuthenticationToken(
+                        userDetail,
+                        userToken,
+                        userDetail.authorities,
+                    )
                 SecurityContextHolder.getContext().authentication = authentication
             } catch (e: Exception) {
                 // Ignore error and continue as anonymous if token is invalid or service is down

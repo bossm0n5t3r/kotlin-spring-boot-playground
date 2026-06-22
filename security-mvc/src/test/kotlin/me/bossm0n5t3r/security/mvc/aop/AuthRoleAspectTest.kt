@@ -53,7 +53,8 @@ class AuthRoleAspectTest {
                 roles = listOf(UserRole.USER, UserRole.PREMIUM),
             )
         val token = "token1"
-        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, token, user.authorities)
+        SecurityContextHolder.getContext().authentication =
+            UsernamePasswordAuthenticationToken(user, token, user.authorities)
 
         val exception =
             assertThrows(UserRoleRestrictedException::class.java) {
@@ -77,7 +78,8 @@ class AuthRoleAspectTest {
                 roles = listOf(UserRole.PREMIUM),
             )
         val token = "token1"
-        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, token, user.authorities)
+        SecurityContextHolder.getContext().authentication =
+            UsernamePasswordAuthenticationToken(user, token, user.authorities)
 
         val exception =
             assertThrows(UserRoleRestrictedException::class.java) {
@@ -101,7 +103,8 @@ class AuthRoleAspectTest {
                 roles = listOf(UserRole.PREMIUM),
             )
         val token = "token1"
-        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, token, user.authorities)
+        SecurityContextHolder.getContext().authentication =
+            UsernamePasswordAuthenticationToken(user, token, user.authorities)
 
         every { joinPoint.proceed() } returns "Premium Success"
 
@@ -124,7 +127,8 @@ class AuthRoleAspectTest {
                 roles = listOf(UserRole.ANONYMOUS),
             )
         val token = "token1"
-        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, token, user.authorities)
+        SecurityContextHolder.getContext().authentication =
+            UsernamePasswordAuthenticationToken(user, token, user.authorities)
 
         every { joinPoint.proceed() } returns "Anonymous Success"
 
@@ -147,7 +151,8 @@ class AuthRoleAspectTest {
                 roles = listOf(UserRole.USER),
             )
         val token = "token1"
-        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, token, user.authorities)
+        SecurityContextHolder.getContext().authentication =
+            UsernamePasswordAuthenticationToken(user, token, user.authorities)
 
         every { joinPoint.proceed() } returns "Success"
 
