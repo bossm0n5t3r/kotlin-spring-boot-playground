@@ -4,8 +4,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-BACKEND_PORT=1019
-FRONTEND_PORT=1021
+BACKEND_PORT=1031
+FRONTEND_PORT=1033
 
 # Public URL used by the browser to call the Spring backend.
 # The backend does not need to be exposed publicly if nginx and backend run on the same host.

@@ -1,10 +1,10 @@
 server:
-  port: 1019
+  port: 1031
 
 readability4k:
   cors:
     origins:
-      - "http://localhost:1021"
+      - "http://localhost:1033"
   http:
     connect-timeout-seconds: 10
     request-timeout-seconds: 30

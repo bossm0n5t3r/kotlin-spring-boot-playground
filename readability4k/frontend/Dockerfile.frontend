@@ -9,7 +9,7 @@ RUN pnpm install --frozen-lockfile
 
 COPY . .
 
-ARG PUBLIC_API_BASE=http://localhost:1019
+ARG PUBLIC_API_BASE=http://localhost:1031
 ARG PUBLIC_BASE_PATH=/
 ENV PUBLIC_API_BASE=${PUBLIC_API_BASE}
 ENV PUBLIC_BASE_PATH=${PUBLIC_BASE_PATH}
@@ -22,7 +22,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
-ENV PORT=1021
+ENV PORT=1033
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
@@ -31,6 +31,6 @@ RUN pnpm install --prod --frozen-lockfile
 
 COPY --from=builder /app/dist ./dist
 
-EXPOSE 1021
+EXPOSE 1033
 
 CMD ["node", "./dist/server/entry.mjs"]

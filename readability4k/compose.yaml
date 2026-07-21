@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile.backend
     container_name: readability4k-backend
     ports:
-      - "1019:1019"
+      - "1031:1031"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     networks:
@@ -16,16 +16,16 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.frontend
       args:
-        - PUBLIC_API_BASE=${PUBLIC_API_BASE:-http://localhost:1019}
+        - PUBLIC_API_BASE=${PUBLIC_API_BASE:-http://localhost:1031}
         - PUBLIC_BASE_PATH=${PUBLIC_BASE_PATH:-/}
     container_name: readability4k-frontend
     ports:
-      - "1021:1021"
+      - "1033:1033"
     depends_on:
       - backend
     environment:
       - HOST=0.0.0.0
-      - PORT=1021
+      - PORT=1033
     networks:
       - readability4k
 
