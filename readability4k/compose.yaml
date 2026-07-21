@@ -1,0 +1,33 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: readability4k-backend
+    ports:
+      - "1019:1019"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - readability4k
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+      args:
+        - PUBLIC_API_BASE=${PUBLIC_API_BASE:-http://localhost:1019}
+    container_name: readability4k-frontend
+    ports:
+      - "1021:1021"
+    depends_on:
+      - backend
+    environment:
+      - HOST=0.0.0.0
+      - PORT=1021
+    networks:
+      - readability4k
+
+networks:
+  readability4k:
+    driver: bridge

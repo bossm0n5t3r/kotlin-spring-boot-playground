@@ -176,7 +176,7 @@
   const button = document.getElementById('submit-btn') as HTMLButtonElement;
   const grid = document.getElementById('grid') as HTMLDivElement;
 
-  const API_BASE = 'http://localhost:1019';
+  const API_BASE = import.meta.env.PUBLIC_API_BASE || 'http://localhost:1019';
 
   type Library = {
     key: string;

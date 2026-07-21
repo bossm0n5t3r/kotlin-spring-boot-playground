@@ -1,0 +1,16 @@
+# IDE / Gradle caches
+.gradle/
+.idea/
+*.iml
+
+# Sources and tests (not needed at runtime)
+src/
+
+# Build artifacts except the fat jar
+build/*
+!build/libs/
+build/libs/*
+!build/libs/*.jar
+
+# Frontend is a separate service
+frontend/
