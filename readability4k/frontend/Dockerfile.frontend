@@ -10,7 +10,9 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 ARG PUBLIC_API_BASE=http://localhost:1019
+ARG PUBLIC_BASE_PATH=/
 ENV PUBLIC_API_BASE=${PUBLIC_API_BASE}
+ENV PUBLIC_BASE_PATH=${PUBLIC_BASE_PATH}
 
 RUN pnpm build
 

@@ -17,6 +17,7 @@ services:
       dockerfile: Dockerfile.frontend
       args:
         - PUBLIC_API_BASE=${PUBLIC_API_BASE:-http://localhost:1019}
+        - PUBLIC_BASE_PATH=${PUBLIC_BASE_PATH:-/}
     container_name: readability4k-frontend
     ports:
       - "1021:1021"

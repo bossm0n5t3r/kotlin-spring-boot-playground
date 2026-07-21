@@ -191,7 +191,7 @@
       name: 'Mozilla readability',
       badge: 'Astro 서버',
       fetch: async (url) => {
-        const res = await fetch('/api/readability', {
+        const res = await fetch('api/readability', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ url }),
