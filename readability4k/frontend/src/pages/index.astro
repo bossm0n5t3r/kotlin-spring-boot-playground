@@ -7,7 +7,7 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Readability 비교</title>
-    <style>
+    <style is:global>
         * {
             box-sizing: border-box;
         }
@@ -163,6 +163,7 @@
     <h1>Readability 비교</h1>
     <p>같은 URL로 여러 readability 라이브러리의 결과를 비교합니다.</p>
     <form id="readability-form">
+        <label for="url-input"></label>
         <input id="url-input" type="url" name="url" placeholder="https://example.com/article" required/>
         <button id="submit-btn" type="submit">모두 변환</button>
     </form>
@@ -310,7 +311,6 @@
 
     const results = await Promise.all(
       libraries.map(async (library) => {
-        const container = document.getElementById(`result-${library.key}`) as HTMLDivElement;
         try {
           const { data } = await library.fetch(url);
           return { key: library.key, data, error: null };
