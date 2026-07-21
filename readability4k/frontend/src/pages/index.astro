@@ -194,6 +194,10 @@
     fetch: (url: string) => Promise<{ data: any; error: string | null }>;
   };
 
+  const base = import.meta.env.BASE_URL.endsWith('/')
+    ? import.meta.env.BASE_URL
+    : `${import.meta.env.BASE_URL}/`;
+
   const libraries: Library[] = [
     {
       key: 'mozilla',
@@ -201,7 +205,7 @@
       url: 'https://github.com/mozilla/readability',
       badge: 'Astro 서버',
       fetch: async (url) => {
-        const res = await fetch('api/readability', {
+        const res = await fetch(`${base}api/readability`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ url }),
@@ -217,7 +221,7 @@
       url: 'https://codeberg.org/bossm0n5t3r/readability4k',
       badge: 'Spring API',
       fetch: async (url) => {
-        const res = await fetch(`/api/readability4k/bossm0n5t3r?link=${encodeURIComponent(url)}`);
+        const res = await fetch(`${base}api/readability4k/bossm0n5t3r?link=${encodeURIComponent(url)}`);
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || data.message || '오류가 발생했습니다.');
         return { data, error: null };
@@ -229,7 +233,7 @@
       url: 'https://github.com/Sermilion/readability4k',
       badge: 'Spring API',
       fetch: async (url) => {
-        const res = await fetch(`/api/readability4k/sermilion?link=${encodeURIComponent(url)}`);
+        const res = await fetch(`${base}api/readability4k/sermilion?link=${encodeURIComponent(url)}`);
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || data.message || '오류가 발생했습니다.');
         return { data, error: null };
