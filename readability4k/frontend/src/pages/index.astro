@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Readability</title>
+    <title>Readability 비교</title>
     <style>
         * {
             box-sizing: border-box;
@@ -14,12 +14,16 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            max-width: 720px;
-            margin: 0 auto;
-            padding: 2rem 1rem;
+            margin: 0;
+            padding: 1rem;
             line-height: 1.6;
             color: #222;
-            background: #fafafa;
+            background: #f5f5f5;
+        }
+
+        header {
+            max-width: 1400px;
+            margin: 0 auto 1.5rem;
         }
 
         h1 {
@@ -35,7 +39,7 @@
         form {
             display: flex;
             gap: 0.5rem;
-            margin: 1.5rem 0;
+            margin-top: 1rem;
         }
 
         input[type="url"] {
@@ -61,41 +65,80 @@
             cursor: not-allowed;
         }
 
-        #result {
-            min-height: 8rem;
-            padding: 1.25rem;
-            border: 1px solid #ddd;
-            border-radius: 0.75rem;
-            background: #fff;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
-        #result:empty::before {
-            content: "URL을 입력하면 변환된 내용이 여기에 표시됩니다.";
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #eee;
+            background: #fafafa;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-header .badge {
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.25rem 0.5rem;
+            border-radius: 999px;
+            background: #e6f2ff;
+            color: #0066cc;
+        }
+
+        .card-body {
+            padding: 1rem;
+            min-height: 12rem;
+            flex: 1;
+        }
+
+        .card-body:empty::before {
+            content: "URL을 입력하고 '모두 변환'을 누르면 결과가 여기에 표시됩니다.";
             color: #888;
         }
 
-        #result.error {
-            color: #c00;
-            border-color: #f5a3a3;
-            background: #fff5f5;
-        }
-
-        #result.loading {
+        .card-body.loading {
             color: #666;
         }
 
-        #result h1 {
-            font-size: 1.75rem;
+        .card-body.error {
+            color: #c00;
+            background: #fff5f5;
+        }
+
+        .card-body h1 {
+            font-size: 1.25rem;
             margin-top: 0;
         }
 
-        #result img {
+        .card-body img {
             max-width: 100%;
             height: auto;
         }
 
-        #result pre {
+        .card-body pre {
             background: #f4f4f4;
             padding: 0.75rem;
             border-radius: 0.375rem;
@@ -104,79 +147,186 @@
 
         .meta {
             color: #777;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .length {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.75rem;
         }
     </style>
 </head>
 <body>
-<h1>Readability</h1>
-<p>article link를 입력하면 본문을 추출해 보여줍니다.</p>
+<header>
+    <h1>Readability 비교</h1>
+    <p>같은 URL로 여러 readability 라이브러리의 결과를 비교합니다.</p>
+    <form id="readability-form">
+        <input id="url-input" type="url" name="url" placeholder="https://example.com/article" required/>
+        <button id="submit-btn" type="submit">모두 변환</button>
+    </form>
+</header>
 
-<form id="readability-form">
-    <label for="url-input"></label>
-    <input id="url-input" type="url" name="url" placeholder="https://example.com/article" required/>
-    <button id="submit-btn" type="submit">변환</button>
-</form>
-
-<div id="result"></div>
+<div id="grid" class="grid"></div>
 
 <script>
   const form = document.getElementById('readability-form') as HTMLFormElement;
   const input = document.getElementById('url-input') as HTMLInputElement;
   const button = document.getElementById('submit-btn') as HTMLButtonElement;
-  const result = document.getElementById('result') as HTMLDivElement;
+  const grid = document.getElementById('grid') as HTMLDivElement;
+
+  const API_BASE = 'http://localhost:1019';
+
+  type Library = {
+    key: string;
+    name: string;
+    badge: string;
+    fetch: (url: string) => Promise<{ data: any; error: string | null }>;
+  };
+
+  const libraries: Library[] = [
+    {
+      key: 'mozilla',
+      name: 'Mozilla readability',
+      badge: 'Astro 서버',
+      fetch: async (url) => {
+        const res = await fetch('/api/readability', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || '오류가 발생했습니다.');
+        return { data, error: null };
+      },
+    },
+    {
+      key: 'bossm0n5t3r',
+      name: 'bossm0n5t3r',
+      badge: 'Spring API',
+      fetch: async (url) => {
+        const res = await fetch(`${API_BASE}/readability4k/bossm0n5t3r?link=${encodeURIComponent(url)}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || data.message || '오류가 발생했습니다.');
+        return { data, error: null };
+      },
+    },
+    {
+      key: 'sermilion',
+      name: 'Sermilion',
+      badge: 'Spring API',
+      fetch: async (url) => {
+        const res = await fetch(`${API_BASE}/readability4k/sermilion?link=${encodeURIComponent(url)}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || data.message || '오류가 발생했습니다.');
+        return { data, error: null };
+      },
+    },
+  ];
+
+  function createCard(library: Library): HTMLDivElement {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+        <div class="card-header">
+          ${library.name}
+          <span class="badge">${library.badge}</span>
+        </div>
+        <div id="result-${library.key}" class="card-body"></div>
+      `;
+    return card;
+  }
+
+  function renderResult(container: HTMLDivElement, data: any, error: string | null) {
+    container.className = 'card-body';
+    container.innerHTML = '';
+
+    if (error) {
+      container.classList.add('error');
+      container.textContent = error;
+      return;
+    }
+
+    if (!data) {
+      container.innerHTML = '';
+      return;
+    }
+
+    const title = data.title || data.siteName;
+    const author = data.byline || data.author;
+    const content = data.content;
+    const textContent = data.textContent;
+
+    if (title) {
+      const h1 = document.createElement('h1');
+      h1.textContent = title;
+      container.appendChild(h1);
+    }
+    if (author) {
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      meta.textContent = author;
+      container.appendChild(meta);
+    }
+    if (content) {
+      const body = document.createElement('div');
+      body.innerHTML = content;
+      container.appendChild(body);
+    } else if (textContent) {
+      const body = document.createElement('div');
+      body.textContent = textContent;
+      container.appendChild(body);
+    } else {
+      const empty = document.createElement('div');
+      empty.textContent = '추출된 내용이 없습니다.';
+      container.appendChild(empty);
+    }
+    if (textContent) {
+      const length = document.createElement('div');
+      length.className = 'length';
+      length.textContent = `text length: ${textContent.length.toLocaleString()} chars`;
+      container.appendChild(length);
+    }
+  }
+
+  function setLoading(container: HTMLDivElement) {
+    container.className = 'card-body loading';
+    container.textContent = '불러오는 중...';
+  }
+
+  libraries.forEach((library) => grid.appendChild(createCard(library)));
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const url = input.value.trim();
     if (!url) return;
 
-    result.className = 'loading';
-    result.innerHTML = '불러오는 중...';
     button.disabled = true;
+    libraries.forEach((library) => {
+      const container = document.getElementById(`result-${library.key}`) as HTMLDivElement;
+      setLoading(container);
+    });
 
-    try {
-      const res = await fetch('/api/readability', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url }),
-      });
-      const data = await res.json();
+    const results = await Promise.all(
+      libraries.map(async (library) => {
+        const container = document.getElementById(`result-${library.key}`) as HTMLDivElement;
+        try {
+          const { data } = await library.fetch(url);
+          return { key: library.key, data, error: null };
+        } catch (err) {
+          const message = err instanceof Error ? err.message : '오류가 발생했습니다.';
+          return { key: library.key, data: null, error: message };
+        }
+      }),
+    );
 
-      if (!res.ok || data.error) {
-        result.className = 'error';
-        result.textContent = data.error || '오류가 발생했습니다.';
-        return;
-      }
+    results.forEach(({ key, data, error }) => {
+      const container = document.getElementById(`result-${key}`) as HTMLDivElement;
+      renderResult(container, data, error);
+    });
 
-      result.className = '';
-      result.innerHTML = '';
-
-      if (data.title) {
-        const title = document.createElement('h1');
-        title.textContent = data.title;
-        result.appendChild(title);
-      }
-      if (data.byline || data.siteName) {
-        const meta = document.createElement('div');
-        meta.className = 'meta';
-        meta.textContent = [data.byline, data.siteName].filter(Boolean).join(' · ');
-        result.appendChild(meta);
-      }
-      if (data.content) {
-        const body = document.createElement('div');
-        body.innerHTML = data.content;
-        result.appendChild(body);
-      } else {
-        result.textContent = '추출된 내용이 없습니다.';
-      }
-    } catch (err) {
-      result.className = 'error';
-      result.textContent = '요청 중 오류가 발생했습니다.';
-    } finally {
-      button.disabled = false;
-    }
+    button.disabled = false;
   });
 </script>
 </body>

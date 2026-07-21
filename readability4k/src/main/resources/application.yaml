@@ -1,0 +1,11 @@
+server:
+  port: 1019
+
+readability4k:
+  cors:
+    origins:
+      - "http://localhost:1021"
+  http:
+    connect-timeout-seconds: 10
+    request-timeout-seconds: 30
+    user-agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
