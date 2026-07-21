@@ -99,6 +99,15 @@
             justify-content: space-between;
         }
 
+        .card-header a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .card-header a:hover {
+            text-decoration: underline;
+        }
+
         .card-header .badge {
             font-size: 0.75rem;
             font-weight: 500;
@@ -182,6 +191,7 @@
   type Library = {
     key: string;
     name: string;
+    url: string;
     badge: string;
     fetch: (url: string) => Promise<{ data: any; error: string | null }>;
   };
@@ -189,7 +199,8 @@
   const libraries: Library[] = [
     {
       key: 'mozilla',
-      name: 'Mozilla readability',
+      name: 'Mozilla/readability',
+      url: 'https://github.com/mozilla/readability',
       badge: 'Astro 서버',
       fetch: async (url) => {
         const res = await fetch('api/readability', {
@@ -204,7 +215,8 @@
     },
     {
       key: 'bossm0n5t3r',
-      name: 'bossm0n5t3r',
+      name: 'bossm0n5t3r/readability4k',
+      url: 'https://codeberg.org/bossm0n5t3r/readability4k',
       badge: 'Spring API',
       fetch: async (url) => {
         const res = await fetch(`${API_BASE}/readability4k/bossm0n5t3r?link=${encodeURIComponent(url)}`);
@@ -215,7 +227,8 @@
     },
     {
       key: 'sermilion',
-      name: 'Sermilion',
+      name: 'Sermilion/readability4k',
+      url: 'https://github.com/Sermilion/readability4k',
       badge: 'Spring API',
       fetch: async (url) => {
         const res = await fetch(`${API_BASE}/readability4k/sermilion?link=${encodeURIComponent(url)}`);
@@ -231,7 +244,7 @@
     card.className = 'card';
     card.innerHTML = `
         <div class="card-header">
-          ${library.name}
+          <a href="${library.url}" target="_blank" rel="noopener noreferrer">${library.name}</a>
           <span class="badge">${library.badge}</span>
         </div>
         <div id="result-${library.key}" class="card-body"></div>
