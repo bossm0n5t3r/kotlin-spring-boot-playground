@@ -186,8 +186,6 @@
   const button = document.getElementById('submit-btn') as HTMLButtonElement;
   const grid = document.getElementById('grid') as HTMLDivElement;
 
-  const API_BASE = import.meta.env.PUBLIC_API_BASE || 'http://localhost:1031';
-
   type Library = {
     key: string;
     name: string;
@@ -219,7 +217,7 @@
       url: 'https://codeberg.org/bossm0n5t3r/readability4k',
       badge: 'Spring API',
       fetch: async (url) => {
-        const res = await fetch(`${API_BASE}/readability4k/bossm0n5t3r?link=${encodeURIComponent(url)}`);
+        const res = await fetch(`/api/readability4k/bossm0n5t3r?link=${encodeURIComponent(url)}`);
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || data.message || '오류가 발생했습니다.');
         return { data, error: null };
@@ -231,7 +229,7 @@
       url: 'https://github.com/Sermilion/readability4k',
       badge: 'Spring API',
       fetch: async (url) => {
-        const res = await fetch(`${API_BASE}/readability4k/sermilion?link=${encodeURIComponent(url)}`);
+        const res = await fetch(`/api/readability4k/sermilion?link=${encodeURIComponent(url)}`);
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || data.message || '오류가 발생했습니다.');
         return { data, error: null };
