@@ -16,8 +16,11 @@ kotlinx-serialization-jvm-extra = "0.2.0"
 google-protobuf = "4.35.1"
 protobuf-gradle-plugin = "0.10.0"
 mockk = "1.14.11"
-
 jjwt = "0.13.0"
+
+# readability4k
+readability4k-bossm0n5t3r = "1.0.1"
+readability4k-sermilion = "0.2.0"
 
 [plugins]
 # Kotlin JVM Gradle plugin
@@ -109,3 +112,6 @@ jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
 jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
 r2dbc-postgresql = { module = "org.postgresql:r2dbc-postgresql" }
 spring-boot-starter-data-r2dbc = { module = "org.springframework.boot:spring-boot-starter-data-r2dbc" }
+
+readability4k-bossm0n5t3r = { module = "com.m0n5t3r.boss:readability4k", version.ref = "readability4k-bossm0n5t3r" }
+readability4k-sermilion = { module = "com.github.Sermilion.readability4k:readability4k", version.ref = "readability4k-sermilion" }
