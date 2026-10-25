@@ -5,8 +5,8 @@ Exposed, R2DBC), Server-Sent Events (SSE), Content Negotiation, and Serializatio
 
 ## 🛠 Tech Stack
 
-- **Language:** [Kotlin](https://kotlinlang.org/) (2.3.10)
-- **Framework:** [Spring Boot](https://spring.io/projects/spring-boot) (4.0.2)
+- **Language:** [Kotlin](https://kotlinlang.org/) (2.4.21)
+- **Framework:** [Spring Boot](https://spring.io/projects/spring-boot) (4.1.2)
 - **JDK:** 25
 - **Build Tool:** Gradle (Kotlin DSL)
 - **Database Integrations:** Exposed (JDBC/R2DBC), Spring Data JPA, R2DBC, H2, PostgreSQL
