@@ -39,7 +39,7 @@ class MasterDatabaseConfiguration {
     @Primary
     @Bean
     fun masterDataSource(
-        @Qualifier("masterHikariConfig") masterHikariConfig: HikariConfig
+        @Qualifier("masterHikariConfig") masterHikariConfig: HikariConfig,
     ): DataSource = HikariDataSource(masterHikariConfig)
 
     @Primary
@@ -59,7 +59,7 @@ class MasterDatabaseConfiguration {
     @Primary
     @Bean(name = [TRANSACTION_MANAGER])
     fun masterTransactionManager(
-        @Qualifier("masterEntityManagerFactory") emf: EntityManagerFactory
+        @Qualifier("masterEntityManagerFactory") emf: EntityManagerFactory,
     ): PlatformTransactionManager = JpaTransactionManager(emf)
 
     @Primary

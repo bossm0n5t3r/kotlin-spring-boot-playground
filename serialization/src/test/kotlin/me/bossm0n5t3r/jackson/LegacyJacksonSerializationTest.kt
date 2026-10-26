@@ -83,9 +83,10 @@ class LegacyJacksonSerializationTest {
         val deserialized = mapper.readValue<WeirdDto>(WEIRD_DTO_RIGHT_JSON)
         assertEquals(weirdDto, deserialized)
 
-        val rightObjectMapper =
-            jacksonObjectMapper { enable(KotlinFeature.KotlinPropertyNameAsImplicitName) }
-                .registerModule(JavaTimeModule())
+        val rightObjectMapper = jacksonObjectMapper {
+            enable(KotlinFeature.KotlinPropertyNameAsImplicitName)
+        }
+            .registerModule(JavaTimeModule())
 
         val rightSerialized = rightObjectMapper.writeValueAsString(weirdDto)
         assertEquals(WEIRD_DTO_RIGHT_JSON, rightSerialized)

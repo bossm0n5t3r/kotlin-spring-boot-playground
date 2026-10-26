@@ -22,7 +22,7 @@ interface AccountClient {
 
     @GetExchange("/me")
     suspend fun getMe(
-        @RequestHeader(HttpHeaders.AUTHORIZATION) authHeader: String
+        @RequestHeader(HttpHeaders.AUTHORIZATION) authHeader: String,
     ): UserAccountResponse
 
     @PatchExchange("/role")

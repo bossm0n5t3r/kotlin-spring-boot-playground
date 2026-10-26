@@ -54,7 +54,7 @@ class RestClientTodoServiceTest {
             MockResponse()
                 .setResponseCode(200)
                 .setBody(body)
-                .addHeader("Content-Type", "application/json")
+                .addHeader("Content-Type", "application/json"),
         )
 
         // when
@@ -87,7 +87,7 @@ class RestClientTodoServiceTest {
             MockResponse()
                 .setResponseCode(201)
                 .setBody(responseBody)
-                .addHeader("Content-Type", "application/json")
+                .addHeader("Content-Type", "application/json"),
         )
 
         // when
@@ -101,7 +101,7 @@ class RestClientTodoServiceTest {
         assertThat(recorded.getHeader("Content-Type")).contains("application/json")
         assertThat(recorded.body.readUtf8())
             .isEqualTo(
-                "{" + "\"userId\":99," + "\"title\":\"new item\"," + "\"completed\":true" + "}"
+                "{" + "\"userId\":99," + "\"title\":\"new item\"," + "\"completed\":true" + "}",
             )
         assertThat(created.id).isEqualTo(201)
         assertThat(created.userId).isEqualTo(99)
@@ -126,7 +126,7 @@ class RestClientTodoServiceTest {
             MockResponse()
                 .setResponseCode(200)
                 .setBody(responseBody)
-                .addHeader("Content-Type", "application/json")
+                .addHeader("Content-Type", "application/json"),
         )
 
         // when

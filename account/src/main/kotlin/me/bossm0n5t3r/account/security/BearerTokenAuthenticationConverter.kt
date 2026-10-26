@@ -22,7 +22,7 @@ class BearerTokenAuthenticationConverter : ServerAuthenticationConverter {
     private fun validateAndExtractToken(authHeader: String): Mono<String> {
         if (!authHeader.startsWith(BEARER_PREFIX)) {
             return Mono.error(
-                TokenFormatInvalidException("Authorization header must start with Bearer")
+                TokenFormatInvalidException("Authorization header must start with Bearer"),
             )
         }
 

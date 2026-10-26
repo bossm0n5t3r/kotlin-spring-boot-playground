@@ -13,17 +13,17 @@ import org.springframework.web.bind.annotation.RestController
 class PayloadController(private val payloadGeneratorService: PayloadGeneratorService) {
     @GetMapping("/payload/small")
     fun getSmallPayload(
-        @RequestHeader(Constants.ACCEPT_HEADER) accept: String?
+        @RequestHeader(Constants.ACCEPT_HEADER) accept: String?,
     ): ResponseEntity<Any> = handlePayload(accept, payloadGeneratorService.generateSmall())
 
     @GetMapping("/payload/medium")
     fun getMediumPayload(
-        @RequestHeader(Constants.ACCEPT_HEADER) accept: String?
+        @RequestHeader(Constants.ACCEPT_HEADER) accept: String?,
     ): ResponseEntity<Any> = handlePayload(accept, payloadGeneratorService.generateMedium())
 
     @GetMapping("/payload/large")
     fun getLargePayload(
-        @RequestHeader(Constants.ACCEPT_HEADER) accept: String?
+        @RequestHeader(Constants.ACCEPT_HEADER) accept: String?,
     ): ResponseEntity<Any> = handlePayload(accept, payloadGeneratorService.generateLarge())
 
     private fun handlePayload(accept: String?, data: PayloadData): ResponseEntity<Any> =

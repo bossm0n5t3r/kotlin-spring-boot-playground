@@ -63,7 +63,7 @@ class RoutingDataSourceConfig(
 
     @Bean
     fun masterDataSourceInitializer(
-        @Qualifier("masterDataSource") dataSource: DataSource
+        @Qualifier("masterDataSource") dataSource: DataSource,
     ): DataSourceInitializer {
         val initializer = DataSourceInitializer()
         initializer.setDataSource(dataSource)
@@ -73,7 +73,7 @@ class RoutingDataSourceConfig(
 
     @Bean
     fun slaveDataSourceInitializer(
-        @Qualifier("slaveDataSource") dataSource: DataSource
+        @Qualifier("slaveDataSource") dataSource: DataSource,
     ): DataSourceInitializer {
         val initializer = DataSourceInitializer()
         initializer.setDataSource(dataSource)

@@ -16,11 +16,11 @@ import reactor.core.publisher.Flux
 @RestController
 @RequestMapping("/sse/redis")
 class RedisSseController(
-    @param:Qualifier("redisStreamEventStore") override val eventStore: EventStore
+    @param:Qualifier("redisStreamEventStore") override val eventStore: EventStore,
 ) : SseController {
     @GetMapping(produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
     override fun sse(
-        @RequestHeader(LAST_EVENT_ID, required = false) lastEventId: String?
+        @RequestHeader(LAST_EVENT_ID, required = false) lastEventId: String?,
     ): Flux<ServerSentEvent<SseEvent>> =
         eventStore.streamFrom(lastEventId).map { event ->
             ServerSentEvent.builder<SseEvent>()

@@ -16,7 +16,7 @@ class ReadabilityExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleValidationException(
-        e: MethodArgumentNotValidException
+        e: MethodArgumentNotValidException,
     ): ResponseEntity<Map<String, String?>> {
         val message =
             e.bindingResult.fieldErrors.joinToString(", ") { "${it.field}: ${it.defaultMessage}" }
@@ -25,7 +25,7 @@ class ReadabilityExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException::class)
     fun handleConstraintViolation(
-        e: ConstraintViolationException
+        e: ConstraintViolationException,
     ): ResponseEntity<Map<String, String?>> {
         val message =
             e.constraintViolations.joinToString(", ") { "${it.propertyPath}: ${it.message}" }

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 @OptIn(ExperimentalTime::class)
 @Component
 class RedisPublisher(
-    @param:Qualifier("redisStreamEventStore") override val eventStore: EventStore
+    @param:Qualifier("redisStreamEventStore") override val eventStore: EventStore,
 ) : EventPublisher {
     @Scheduled(fixedRate = 5_000)
     override fun publish() {

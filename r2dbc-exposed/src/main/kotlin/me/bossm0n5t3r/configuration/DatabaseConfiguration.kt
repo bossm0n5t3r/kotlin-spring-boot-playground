@@ -22,7 +22,7 @@ class DatabaseConfiguration(private val databaseProperties: DatabaseProperties) 
     @Bean
     @Primary
     fun masterDatabase(
-        @Qualifier("r2dbcDatabaseConfig") config: R2dbcDatabaseConfig.Builder
+        @Qualifier("r2dbcDatabaseConfig") config: R2dbcDatabaseConfig.Builder,
     ): R2dbcDatabase =
         R2dbcDatabase.connect(
             connectionFactory = ConnectionFactories.get(databaseProperties.master.r2dbc.url),
@@ -31,7 +31,7 @@ class DatabaseConfiguration(private val databaseProperties: DatabaseProperties) 
 
     @Bean
     fun slaveDatabase(
-        @Qualifier("r2dbcDatabaseConfig") config: R2dbcDatabaseConfig.Builder
+        @Qualifier("r2dbcDatabaseConfig") config: R2dbcDatabaseConfig.Builder,
     ): R2dbcDatabase =
         R2dbcDatabase.connect(
             connectionFactory = ConnectionFactories.get(databaseProperties.slave.r2dbc.url),

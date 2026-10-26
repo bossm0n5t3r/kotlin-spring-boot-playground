@@ -53,6 +53,6 @@ class SlaveDataSourceConfiguration {
 
     @Bean(name = [TRANSACTION_MANAGER])
     fun slaveTransactionManager(
-        @Qualifier("slaveEntityManagerFactory") emf: EntityManagerFactory
+        @Qualifier("slaveEntityManagerFactory") emf: EntityManagerFactory,
     ): PlatformTransactionManager = JpaTransactionManager(emf)
 }

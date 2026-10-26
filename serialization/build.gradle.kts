@@ -13,7 +13,13 @@ java { toolchain { languageVersion = JavaLanguageVersion.of(libs.versions.jdk.ge
 
 repositories { mavenCentral() }
 
-dependencyManagement { imports { mavenBom(libs.spring.boot.dependencies.get().toString()) } }
+dependencyManagement {
+    imports {
+        mavenBom(libs.spring.boot.dependencies.get().toString()) {
+            bomProperty("kotlin.version", libs.versions.kotlin.get())
+        }
+    }
+}
 
 dependencies {
     testImplementation(libs.jackson.module.kotlin)

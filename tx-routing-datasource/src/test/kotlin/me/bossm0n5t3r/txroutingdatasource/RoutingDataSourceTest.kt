@@ -44,7 +44,7 @@ class RoutingDataSourceTest {
 
         @Bean
         fun routingKeyProbe(
-            @Qualifier("routingDataSource") routingDataSource: RoutingDataSource
+            @Qualifier("routingDataSource") routingDataSource: RoutingDataSource,
         ): RoutingKeyProbe {
             return RoutingKeyProbe(routingDataSource)
         }

@@ -37,8 +37,8 @@ class UserControllerTest {
                         """
                         {"name":"master","email":"master@example.com"}
                         """
-                            .trimIndent()
-                    )
+                            .trimIndent(),
+                    ),
             )
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.id").value(1))
@@ -78,8 +78,8 @@ class UserControllerTest {
                         """
                         {"name":"updated"}
                         """
-                            .trimIndent()
-                    )
+                            .trimIndent(),
+                    ),
             )
             .andExpect(status().isNoContent)
     }

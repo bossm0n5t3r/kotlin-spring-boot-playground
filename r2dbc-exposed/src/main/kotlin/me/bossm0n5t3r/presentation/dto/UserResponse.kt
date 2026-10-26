@@ -4,7 +4,7 @@ import me.bossm0n5t3r.application.dto.UserDto
 
 data class UserResponse(val id: Long, val name: String, val age: Int) {
     constructor(
-        userDto: UserDto
+        userDto: UserDto,
     ) : this(id = userDto.id.value, name = userDto.name, age = userDto.age)
 }
 

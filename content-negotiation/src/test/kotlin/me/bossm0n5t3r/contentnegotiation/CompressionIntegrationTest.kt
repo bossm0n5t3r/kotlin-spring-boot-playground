@@ -125,7 +125,7 @@ class CompressionIntegrationTest {
                 gzipBytes = gzipBytes.size.toLong(),
                 ratio = ratio,
                 gzipApplied = gzipApplied,
-            )
+            ),
         )
     }
 
@@ -143,7 +143,7 @@ class CompressionIntegrationTest {
         results.sortedWith(compareBy({ it.format }, { it.endpoint })).forEach {
             val ratioStr = it.ratio?.toString() ?: "-"
             sb.append(
-                "| ${it.format} | ${it.endpoint} | ${it.identityBytes} | ${it.gzipBytes} | $ratioStr | ${it.gzipApplied} |\n"
+                "| ${it.format} | ${it.endpoint} | ${it.identityBytes} | ${it.gzipBytes} | $ratioStr | ${it.gzipApplied} |\n",
             )
         }
         return sb.toString()
