@@ -1,4 +1,4 @@
-package me.bossm0n5t3r.nullsafety
+package me.bossm0n5t3r.nullsafety.scalar
 
 import java.net.URI
 import java.net.http.HttpClient

@@ -100,14 +100,20 @@
 
 ## 파일 구성
 
-- `NullSafetyController.kt`: 8개 직접 바인딩 API
-- `NullSafetyDto.kt`: 4개 요청 DTO와 응답 DTO
-- `NestedNullSafetyController.kt`, `NestedNullSafetyDto.kt`: 중첩 DTO 비교 API 16개와 부모 DTO 8개, 자식 DTO
-- `ValidationExceptionHandler.kt`: Bean Validation 오류 응답 Advice
+- 기준 패키지: `me.bossm0n5t3r.nullsafety`. 애플리케이션 클래스는 루트에 유지합니다.
+- `scalar/`: 단일 필드 예제
+  - `NullSafetyController.kt`: 8개 직접 바인딩 API
+  - `NullSafetyDto.kt`: 4개 요청 DTO와 응답 DTO
+- `nested/`: 중첩 DTO 예제
+  - `NestedNullSafetyController.kt`, `NestedNullSafetyDto.kt`: API 16개와 부모 DTO 8개, 자식 DTO
+- `validation/`: 예제 간 공유하는 검증 오류 처리
+  - `ValidationExceptionHandler.kt`: Bean Validation 오류 응답 Advice
+  - `ValidationErrorResponse.kt`: 공통 오류 응답 DTO
+- 테스트도 `src/test/kotlin` 아래에 동일한 `scalar/`, `nested/` 패키지로 구분합니다.
 
 ## 테스트
 
 - 두 ApiTest 모두 임의 포트의 실제 Spring Boot 서버에 HTTP 요청을 보냅니다.
-  - `NullSafetyApiTest`: 기존 단일 필드 8개 조합 × 누락/null/0/25 = 32개.
-  - `NestedNullSafetyApiTest`: 중첩 DTO 전체 16개 조합 × 입력 6종 = 96개.
+  - `scalar/NullSafetyApiTest.kt`: 기존 단일 필드 8개 조합 × 누락/null/0/25 = 32개.
+  - `nested/NestedNullSafetyApiTest.kt`: 중첩 DTO 전체 16개 조합 × 입력 6종 = 96개.
 - 총 128개 시나리오에서 HTTP 상태와 허용된 입력의 응답값, Bean Validation 오류 필드를 검증합니다.

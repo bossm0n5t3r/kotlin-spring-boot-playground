@@ -1,4 +1,4 @@
-package me.bossm0n5t3r.nullsafety
+package me.bossm0n5t3r.nullsafety.scalar
 
 import jakarta.validation.constraints.NotNull
 
@@ -11,5 +11,3 @@ data class NullableAgeRequest(val age: Int?)
 data class NullableNotNullAgeRequest(@field:NotNull val age: Int?)
 
 data class AgeResponse(val age: Int?)
-
-data class ValidationErrorResponse(val fields: List<String>)

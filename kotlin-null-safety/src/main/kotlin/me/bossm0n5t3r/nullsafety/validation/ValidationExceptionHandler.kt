@@ -1,4 +1,4 @@
-package me.bossm0n5t3r.nullsafety
+package me.bossm0n5t3r.nullsafety.validation
 
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.MethodArgumentNotValidException
