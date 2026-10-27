@@ -1,0 +1,53 @@
+@baseUrl = http://localhost:8080/api/null-safety/ages
+
+# Switch between {}, {"age":null}, {"age":0}, {"age":25} to compare the same input.
+# All eight combinations accept explicit 0 and 25.
+@body = {"age":null}
+
+### 1. Int, no @NotNull, no @Valid: missing/null -> 400 (Jackson)
+POST {{baseUrl}}/non-null/plain
+Content-Type: application/json
+
+{{body}}
+
+### 2. Int, no @NotNull, @Valid: missing/null -> 400 (Jackson)
+POST {{baseUrl}}/non-null/plain/valid
+Content-Type: application/json
+
+{{body}}
+
+### 3. Int, @NotNull, no @Valid: missing/null -> 400 (Jackson)
+POST {{baseUrl}}/non-null/not-null
+Content-Type: application/json
+
+{{body}}
+
+### 4. Int, @NotNull, @Valid: missing/null -> 400 (Jackson)
+POST {{baseUrl}}/non-null/not-null/valid
+Content-Type: application/json
+
+{{body}}
+
+### 5. Int?, no @NotNull, no @Valid: missing/null -> 200, age = null
+POST {{baseUrl}}/nullable/plain
+Content-Type: application/json
+
+{{body}}
+
+### 6. Int?, no @NotNull, @Valid: missing/null -> 200, age = null
+POST {{baseUrl}}/nullable/plain/valid
+Content-Type: application/json
+
+{{body}}
+
+### 7. Int?, @NotNull, no @Valid: missing/null -> 200, age = null
+POST {{baseUrl}}/nullable/not-null
+Content-Type: application/json
+
+{{body}}
+
+### 8. Int?, @NotNull, @Valid: missing/null -> 400, fields = [age]
+POST {{baseUrl}}/nullable/not-null/valid
+Content-Type: application/json
+
+{{body}}

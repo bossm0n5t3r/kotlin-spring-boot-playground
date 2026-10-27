@@ -25,6 +25,8 @@ This is a multi-module Gradle project:
 - **[`jdbc-exposed`](./jdbc-exposed)**: Integration of [JetBrains Exposed](https://github.com/JetBrains/Exposed) with
   JDBC in a Spring Boot environment.
 - **[`jdbc-jpa`](./jdbc-jpa)**: Standard Spring Data JPA integration.
+- **[`kotlin-null-safety`](./kotlin-null-safety)**: Runtime gaps in Kotlin DTO null safety and Bean Validation
+  prevention examples, with executable APIs and HTTP integration tests.
 - **[`r2dbc-exposed`](./r2dbc-exposed)**: Reactive database access using Exposed with R2DBC.
 - **[`security-mvc`](./security-mvc)**: Spring Security implementation for Spring MVC applications, including JWT
   authentication.
@@ -46,6 +48,7 @@ Each module has its own `main` function:
 - `http-exchange`: `me.bossm0n5t3r.HttpExchangeApplicationKt`
 - `jdbc-exposed`: `me.bossm0n5t3r.JdbcExposedApplicationKt`
 - `jdbc-jpa`: `me.bossm0n5t3r.JdbcJpaApplicationKt`
+- `kotlin-null-safety`: `me.bossm0n5t3r.nullsafety.KotlinNullSafetyApplicationKt`
 - `r2dbc-exposed`: `me.bossm0n5t3r.R2dbcExposedApplicationKt`
 - `security-mvc`: `me.bossm0n5t3r.security.mvc.SecurityMvcApplicationKt`
 - `security-webflux`: `me.bossm0n5t3r.security.webflux.SecurityWebfluxApplicationKt`
