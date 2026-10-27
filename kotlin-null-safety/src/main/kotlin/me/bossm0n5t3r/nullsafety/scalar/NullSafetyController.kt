@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/null-safety/ages", consumes = [MediaType.APPLICATION_JSON_VALUE])
 class NullSafetyController {
+    // 아래 결과는 FAIL_ON_NULL_FOR_PRIMITIVES=true(기본 모드) 기준입니다.
     // Case 1: nullable=X, @NotNull=X, @Valid=X
     // 누락/null -> 400 (Jackson 역직렬화 거부), age=0 또는 age=25 -> 200 OK
     @PostMapping("/non-null/plain")

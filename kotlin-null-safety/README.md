@@ -2,6 +2,7 @@
 
 - Spring MVC Controller의 `@RequestBody` 파라미터에 Kotlin DTO를 직접 선언하고, `nullable × @field:NotNull × @Valid`의 8개 조합을 비교합니다.
 - 중첩 DTO의 cascade 검증과 Map 자체·값·값 내부의 검증 경계도 별도 API로 비교합니다.
+- 기존 scalar API를 재사용하여 Jackson의 `FAIL_ON_NULL_FOR_PRIMITIVES` 옵션 true/false에 따른 primitive 기본값 변환도 비교합니다.
 - String으로 받거나 수동으로 JSON을 파싱하지 않습니다.
 
 ## 실행
@@ -15,6 +16,7 @@
   - [단일 필드 8개 조합](../http/kotlin-null-safety.http)
   - [중첩 DTO](../http/kotlin-null-safety-nested.http)
   - [Map](../http/kotlin-null-safety-map.http)
+  - [Primitive null 옵션 비교](../http/kotlin-null-safety-primitive-null.http)
 
 ## 8개 조합
 
@@ -177,6 +179,61 @@ data class NullableNotNullCascadeValueRequest(
   - `-Xjsr305=strict`만으로는 충분하지 않습니다.
   - 이 설정 없이 타입 인자 제약을 선언하면 이 환경에서는 Map 값의 null 및 내부 age 검증이 실행되지 않았습니다.
 
+## Primitive null 옵션 비교
+
+- 기존 `scalar` 패키지의 Controller와 DTO를 그대로 사용합니다. 비교용 Controller·DTO를 추가하지 않습니다.
+- 경로: `POST /api/null-safety/ages` 아래의 동일한 8개 API입니다.
+- 애플리케이션을 두 모드로 실행하여 `FAIL_ON_NULL_FOR_PRIMITIVES` 옵션만 다르게 적용합니다.
+  - 기본 실행은 현재 Jackson 3 기본값인 `true`를 유지합니다.
+  - `primitive-defaulting` 프로필을 활성화할 때만 `false`를 설정합니다.
+  - 프로필 파일: `src/main/resources/application-primitive-defaulting.yaml`.
+- 이 설정은 패키지 단위가 아니라 **애플리케이션의 Jackson 설정 전체**에 적용됩니다.
+  - 앞의 scalar/nested/Map 표는 기본 실행 모드 기준입니다.
+  - 기존 nested/Map 예제의 내부 age는 `Int?`이므로 해당 구조의 예제를 복제하지 않습니다.
+
+| 기존 scalar 경로           | true: 누락/null           | false: 누락/null          |
+|----------------------------|---------------------------|---------------------------|
+| `/non-null/plain`          | 400, Jackson              | 200, `{"age":0}`          |
+| `/non-null/plain/valid`    | 400, Jackson              | 200, `{"age":0}`          |
+| `/non-null/not-null`       | 400, Jackson              | 200, `{"age":0}`          |
+| `/non-null/not-null/valid` | 400, Jackson              | 200, `{"age":0}`          |
+| `/nullable/plain`          | 200, `{"age":null}`       | 200, `{"age":null}`       |
+| `/nullable/plain/valid`    | 200, `{"age":null}`       | 200, `{"age":null}`       |
+| `/nullable/not-null`       | 200, `{"age":null}`       | 200, `{"age":null}`       |
+| `/nullable/not-null/valid` | 400, `{"fields":["age"]}` | 400, `{"fields":["age"]}` |
+
+- 누락 입력은 `{}`, 명시적 null 입력은 `{"age":null}`입니다.
+- 명시적 `{"age":0}`과 `{"age":25}`는 8개 API 모두 두 모드에서 200 OK로 입력값을 반환합니다.
+- `false`는 `Int` 필드에 null을 저장하는 것이 아니라 **역직렬화 중 0으로 변환**합니다.
+  - Bean Validation이 실행될 때는 이미 null이 아니므로 `@NotNull`로 차단할 수 없습니다.
+  - 실제로 전달한 0과 누락/null에서 변환된 0을 DTO만으로 구분할 수 없습니다.
+- `Int?` 입력은 null을 보존하므로 `@NotNull + @Valid`로 두 모드 모두 차단합니다.
+- 이 옵션은 JVM primitive의 null 처리를 비교합니다. non-null 객체·Map 자체의 null 허용 설정이 아닙니다.
+
+### 두 모드 실행
+
+- 두 모드 모두 기본 포트 **8080**을 사용합니다. 한 모드를 실행하고 HTTP 파일을 보낸 뒤, 서버를 종료하고 다른 모드로 재시작합니다.
+
+```bash
+# 기본 모드: FAIL_ON_NULL_FOR_PRIMITIVES=true
+./gradlew :kotlin-null-safety:bootRun
+
+# 위 서버를 종료한 뒤 별도 프로필로 재시작: FAIL_ON_NULL_FOR_PRIMITIVES=false
+./gradlew :kotlin-null-safety:bootRun --args='--spring.profiles.active=primitive-defaulting'
+```
+
+- 기존 `scalar/NullSafetyApiTest.kt`가 기본 true 모드를 검증합니다.
+- 추가한 `scalar/NullSafetyDefaultingApiTest.kt`가 `@ActiveProfiles("primitive-defaulting")`로 false 모드를 검증합니다.
+  - 두 테스트는 동일한 8개 API에 누락/null/0/25를 보내 각각 32건을 검증합니다.
+  - 서로 다른 Spring 테스트 컨텍스트를 사용하므로 기존 기본 모드 테스트와 설정을 공유하지 않습니다.
+- 추가 HTTP 파일은 `http://localhost:8080/api/null-safety/ages`의 같은 8개 API를 호출합니다.
+  - 파일의 `@body`를 누락/null/0/25로 변경하며 각 모드에서 동일한 요청 8개를 실행하면 결과를 비교할 수 있습니다.
+  - IDE HTTP Client에서 실행하거나, Node.js 환경에서 아래 명령으로 파일 자체를 실행합니다.
+
+```bash
+npx --yes httpyac send http/kotlin-null-safety-primitive-null.http --all --output short --no-color
+```
+
 ## 파일 구성
 
 - 기준 패키지: `me.bossm0n5t3r.nullsafety`. 애플리케이션 클래스는 루트에 유지합니다.
@@ -198,12 +255,13 @@ data class NullableNotNullCascadeValueRequest(
 
 ## 테스트
 
-- 여섯 ApiTest 모두 임의 포트의 실제 Spring Boot 서버에 HTTP 요청을 보냅니다.
+- 일곱 ApiTest 모두 임의 포트의 실제 Spring Boot 서버에 HTTP 요청을 보냅니다.
   - `scalar/NullSafetyApiTest.kt`: 단일 필드 8개 조합 × 누락/null/0/25 = 32개.
   - `nested/NestedNullSafetyApiTest.kt`: 중첩 DTO 전체 16개 조합 × 입력 6종 = 96개.
   - `map/nonnull/NonNullMapApiTest.kt`: 16개 조합 × 입력 9종 = 144개.
   - `map/nonnullconstrained/NonNullConstrainedMapApiTest.kt`: 16개 조합 × 입력 9종 = 144개.
   - `map/nullable/NullableMapApiTest.kt`: 16개 조합 × 입력 9종 = 144개.
   - `map/nullableconstrained/NullableConstrainedMapApiTest.kt`: 16개 조합 × 입력 9종 = 144개.
+  - `scalar/NullSafetyDefaultingApiTest.kt`: false 프로필 모드, 기존 scalar API 8개 × 입력 4종 = 32개.
 - Map의 입력 9종은 Map 누락, Map null, 빈 Map, null 값, 내부 age 누락, 내부 age null, 정상 값 여러 개, 내부 오류 여러 개, null 값과 내부 오류 혼합입니다.
-- Map 64개 조합의 테스트는 576건이며, 기존 단일 필드·중첩 DTO 테스트를 포함한 총 704건에서 HTTP 상태와 응답값 및 Bean Validation 오류 필드를 검증합니다.
+- Map 64개 조합의 테스트는 576건이며, 단일 필드의 두 모드와 중첩 DTO를 포함한 총 736건에서 HTTP 상태와 응답값 및 Bean Validation 오류 필드를 검증합니다.

@@ -1,0 +1,65 @@
+# Both modes reuse the SAME scalar Controller, DTOs, and default port 8080.
+# Run the default mode, send these requests, then stop it and restart with:
+# ./gradlew :kotlin-null-safety:bootRun --args='--spring.profiles.active=primitive-defaulting'
+@baseUrl = http://localhost:8080/api/null-safety/ages
+
+# Compare {}, {"age":null}, {"age":0}, {"age":25}.
+# Explicit age=0 or age=25 -> 200 OK in all eight requests in either mode.
+# The descriptions below are for missing/null input.
+@body = {"age":null}
+
+### 1. nullable=X, @NotNull=X, @Valid=X
+# true -> 400 (Jackson); false -> 200, age=0
+POST {{baseUrl}}/non-null/plain
+Content-Type: application/json
+
+{{body}}
+
+### 2. nullable=X, @NotNull=X, @Valid=O
+# true -> 400 (Jackson); false -> 200, age=0
+POST {{baseUrl}}/non-null/plain/valid
+Content-Type: application/json
+
+{{body}}
+
+### 3. nullable=X, @NotNull=O, @Valid=X
+# true -> 400 (Jackson); false -> 200, age=0
+POST {{baseUrl}}/non-null/not-null
+Content-Type: application/json
+
+{{body}}
+
+### 4. nullable=X, @NotNull=O, @Valid=O
+# true -> 400 (Jackson); false -> 200, age=0 (@NotNull sees zero, not null)
+POST {{baseUrl}}/non-null/not-null/valid
+Content-Type: application/json
+
+{{body}}
+
+### 5. nullable=O, @NotNull=X, @Valid=X
+# true/false -> 200, age=null
+POST {{baseUrl}}/nullable/plain
+Content-Type: application/json
+
+{{body}}
+
+### 6. nullable=O, @NotNull=X, @Valid=O
+# true/false -> 200, age=null
+POST {{baseUrl}}/nullable/plain/valid
+Content-Type: application/json
+
+{{body}}
+
+### 7. nullable=O, @NotNull=O, @Valid=X
+# true/false -> 200, age=null (validation is not activated)
+POST {{baseUrl}}/nullable/not-null
+Content-Type: application/json
+
+{{body}}
+
+### 8. nullable=O, @NotNull=O, @Valid=O
+# true/false -> 400, fields=[age] (null is preserved)
+POST {{baseUrl}}/nullable/not-null/valid
+Content-Type: application/json
+
+{{body}}
