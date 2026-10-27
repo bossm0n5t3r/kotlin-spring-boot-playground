@@ -1,0 +1,121 @@
+@baseUrl = http://localhost:8080/api/null-safety/nested
+
+# All 16 combinations use NestedChild(@field:NotNull val age: Int?).
+# Each endpoint is tested with all six inputs:
+# {}, {"child":null}, {"child":{}}, {"child":{"age":null}},
+# {"child":{"age":0}}, {"child":{"age":25}}.
+# Change @body to compare the same input across every combination.
+# child.age=0 or child.age=25 -> 200 OK for all 16 endpoints.
+@body = {"child":{"age":null}}
+
+### 1. child nullable=X, child @NotNull=X, child @Valid=X, Controller @Valid=X
+# child missing/null -> 400 (Jackson); child.age missing/null -> 200
+POST {{baseUrl}}/non-null/plain
+Content-Type: application/json
+
+{{body}}
+
+### 2. child nullable=X, child @NotNull=X, child @Valid=X, Controller @Valid=O
+# child missing/null -> 400 (Jackson); child.age missing/null -> 200
+POST {{baseUrl}}/non-null/plain/valid
+Content-Type: application/json
+
+{{body}}
+
+### 3. child nullable=X, child @NotNull=X, child @Valid=O, Controller @Valid=X
+# child missing/null -> 400 (Jackson); child.age missing/null -> 200
+POST {{baseUrl}}/non-null/cascade
+Content-Type: application/json
+
+{{body}}
+
+### 4. child nullable=X, child @NotNull=X, child @Valid=O, Controller @Valid=O
+# child missing/null -> 400 (Jackson); child.age missing/null -> 400, fields=[child.age]
+POST {{baseUrl}}/non-null/cascade/valid
+Content-Type: application/json
+
+{{body}}
+
+### 5. child nullable=X, child @NotNull=O, child @Valid=X, Controller @Valid=X
+# child missing/null -> 400 (Jackson); child.age missing/null -> 200
+POST {{baseUrl}}/non-null/not-null
+Content-Type: application/json
+
+{{body}}
+
+### 6. child nullable=X, child @NotNull=O, child @Valid=X, Controller @Valid=O
+# child missing/null -> 400 (Jackson); child.age missing/null -> 200
+POST {{baseUrl}}/non-null/not-null/valid
+Content-Type: application/json
+
+{{body}}
+
+### 7. child nullable=X, child @NotNull=O, child @Valid=O, Controller @Valid=X
+# child missing/null -> 400 (Jackson); child.age missing/null -> 200
+POST {{baseUrl}}/non-null/not-null/cascade
+Content-Type: application/json
+
+{{body}}
+
+### 8. child nullable=X, child @NotNull=O, child @Valid=O, Controller @Valid=O
+# child missing/null -> 400 (Jackson); child.age missing/null -> 400, fields=[child.age]
+POST {{baseUrl}}/non-null/not-null/cascade/valid
+Content-Type: application/json
+
+{{body}}
+
+### 9. child nullable=O, child @NotNull=X, child @Valid=X, Controller @Valid=X
+# child missing/null -> 200; child.age missing/null -> 200
+POST {{baseUrl}}/nullable/plain
+Content-Type: application/json
+
+{{body}}
+
+### 10. child nullable=O, child @NotNull=X, child @Valid=X, Controller @Valid=O
+# child missing/null -> 200; child.age missing/null -> 200
+POST {{baseUrl}}/nullable/plain/valid
+Content-Type: application/json
+
+{{body}}
+
+### 11. child nullable=O, child @NotNull=X, child @Valid=O, Controller @Valid=X
+# child missing/null -> 200; child.age missing/null -> 200
+POST {{baseUrl}}/nullable/cascade
+Content-Type: application/json
+
+{{body}}
+
+### 12. child nullable=O, child @NotNull=X, child @Valid=O, Controller @Valid=O
+# child missing/null -> 200; child.age missing/null -> 400, fields=[child.age]
+POST {{baseUrl}}/nullable/cascade/valid
+Content-Type: application/json
+
+{{body}}
+
+### 13. child nullable=O, child @NotNull=O, child @Valid=X, Controller @Valid=X
+# child missing/null -> 200; child.age missing/null -> 200
+POST {{baseUrl}}/nullable/not-null
+Content-Type: application/json
+
+{{body}}
+
+### 14. child nullable=O, child @NotNull=O, child @Valid=X, Controller @Valid=O
+# child missing/null -> 400, fields=[child]; child.age missing/null -> 200
+POST {{baseUrl}}/nullable/not-null/valid
+Content-Type: application/json
+
+{{body}}
+
+### 15. child nullable=O, child @NotNull=O, child @Valid=O, Controller @Valid=X
+# child missing/null -> 200; child.age missing/null -> 200
+POST {{baseUrl}}/nullable/not-null/cascade
+Content-Type: application/json
+
+{{body}}
+
+### 16. child nullable=O, child @NotNull=O, child @Valid=O, Controller @Valid=O
+# child missing/null -> 400, fields=[child]; child.age missing/null -> 400, fields=[child.age]
+POST {{baseUrl}}/nullable/not-null/cascade/valid
+Content-Type: application/json
+
+{{body}}
