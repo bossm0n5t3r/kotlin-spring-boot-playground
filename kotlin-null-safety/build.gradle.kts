@@ -26,7 +26,9 @@ dependencies {
     testRuntimeOnly(libs.junit.platform.launcher)
 }
 
-kotlin { compilerOptions { freeCompilerArgs.addAll("-Xjsr305=strict") } }
+kotlin {
+    compilerOptions { freeCompilerArgs.addAll("-Xjsr305=strict", "-Xemit-jvm-type-annotations") }
+}
 
 tasks.withType<Test> { useJUnitPlatform() }
 

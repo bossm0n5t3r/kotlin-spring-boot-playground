@@ -1,0 +1,135 @@
+@baseUrl = http://localhost:8080/api/null-safety/maps
+
+# Choose one of four Map groups, then run the same 16 requests below (4 x 16 = 64 APIs):
+# non-null/plain  -> Map nullable=X, Map @NotNull=X
+# non-null/not-null -> Map nullable=X, Map @NotNull=O
+# nullable/plain  -> Map nullable=O, Map @NotNull=X
+# nullable/not-null -> Map nullable=O, Map @NotNull=O
+@mapGroup = nullable/not-null
+
+# MapChild is fixed: @field:NotNull val age: Int?.
+# Tests exercise all nine inputs for every API. Change @body to compare:
+# 1. {} (missing Map)
+# 2. {"children":null}
+# 3. {"children":{}}
+# 4. {"children":{"first":null}}
+# 5. {"children":{"first":{}}}
+# 6. {"children":{"first":{"age":null}}}
+# 7. {"children":{"first":{"age":0},"second":{"age":25}}}
+# 8. {"children":{"second":{"age":null},"first":{}}}
+# 9. {"children":{"first":null,"second":{"age":null}}}
+# Empty Map and valid entries age=0 or age=25 -> 200 OK for every API.
+# Missing/null Map depends on mapGroup and Controller @Valid; see README's group table.
+@body = {"children":{"first":{"age":null}}}
+
+### 1. Value nullable=X, value @NotNull=X, value @Valid=X, Controller @Valid=X
+# Null value -> 400 (Jackson); missing/null age -> 200
+POST {{baseUrl}}/{{mapGroup}}/values/non-null/plain
+Content-Type: application/json
+
+{{body}}
+
+### 2. Value nullable=X, value @NotNull=X, value @Valid=X, Controller @Valid=O
+# Null value -> 400 (Jackson); missing/null age -> 200
+POST {{baseUrl}}/{{mapGroup}}/values/non-null/plain/valid
+Content-Type: application/json
+
+{{body}}
+
+### 3. Value nullable=X, value @NotNull=X, value @Valid=O, Controller @Valid=X
+# Null value -> 400 (Jackson); missing/null age -> 200
+POST {{baseUrl}}/{{mapGroup}}/values/non-null/cascade
+Content-Type: application/json
+
+{{body}}
+
+### 4. Value nullable=X, value @NotNull=X, value @Valid=O, Controller @Valid=O
+# Null value -> 400 (Jackson); missing/null age -> 400, fields=[children[first].age]
+POST {{baseUrl}}/{{mapGroup}}/values/non-null/cascade/valid
+Content-Type: application/json
+
+{{body}}
+
+### 5. Value nullable=X, value @NotNull=O, value @Valid=X, Controller @Valid=X
+# Null value -> 400 (Jackson); missing/null age -> 200
+POST {{baseUrl}}/{{mapGroup}}/values/non-null/not-null
+Content-Type: application/json
+
+{{body}}
+
+### 6. Value nullable=X, value @NotNull=O, value @Valid=X, Controller @Valid=O
+# Null value -> 400 (Jackson); missing/null age -> 200
+POST {{baseUrl}}/{{mapGroup}}/values/non-null/not-null/valid
+Content-Type: application/json
+
+{{body}}
+
+### 7. Value nullable=X, value @NotNull=O, value @Valid=O, Controller @Valid=X
+# Null value -> 400 (Jackson); missing/null age -> 200
+POST {{baseUrl}}/{{mapGroup}}/values/non-null/not-null/cascade
+Content-Type: application/json
+
+{{body}}
+
+### 8. Value nullable=X, value @NotNull=O, value @Valid=O, Controller @Valid=O
+# Null value -> 400 (Jackson); missing/null age -> 400, fields=[children[first].age]
+POST {{baseUrl}}/{{mapGroup}}/values/non-null/not-null/cascade/valid
+Content-Type: application/json
+
+{{body}}
+
+### 9. Value nullable=O, value @NotNull=X, value @Valid=X, Controller @Valid=X
+# Null value -> 200; missing/null age -> 200
+POST {{baseUrl}}/{{mapGroup}}/values/nullable/plain
+Content-Type: application/json
+
+{{body}}
+
+### 10. Value nullable=O, value @NotNull=X, value @Valid=X, Controller @Valid=O
+# Null value -> 200; missing/null age -> 200
+POST {{baseUrl}}/{{mapGroup}}/values/nullable/plain/valid
+Content-Type: application/json
+
+{{body}}
+
+### 11. Value nullable=O, value @NotNull=X, value @Valid=O, Controller @Valid=X
+# Null value -> 200; missing/null age -> 200
+POST {{baseUrl}}/{{mapGroup}}/values/nullable/cascade
+Content-Type: application/json
+
+{{body}}
+
+### 12. Value nullable=O, value @NotNull=X, value @Valid=O, Controller @Valid=O
+# Null value -> 200; missing/null age -> 400, fields=[children[first].age]
+POST {{baseUrl}}/{{mapGroup}}/values/nullable/cascade/valid
+Content-Type: application/json
+
+{{body}}
+
+### 13. Value nullable=O, value @NotNull=O, value @Valid=X, Controller @Valid=X
+# Null value -> 200; missing/null age -> 200
+POST {{baseUrl}}/{{mapGroup}}/values/nullable/not-null
+Content-Type: application/json
+
+{{body}}
+
+### 14. Value nullable=O, value @NotNull=O, value @Valid=X, Controller @Valid=O
+# Null value -> 400, fields=[children[first]]; missing/null age -> 200
+POST {{baseUrl}}/{{mapGroup}}/values/nullable/not-null/valid
+Content-Type: application/json
+
+{{body}}
+
+### 15. Value nullable=O, value @NotNull=O, value @Valid=O, Controller @Valid=X
+# Null value -> 200; missing/null age -> 200
+POST {{baseUrl}}/{{mapGroup}}/values/nullable/not-null/cascade
+Content-Type: application/json
+
+{{body}}
+
+### 16. Value nullable=O, value @NotNull=O, value @Valid=O, Controller @Valid=O
+# Null value -> 400, fields=[children[first]]; missing/null age -> 400, fields=[children[first].age]
+POST {{baseUrl}}/{{mapGroup}}/values/nullable/not-null/cascade/valid
+Content-Type: application/json
+
+{{body}}
