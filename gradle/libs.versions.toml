@@ -17,6 +17,9 @@ google-protobuf = "4.36.2"
 protobuf-gradle-plugin = "0.10.0"
 mockk = "1.14.11"
 jjwt = "0.13.0"
+kotlinx-html = "0.12.0"
+onetime = "2.2.0"
+zxing = "3.5.4"
 
 # readability4k
 readability4k-bossm0n5t3r = "1.2.0"
@@ -51,10 +54,14 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 
 spring-boot-starter-data-jdbc = { module = "org.springframework.boot:spring-boot-starter-data-jdbc" }
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
+spring-boot-starter-webmvc = { module = "org.springframework.boot:spring-boot-starter-webmvc" }
+spring-boot-starter-webmvc-test = { module = "org.springframework.boot:spring-boot-starter-webmvc-test" }
 spring-boot-starter-webflux = { module = "org.springframework.boot:spring-boot-starter-webflux" }
 spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
 spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-starter-security" }
+spring-boot-starter-security-test = { module = "org.springframework.boot:spring-boot-starter-security-test" }
 spring-boot-starter-aop = { module = "org.springframework.boot:spring-boot-starter-aop", version.ref = "spring-boot-start-aop" }
+spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools" }
 
 # Reactor
 reactor-kotlin-extensions = { module = "io.projectreactor.kotlin:reactor-kotlin-extensions" }
@@ -113,6 +120,9 @@ jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
 jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
 r2dbc-postgresql = { module = "org.postgresql:r2dbc-postgresql" }
 spring-boot-starter-data-r2dbc = { module = "org.springframework.boot:spring-boot-starter-data-r2dbc" }
+kotlinx-html-jvm = { module = "org.jetbrains.kotlinx:kotlinx-html-jvm", version.ref = "kotlinx-html" }
+atlassian-onetime = { module = "com.atlassian:onetime", version.ref = "onetime" }
+zxing-javase = { module = "com.google.zxing:javase", version.ref = "zxing" }
 
 readability4k-bossm0n5t3r = { module = "com.m0n5t3r.boss:readability4k", version.ref = "readability4k-bossm0n5t3r" }
 readability4k-sermilion = { module = "com.github.Sermilion.readability4k:readability4k", version.ref = "readability4k-sermilion" }
