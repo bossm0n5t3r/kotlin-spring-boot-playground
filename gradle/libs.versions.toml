@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.4.21"
-ktfmt-gradle = "0.27.0"
+ktfmt-gradle = "0.28.0"
 jdk = "25"
 spring-boot = "4.1.2"
 spring-boot-start-aop = "4.0.0-M2"
