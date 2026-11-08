@@ -24,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException
 @RequestMapping("/totp")
 class TotpController(
     private val totpService: TotpService,
+    private val totpLockManager: TotpLockManager,
     private val totpAuthenticationHandler: TotpAuthenticationHandler,
 ) {
     @GetMapping("/setup", produces = [MediaType.TEXT_HTML_VALUE])
@@ -70,7 +71,15 @@ class TotpController(
 
         val totpSecret = user.totpSecret ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
 
+        if (totpLockManager.isLocked(user.username)) {
+            request.session.invalidate()
+            return ResponseEntity.status(HttpStatus.SEE_OTHER)
+                .location(URI("/login?locked"))
+                .build()
+        }
+
         if (totpService.verifyCode(totpSecret, code)) {
+            totpLockManager.resetFailures(user.username)
             user.mfaEnabled = true
             totpAuthenticationHandler.grantTotpFactor(
                 authentication = authentication,
@@ -80,6 +89,7 @@ class TotpController(
             return ResponseEntity.status(HttpStatus.SEE_OTHER).location(URI("/dashboard")).build()
         }
 
+        totpLockManager.recordFailure(user.username)
         return ResponseEntity.ok(
             totpSetupPage(
                 qrCode =
@@ -121,7 +131,15 @@ class TotpController(
             authentication.getCurrentUserDetailOrNull()?.user
                 ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
 
+        if (totpLockManager.isLocked(user.username)) {
+            request.session.invalidate()
+            return ResponseEntity.status(HttpStatus.SEE_OTHER)
+                .location(URI("/login?locked"))
+                .build()
+        }
+
         if (totpService.verifyCode(user.totpSecret, code)) {
+            totpLockManager.resetFailures(user.username)
             totpAuthenticationHandler.grantTotpFactor(
                 authentication = authentication,
                 request = request,
@@ -130,6 +148,7 @@ class TotpController(
             return ResponseEntity.status(HttpStatus.SEE_OTHER).location(URI("/dashboard")).build()
         }
 
+        totpLockManager.recordFailure(user.username)
         return ResponseEntity.ok(
             totpVerifyPage(
                 username = user.username,

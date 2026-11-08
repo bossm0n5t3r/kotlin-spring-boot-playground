@@ -15,11 +15,13 @@ class LoginController {
     fun login(
         @RequestParam error: String?,
         @RequestParam logout: String?,
+        @RequestParam locked: String?,
         csrfToken: CsrfToken,
     ): String =
         loginPage(
             csrfToken,
-            error?.let { "Invalid username or password" },
+            locked?.let { "Too many failed attempts. Please try again later." }
+                ?: error?.let { "Invalid username or password" },
             logout?.let { "You have been logged out" },
         )
 }
