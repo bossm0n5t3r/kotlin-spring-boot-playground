@@ -1,0 +1,4 @@
+totp:
+  allowed:
+    past-steps: 1
+    future-steps: 1
