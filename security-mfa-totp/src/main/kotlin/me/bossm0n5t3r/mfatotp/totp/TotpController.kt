@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import java.net.URI
 import me.bossm0n5t3r.mfatotp.user.TotpUserDetails
-import me.bossm0n5t3r.mfatotp.view.dashboardPage
 import me.bossm0n5t3r.mfatotp.view.totpSetupPage
 import me.bossm0n5t3r.mfatotp.view.totpVerifyPage
 import org.springframework.http.HttpStatus
@@ -78,7 +77,7 @@ class TotpController(
                 request = request,
                 response = response,
             )
-            return ResponseEntity.ok(dashboardPage(username = user.username, csrf = csrfToken))
+            return ResponseEntity.status(HttpStatus.SEE_OTHER).location(URI("/dashboard")).build()
         }
 
         return ResponseEntity.ok(
@@ -114,7 +113,7 @@ class TotpController(
         response: HttpServletResponse,
         @RequestParam code: String? = null,
         csrfToken: CsrfToken,
-    ): String {
+    ): ResponseEntity<String> {
         val authentication =
             getAuthenticationOrNull() ?: throw ResponseStatusException(HttpStatus.FORBIDDEN)
 
@@ -128,13 +127,15 @@ class TotpController(
                 request = request,
                 response = response,
             )
-            return dashboardPage(username = user.username, csrf = csrfToken)
+            return ResponseEntity.status(HttpStatus.SEE_OTHER).location(URI("/dashboard")).build()
         }
 
-        return totpVerifyPage(
-            username = user.username,
-            csrf = csrfToken,
-            error = "Invalid code. Please try again.",
+        return ResponseEntity.ok(
+            totpVerifyPage(
+                username = user.username,
+                csrf = csrfToken,
+                error = "Invalid code. Please try again.",
+            ),
         )
     }
 
