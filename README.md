@@ -12,7 +12,7 @@ Exposed, R2DBC), Server-Sent Events (SSE), Content Negotiation, and Serializatio
 - **Database Integrations:** Exposed (JDBC/R2DBC), Spring Data JPA, R2DBC, H2, PostgreSQL
 - **Messaging:** Redis Streams, Apache Kafka
 - **Serialization:** Jackson, kotlinx.serialization, Gson, Protobuf, MessagePack
-- **Security:** Spring Security (MVC & WebFlux), JWT
+- **Security:** Spring Security (MVC & WebFlux), JWT, MFA with TOTP
 
 ## 📂 Project Structure
 
@@ -22,12 +22,19 @@ This is a multi-module Gradle project:
 - **[`content-negotiation`](./content-negotiation)**: Experimenting with different content types (JSON, MessagePack,
   Protobuf) and HTTP compression (Gzip). Includes automated compression ratio reports.
 - **[`http-exchange`](./http-exchange)**: Demonstration of Spring's HTTP Interface (introduced in Spring 6).
+- **[`interface-delegation`](./interface-delegation)**: Kotlin interface delegation (`by` keyword) examples, both
+  standalone and combined with Spring components.
 - **[`jdbc-exposed`](./jdbc-exposed)**: Integration of [JetBrains Exposed](https://github.com/JetBrains/Exposed) with
   JDBC in a Spring Boot environment.
 - **[`jdbc-jpa`](./jdbc-jpa)**: Standard Spring Data JPA integration.
 - **[`kotlin-null-safety`](./kotlin-null-safety)**: Runtime gaps in Kotlin DTO null safety and Bean Validation
   prevention examples, with executable APIs and HTTP integration tests.
 - **[`r2dbc-exposed`](./r2dbc-exposed)**: Reactive database access using Exposed with R2DBC.
+- **[`readability4k`](./readability4k)**: Article content extraction API comparing two Readability4K libraries
+  (`bossm0n5t3r`, `sermilion`) via `GET /readability4k/{library}`, with an Astro frontend and a Docker Compose deploy
+  script.
+- **[`security-mfa-totp`](./security-mfa-totp)**: Two-factor authentication (password + TOTP) using Spring Security 7
+  Multi-Factor Authentication, with QR code setup, server-rendered kotlinx.html views, and verification attempt lockout.
 - **[`security-mvc`](./security-mvc)**: Spring Security implementation for Spring MVC applications, including JWT
   authentication.
 - **[`security-webflux`](./security-webflux)**: Spring Security implementation for Spring WebFlux (Reactive)
@@ -46,10 +53,13 @@ Each module has its own `main` function:
 - `account`: `me.bossm0n5t3r.account.AccountApplicationKt`
 - `content-negotiation`: `me.bossm0n5t3r.contentnegotiation.ContentNegotiationApplicationKt`
 - `http-exchange`: `me.bossm0n5t3r.HttpExchangeApplicationKt`
+- `interface-delegation`: `me.bossm0n5t3r.delegation.spring.InterfaceDelegationApplicationKt`
 - `jdbc-exposed`: `me.bossm0n5t3r.JdbcExposedApplicationKt`
 - `jdbc-jpa`: `me.bossm0n5t3r.JdbcJpaApplicationKt`
 - `kotlin-null-safety`: `me.bossm0n5t3r.nullsafety.KotlinNullSafetyApplicationKt`
 - `r2dbc-exposed`: `me.bossm0n5t3r.R2dbcExposedApplicationKt`
+- `readability4k`: `me.bossm0n5t3r.readability4k.Readability4kApplicationKt`
+- `security-mfa-totp`: `me.bossm0n5t3r.mfatotp.SecurityMfaTotpApplicationKt`
 - `security-mvc`: `me.bossm0n5t3r.security.mvc.SecurityMvcApplicationKt`
 - `security-webflux`: `me.bossm0n5t3r.security.webflux.SecurityWebfluxApplicationKt`
 - `sse`: `me.bossm0n5t3r.sse.SseApplicationKt`
@@ -95,13 +105,13 @@ Or the `content-negotiation` module:
   ```bash
   ./gradlew test
   ```
-- **Check code style (ktlint):**
+- **Check code style (ktfmt):**
   ```bash
-  ./gradlew ktlintCheck
+  ./gradlew ktfmtCheck
   ```
-- **Format code (ktlint):**
+- **Format code (ktfmt):**
   ```bash
-  ./gradlew ktlintFormat
+  ./gradlew ktfmtFormat
   ```
 
 ## 🧪 Testing
