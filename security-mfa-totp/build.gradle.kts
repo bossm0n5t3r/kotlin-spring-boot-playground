@@ -20,6 +20,9 @@ dependencies {
     implementation(libs.spring.boot.starter.security)
     implementation(libs.kotlin.reflect)
 
+    // jackson
+    implementation(libs.tools.jackson.module.kotlin)
+
     // kotlinx.html
     implementation(libs.kotlinx.html.jvm)
 

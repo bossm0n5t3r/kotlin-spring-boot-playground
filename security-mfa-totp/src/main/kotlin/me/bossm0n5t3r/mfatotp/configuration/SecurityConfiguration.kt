@@ -23,7 +23,7 @@ class SecurityConfiguration(
             .authorizeHttpRequests { auth ->
                 auth
                     // Public pages
-                    .requestMatchers("/", "/error", "/css/**", "/js/**")
+                    .requestMatchers("/", "/api/users", "/error", "/css/**", "/js/**")
                     .permitAll()
                     // TOTP pages - only need password factor
                     .requestMatchers("/totp/**")
@@ -34,6 +34,7 @@ class SecurityConfiguration(
                     .anyRequest()
                     .authenticated()
             }
+            .csrf { csrf -> csrf.ignoringRequestMatchers("/api/users") }
             .formLogin { form -> form.successHandler(totpAuthenticationHandler).permitAll() }
             .logout { logout -> logout.logoutSuccessUrl("/?logout").permitAll() }
             .userDetailsService(userStore)
