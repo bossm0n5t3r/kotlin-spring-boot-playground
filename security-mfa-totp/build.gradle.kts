@@ -32,6 +32,9 @@ dependencies {
     // QR Code
     implementation(libs.zxing.javase)
 
+    // Annotations
+    compileOnly(libs.jetbrains.annotations)
+
     // Dev Tools
     developmentOnly(libs.spring.boot.devtools)
 

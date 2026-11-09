@@ -4,6 +4,7 @@ import java.time.Clock
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
+import org.jetbrains.annotations.VisibleForTesting
 import org.springframework.stereotype.Component
 
 @Component
@@ -30,6 +31,9 @@ class TotpLockManager(
     fun resetFailures(username: String) {
         failures.remove(username)
     }
+
+    @VisibleForTesting
+    internal fun failureCount(username: String): Int = failures[username]?.count ?: 0
 
     private fun FailureState.isExpired(now: Instant = clock.instant()) =
         Duration.between(lastFailedAt, now) >= LOCK_DURATION
