@@ -6,11 +6,18 @@ import com.atlassian.onetime.core.TOTPGenerator
 import com.atlassian.onetime.model.TOTPSecret
 import com.atlassian.onetime.service.RandomSecretProvider
 import com.atlassian.onetime.service.TOTPConfiguration
+import com.google.zxing.BinaryBitmap
+import com.google.zxing.client.j2se.BufferedImageLuminanceSource
+import com.google.zxing.common.HybridBinarizer
+import com.google.zxing.qrcode.QRCodeReader
 import com.google.zxing.qrcode.QRCodeWriter
 import java.time.Duration
+import java.util.Base64
 import java.util.stream.Stream
+import javax.imageio.ImageIO
 import kotlin.test.Test
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import me.bossm0n5t3r.mfatotp.support.MutableClock
 import org.junit.jupiter.api.DisplayName
@@ -169,7 +176,7 @@ class TotpServiceTest {
         weirdCodes.forEach { weirdCode ->
             val result = sut.verifyCode(secret, weirdCode)
 
-            assertTrue { result }
+            assertTrue("weirdCode=`$weirdCode`") { result }
         }
     }
 
@@ -228,7 +235,7 @@ class TotpServiceTest {
 
     @Test
     @DisplayName("generateQrCodeDataUri - 'data:image/png;base64,' 형식을 반환해야 한다")
-    fun generateQrCodeDataUriTest() {
+    fun generateQrCodeDataUriTest0() {
         // given
         val username = "anonymous"
         val secret = sut.generateSecret()
@@ -238,6 +245,30 @@ class TotpServiceTest {
 
         // then
         assertTrue { qrCodeDataUri.startsWith("data:image/png;base64,") }
+    }
+
+    @Test
+    @DisplayName(
+        "generateQrCodeDataUri - QR 코드에 secret, username, issuer 가 담긴 otpauth URL 이 들어 있어야 한다",
+    )
+    fun generateQrCodeDataUriTest1() {
+        // given
+        val username = "anonymous"
+        val secret = sut.generateSecret()
+
+        // when
+        val qrCodeDataUri = sut.generateQrCodeDataUri(username, secret)
+
+        // then
+        val png = Base64.getDecoder().decode(qrCodeDataUri.removePrefix("data:image/png;base64,"))
+        val image = assertNotNull(ImageIO.read(png.inputStream()))
+        val bitmap = BinaryBitmap(HybridBinarizer(BufferedImageLuminanceSource(image)))
+        val url = QRCodeReader().decode(bitmap).text
+
+        assertTrue("url=`$url`") { url.startsWith("otpauth://totp/") }
+        assertTrue("url=`$url`") { url.contains("secret=$secret") }
+        assertTrue("url=`$url`") { url.contains(username) }
+        assertTrue("url=`$url`") { url.contains("issuer=ksbp-security-mfa-totp") }
     }
 
     companion object {
