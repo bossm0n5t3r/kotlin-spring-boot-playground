@@ -2,3 +2,7 @@ totp:
   allowed:
     past-steps: 1
     future-steps: 1
+  start-time: 0
+  time-step-seconds: 30
+  otp-length: six
+  digest: sha1

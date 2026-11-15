@@ -1,7 +1,5 @@
 package me.bossm0n5t3r.mfatotp.configuration
 
-import com.atlassian.onetime.core.HMACDigest
-import com.atlassian.onetime.core.OTPLength
 import com.atlassian.onetime.core.TOTPGenerator
 import com.atlassian.onetime.service.RandomSecretProvider
 import com.atlassian.onetime.service.SecretProvider
@@ -25,10 +23,10 @@ class TotpBeanConfiguration(
     fun totpGenerator(clock: Clock): TOTPGenerator {
         return TOTPGenerator(
             clock = clock,
-            startTime = 0,
-            timeStepSeconds = 30,
-            otpLength = OTPLength.SIX,
-            digest = HMACDigest.SHA1,
+            startTime = totpProperties.startTime,
+            timeStepSeconds = totpProperties.timeStepSeconds,
+            otpLength = totpProperties.otpLength,
+            digest = totpProperties.digest,
         )
     }
 
