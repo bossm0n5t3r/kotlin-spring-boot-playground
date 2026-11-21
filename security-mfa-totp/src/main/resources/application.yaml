@@ -6,3 +6,6 @@ totp:
   time-step-seconds: 30
   otp-length: six
   digest: sha1
+  lock:
+    max-failures: 3
+    duration: 1h

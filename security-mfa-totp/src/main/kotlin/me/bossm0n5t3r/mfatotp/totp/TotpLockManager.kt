@@ -10,14 +10,18 @@ import org.springframework.stereotype.Component
 @Component
 class TotpLockManager(
     private val clock: Clock,
+    totpProperties: TotpProperties,
 ) {
+    private val maxFailures = totpProperties.lock.maxFailures
+    private val lockDuration = totpProperties.lock.duration
+
     private data class FailureState(val count: Int, val lastFailedAt: Instant)
 
     private val failures = ConcurrentHashMap<String, FailureState>()
 
     fun isLocked(username: String): Boolean {
         val state = failures[username] ?: return false
-        return state.count >= MAX_VERIFY_FAILURE_COUNT && !state.isExpired()
+        return state.count >= maxFailures && !state.isExpired()
     }
 
     /**
@@ -31,7 +35,7 @@ class TotpLockManager(
             when {
                 state == null || state.isExpired(now) ->
                     FailureState(1, now).also { recorded = true }
-                state.count >= MAX_VERIFY_FAILURE_COUNT -> state
+                state.count >= maxFailures -> state
                 else -> FailureState(state.count + 1, now).also { recorded = true }
             }
         }
@@ -46,10 +50,5 @@ class TotpLockManager(
     internal fun failureCount(username: String): Int = failures[username]?.count ?: 0
 
     private fun FailureState.isExpired(now: Instant = clock.instant()) =
-        Duration.between(lastFailedAt, now) >= LOCK_DURATION
-
-    companion object {
-        private const val MAX_VERIFY_FAILURE_COUNT = 3
-        private val LOCK_DURATION = Duration.ofHours(1)
-    }
+        Duration.between(lastFailedAt, now) >= lockDuration
 }

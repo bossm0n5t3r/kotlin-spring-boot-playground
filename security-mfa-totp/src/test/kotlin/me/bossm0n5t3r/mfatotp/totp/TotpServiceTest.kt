@@ -36,6 +36,7 @@ class TotpServiceTest {
             timeStepSeconds = 30,
             otpLength = OTPLength.SIX,
             digest = HMACDigest.SHA1,
+            lock = TotpProperties.Lock(maxFailures = 3, duration = Duration.ofHours(1)),
         )
     private val clock = MutableClock()
     private val secretProvider = RandomSecretProvider()

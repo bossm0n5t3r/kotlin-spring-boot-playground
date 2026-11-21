@@ -53,8 +53,9 @@
 
 - **MFA 재설정 차단**: 이미 MFA를 켠 사용자가 `/totp/setup`에 접근하면 `/totp/verify`로 redirect하고, `POST /totp/setup/verify`는 403을 반환합니다.
   비밀번호만 아는 공격자가 기존 시크릿을 다시 발급받는 것을 막습니다.
-- **시도 횟수 제한**: `TotpLockManager`가 사용자별 TOTP 실패 횟수를 기록합니다. 3회 실패하면 마지막 실패 시각부터 1시간 동안 잠기고, 잠긴 상태로 요청하면 세션을 무효화한 뒤
-  `/login?locked`로 보냅니다. 만료 계산은 주입받은 `Clock`을 사용합니다.
+- **시도 횟수 제한**: `TotpLockManager`가 사용자별 TOTP 시도 횟수를 기록합니다. 시도는 코드 검증 전에 먼저 기록하므로 동시 요청으로도 제한을 넘을 수 없고, 성공하면
+  초기화됩니다. 3회 실패하면 마지막 실패 시각부터 1시간 동안 잠기고, 잠긴 상태로 요청하면 세션을 무효화한 뒤 `/login?locked`로 보냅니다. 횟수와 시간은
+  `application.yaml`의 `totp.lock.max-failures`, `totp.lock.duration`으로 설정하며, 만료 계산은 주입받은 `Clock`을 사용합니다.
 - **허용 시간 범위**: `application.yaml`의 `totp.allowed.past-steps`, `future-steps`로 현재 시각 앞뒤 몇 스텝(30초 단위)의 코드를 허용할지 설정합니다.
 
 ## 주요 구성

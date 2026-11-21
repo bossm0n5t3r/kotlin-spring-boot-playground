@@ -1,5 +1,7 @@
 package me.bossm0n5t3r.mfatotp.totp
 
+import com.atlassian.onetime.core.HMACDigest
+import com.atlassian.onetime.core.OTPLength
 import java.time.Duration
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
@@ -12,7 +14,16 @@ import me.bossm0n5t3r.mfatotp.support.MutableClock
 
 class TotpLockManagerTest {
     private val clock = MutableClock()
-    private val sut = TotpLockManager(clock)
+    private val totpProperties =
+        TotpProperties(
+            allowed = TotpProperties.Allowed(pastSteps = 1, futureSteps = 1),
+            startTime = 0,
+            timeStepSeconds = 30,
+            otpLength = OTPLength.SIX,
+            digest = HMACDigest.SHA1,
+            lock = TotpProperties.Lock(maxFailures = 3, duration = Duration.ofHours(1)),
+        )
+    private val sut = TotpLockManager(clock, totpProperties)
 
     @Test
     fun isLocked_returns_false_if_failures_are_less_than_3() {
