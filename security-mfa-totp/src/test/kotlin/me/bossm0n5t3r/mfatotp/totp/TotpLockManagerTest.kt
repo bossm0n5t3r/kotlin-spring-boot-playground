@@ -9,13 +9,12 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import me.bossm0n5t3r.mfatotp.support.MutableClock
 
-@Suppress("NonAsciiCharacters")
 class TotpLockManagerTest {
     private val clock = MutableClock()
     private val sut = TotpLockManager(clock)
 
     @Test
-    fun `실패가 3회 미만이면 잠기지 않음`() {
+    fun isLocked_returns_false_if_failures_are_less_than_3() {
         // given
         val username = "alice"
 
@@ -27,7 +26,7 @@ class TotpLockManagerTest {
     }
 
     @Test
-    fun `3회 실패하면 잠김`() {
+    fun isLocked_returns_true_after_3_failures() {
         // given
         val username = "alice"
 
@@ -39,7 +38,7 @@ class TotpLockManagerTest {
     }
 
     @Test
-    fun `마지막 실패 후 1시간 직전까지는 잠김, 1시간이 지나면 해제`() {
+    fun isLocked_returns_true_until_1_hour_after_last_failure() {
         // given
         val username = "alice"
         repeat(3) { sut.recordFailure(username) }
@@ -58,7 +57,7 @@ class TotpLockManagerTest {
     }
 
     @Test
-    fun `잠금이 만료된 뒤 다시 실패하면 횟수가 1부터 시작`() {
+    fun recordFailure_restarts_count_from_1_after_lock_expires() {
         // given
         val username = "alice"
         repeat(3) { sut.recordFailure(username) }
@@ -72,7 +71,7 @@ class TotpLockManagerTest {
     }
 
     @Test
-    fun `resetFailures 후 잠금 해제`() {
+    fun resetFailures_unlocks_user() {
         // given
         val username = "alice"
         repeat(3) { sut.recordFailure(username) }
@@ -85,7 +84,7 @@ class TotpLockManagerTest {
     }
 
     @Test
-    fun `사용자별로 횟수를 따로 관리 (다른 사용자에게 영향 없음)`() {
+    fun failureCount_is_tracked_separately_per_user() {
         // when
         repeat(3) { sut.recordFailure("alice") }
         repeat(2) { sut.recordFailure("bob") }
@@ -103,7 +102,7 @@ class TotpLockManagerTest {
     }
 
     @Test
-    fun `동시에 recordFailure 를 호출해도 횟수가 정확함`() {
+    fun recordFailure_counts_correctly_under_concurrent_calls() {
         // given
         val username = "alice"
         val threadCount = 8

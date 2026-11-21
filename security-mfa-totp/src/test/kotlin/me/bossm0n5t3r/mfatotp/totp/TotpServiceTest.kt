@@ -20,7 +20,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import me.bossm0n5t3r.mfatotp.support.MutableClock
-import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -61,8 +60,7 @@ class TotpServiceTest {
         totpGenerator.generateCurrent(TOTPSecret.fromBase32EncodedString(secret)).value
 
     @Test
-    @DisplayName("verifyCode - 현재 시각의 올바른 코드는 통과해야 한다")
-    fun verifyCodeTest0() {
+    fun verifyCode_returns_true_for_current_code() {
         // given
         val secret = sut.generateSecret()
         val code = generateCode(secret)
@@ -75,8 +73,7 @@ class TotpServiceTest {
     }
 
     @Test
-    @DisplayName("verifyCode - 현재 시각의 틀린 코드는 실패해야 한다")
-    fun verifyCodeTest1() {
+    fun verifyCode_returns_false_for_wrong_code() {
         // given
         val secret = "ABCDEFGHIJKLMNOP"
         val code = generateCode(secret).toCharArray()
@@ -91,8 +88,7 @@ class TotpServiceTest {
     }
 
     @Test
-    @DisplayName("verifyCode - past-steps 범위 안의 코드는 통과해야 한다")
-    fun verifyCodeTest2() {
+    fun verifyCode_returns_true_if_code_is_within_past_steps() {
         // given
         val secret = sut.generateSecret()
         val code = generateCode(secret)
@@ -106,8 +102,7 @@ class TotpServiceTest {
     }
 
     @Test
-    @DisplayName("verifyCode - past-steps 범위 밖의 코드는 실패해야 한다")
-    fun verifyCodeTest3() {
+    fun verifyCode_returns_false_if_code_is_beyond_past_steps() {
         // given
         val secret = sut.generateSecret()
         val code = generateCode(secret)
@@ -121,8 +116,7 @@ class TotpServiceTest {
     }
 
     @Test
-    @DisplayName("verifyCode - future-steps 범위 안의 코드는 통과해야 한다")
-    fun verifyCodeTest4() {
+    fun verifyCode_returns_true_if_code_is_within_future_steps() {
         // given
         val secret = sut.generateSecret()
         val steps = stepsOf(totpProperties.allowed.futureSteps.toLong())
@@ -138,8 +132,7 @@ class TotpServiceTest {
     }
 
     @Test
-    @DisplayName("verifyCode - future-steps 범위 밖의 코드는 실패해야 한다")
-    fun verifyCodeTest5() {
+    fun verifyCode_returns_false_if_code_is_beyond_future_steps() {
         // given
         val secret = sut.generateSecret()
         val steps = stepsOf(totpProperties.allowed.futureSteps + 1L)
@@ -155,8 +148,7 @@ class TotpServiceTest {
     }
 
     @Test
-    @DisplayName("verifyCode - 공백이나 '-' 가 섞인 코드도 정규화 후 검증해야 한다")
-    fun verifyCodeTest6() {
+    fun verifyCode_normalizes_spaces_and_hyphens_in_code() {
         // given
         val secret = sut.generateSecret()
         val code = generateCode(secret)
@@ -182,8 +174,10 @@ class TotpServiceTest {
 
     @ParameterizedTest(name = "secret=`{0}`, code=`{1}`")
     @MethodSource("secretAndCodeAreNullOrBlank")
-    @DisplayName("verifyCode - secret 이나 code 가 null 또는 빈 문자열이면 실패해야 한다")
-    fun verifyCodeTest7(secret: String?, code: String?) {
+    fun verifyCode_returns_false_if_secret_and_code_are_null_or_blank(
+        secret: String?,
+        code: String?,
+    ) {
         // when, then
         val result = sut.verifyCode(secret, code)
 
@@ -193,8 +187,7 @@ class TotpServiceTest {
     @ParameterizedTest(name = "code=`{0}`")
     @NullAndEmptySource
     @ValueSource(strings = [" "])
-    @DisplayName("verifyCode - secret 이 유효해도 code 가 null 또는 빈 문자열이면 실패해야 한다")
-    fun verifyCodeTest8(code: String?) {
+    fun verifyCode_returns_false_if_code_is_null_or_blank(code: String?) {
         // given
         val secret = sut.generateSecret()
 
@@ -208,8 +201,7 @@ class TotpServiceTest {
     @ParameterizedTest(name = "secret=`{0}`")
     @NullAndEmptySource
     @ValueSource(strings = [" "])
-    @DisplayName("verifyCode - code 가 유효해도 secret 이 null 또는 빈 문자열이면 실패해야 한다")
-    fun verifyCodeTest9(secret: String?) {
+    fun verifyCode_returns_false_if_secret_is_null_or_blank(secret: String?) {
         // given
         val code = generateCode(sut.generateSecret())
 
@@ -221,8 +213,7 @@ class TotpServiceTest {
     }
 
     @Test
-    @DisplayName("generateSecret - Base32 secret 을 생성하고 호출마다 다른 값을 반환해야 한다")
-    fun generateSecretTest() {
+    fun generateSecret_returns_unique_base32_secret() {
         // when
         val firstSecret = sut.generateSecret()
         val secondSecret = sut.generateSecret()
@@ -234,8 +225,7 @@ class TotpServiceTest {
     }
 
     @Test
-    @DisplayName("generateQrCodeDataUri - 'data:image/png;base64,' 형식을 반환해야 한다")
-    fun generateQrCodeDataUriTest0() {
+    fun generateQrCodeDataUri_returns_png_data_uri() {
         // given
         val username = "anonymous"
         val secret = sut.generateSecret()
@@ -248,10 +238,7 @@ class TotpServiceTest {
     }
 
     @Test
-    @DisplayName(
-        "generateQrCodeDataUri - QR 코드에 secret, username, issuer 가 담긴 otpauth URL 이 들어 있어야 한다",
-    )
-    fun generateQrCodeDataUriTest1() {
+    fun generateQrCodeDataUri_encodes_otpauth_url_with_secret_username_and_issuer() {
         // given
         val username = "anonymous"
         val secret = sut.generateSecret()
