@@ -20,5 +20,5 @@ class UserStore : UserDetailsService {
         return if (users.putIfAbsent(username, user) == null) user else null
     }
 
-    fun findByUsernameOrNull(username: String) = users[username]
+    private fun findByUsernameOrNull(username: String) = users[username]
 }
