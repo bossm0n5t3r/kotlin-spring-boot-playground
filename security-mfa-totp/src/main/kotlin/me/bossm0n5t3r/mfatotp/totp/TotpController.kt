@@ -72,7 +72,7 @@ class TotpController(
 
         val totpSecret = user.totpSecret ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
 
-        if (totpLockManager.isLocked(user.username)) {
+        if (!totpLockManager.tryRecordAttempt(user.username)) {
             request.session.invalidate()
             return ResponseEntity.status(HttpStatus.SEE_OTHER)
                 .location(URI("/login?locked"))
@@ -90,7 +90,6 @@ class TotpController(
             return ResponseEntity.status(HttpStatus.SEE_OTHER).location(URI("/dashboard")).build()
         }
 
-        totpLockManager.recordFailure(user.username)
         return ResponseEntity.ok(
             totpSetupPage(
                 qrCode =
@@ -132,7 +131,7 @@ class TotpController(
             authentication.getCurrentUserDetailOrNull()?.user
                 ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
 
-        if (totpLockManager.isLocked(user.username)) {
+        if (!totpLockManager.tryRecordAttempt(user.username)) {
             request.session.invalidate()
             return ResponseEntity.status(HttpStatus.SEE_OTHER)
                 .location(URI("/login?locked"))
@@ -149,7 +148,6 @@ class TotpController(
             return ResponseEntity.status(HttpStatus.SEE_OTHER).location(URI("/dashboard")).build()
         }
 
-        totpLockManager.recordFailure(user.username)
         return ResponseEntity.ok(
             totpVerifyPage(
                 username = user.username,

@@ -20,12 +20,22 @@ class TotpLockManager(
         return state.count >= MAX_VERIFY_FAILURE_COUNT && !state.isExpired()
     }
 
-    fun recordFailure(username: String) {
+    /**
+     * Counts an attempt before the code is verified, and returns `false` without counting it if the
+     * user is locked. Counting first keeps concurrent requests from exceeding the limit.
+     */
+    fun tryRecordAttempt(username: String): Boolean {
         val now = clock.instant()
+        var recorded = false
         failures.compute(username) { _, state ->
-            if (state == null || state.isExpired(now)) FailureState(1, now)
-            else FailureState(state.count + 1, now)
+            when {
+                state == null || state.isExpired(now) ->
+                    FailureState(1, now).also { recorded = true }
+                state.count >= MAX_VERIFY_FAILURE_COUNT -> state
+                else -> FailureState(state.count + 1, now).also { recorded = true }
+            }
         }
+        return recorded
     }
 
     fun resetFailures(username: String) {

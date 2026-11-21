@@ -3,6 +3,7 @@ package me.bossm0n5t3r.mfatotp.totp
 import java.time.Duration
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -19,7 +20,7 @@ class TotpLockManagerTest {
         val username = "alice"
 
         // when
-        repeat(2) { sut.recordFailure(username) }
+        repeat(2) { sut.tryRecordAttempt(username) }
 
         // then
         assertFalse { sut.isLocked(username) }
@@ -31,7 +32,7 @@ class TotpLockManagerTest {
         val username = "alice"
 
         // when
-        repeat(3) { sut.recordFailure(username) }
+        repeat(3) { sut.tryRecordAttempt(username) }
 
         // then
         assertTrue { sut.isLocked(username) }
@@ -41,7 +42,7 @@ class TotpLockManagerTest {
     fun isLocked_returns_true_until_1_hour_after_last_failure() {
         // given
         val username = "alice"
-        repeat(3) { sut.recordFailure(username) }
+        repeat(3) { sut.tryRecordAttempt(username) }
 
         // when
         clock.advance(Duration.ofHours(1).minusNanos(1))
@@ -57,14 +58,14 @@ class TotpLockManagerTest {
     }
 
     @Test
-    fun recordFailure_restarts_count_from_1_after_lock_expires() {
+    fun tryRecordAttempt_restarts_count_from_1_after_lock_expires() {
         // given
         val username = "alice"
-        repeat(3) { sut.recordFailure(username) }
+        repeat(3) { sut.tryRecordAttempt(username) }
         clock.advance(Duration.ofHours(1))
 
         // when
-        sut.recordFailure(username)
+        sut.tryRecordAttempt(username)
 
         // then
         assertEquals(1, sut.failureCount(username))
@@ -74,7 +75,7 @@ class TotpLockManagerTest {
     fun resetFailures_unlocks_user() {
         // given
         val username = "alice"
-        repeat(3) { sut.recordFailure(username) }
+        repeat(3) { sut.tryRecordAttempt(username) }
 
         // when
         sut.resetFailures(username)
@@ -86,8 +87,8 @@ class TotpLockManagerTest {
     @Test
     fun failureCount_is_tracked_separately_per_user() {
         // when
-        repeat(3) { sut.recordFailure("alice") }
-        repeat(2) { sut.recordFailure("bob") }
+        repeat(3) { sut.tryRecordAttempt("alice") }
+        repeat(2) { sut.tryRecordAttempt("bob") }
 
         // then
         assertEquals(3, sut.failureCount("alice"))
@@ -102,11 +103,26 @@ class TotpLockManagerTest {
     }
 
     @Test
-    fun recordFailure_counts_correctly_under_concurrent_calls() {
+    fun tryRecordAttempt_returns_false_without_counting_if_locked() {
+        // given
+        val username = "alice"
+        repeat(3) { assertTrue { sut.tryRecordAttempt(username) } }
+
+        // when
+        val recorded = sut.tryRecordAttempt(username)
+
+        // then
+        assertFalse { recorded }
+        assertEquals(3, sut.failureCount(username))
+    }
+
+    @Test
+    fun tryRecordAttempt_allows_only_3_attempts_under_concurrent_calls() {
         // given
         val username = "alice"
         val threadCount = 8
-        val failuresPerThread = 10_000
+        val attemptsPerThread = 10_000
+        val recordedCount = AtomicInteger()
         val start = CountDownLatch(1)
 
         // when
@@ -115,7 +131,9 @@ class TotpLockManagerTest {
                 List(threadCount) {
                     executor.submit {
                         start.await()
-                        repeat(failuresPerThread) { sut.recordFailure(username) }
+                        repeat(attemptsPerThread) {
+                            if (sut.tryRecordAttempt(username)) recordedCount.incrementAndGet()
+                        }
                     }
                 }
             start.countDown()
@@ -123,6 +141,7 @@ class TotpLockManagerTest {
         }
 
         // then
-        assertEquals(threadCount * failuresPerThread, sut.failureCount(username))
+        assertEquals(3, recordedCount.get())
+        assertEquals(3, sut.failureCount(username))
     }
 }
