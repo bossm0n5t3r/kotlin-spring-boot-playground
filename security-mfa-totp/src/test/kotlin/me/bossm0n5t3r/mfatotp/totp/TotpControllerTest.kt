@@ -150,6 +150,16 @@ class TotpControllerTest {
     }
 
     @Test
+    fun verify_returns_400_if_secret_is_not_issued() {
+        // given
+        val username = authFlow.signUp()
+        val session = authFlow.login(username)
+
+        // when, then
+        mockMvc.perform(authFlow.verifyRequest(session, "123456")).andExpect(status().isBadRequest)
+    }
+
+    @Test
     fun verify_rejects_code_already_used_in_same_time_step() {
         // given
         val username = authFlow.signUpWithMfaEnabled()

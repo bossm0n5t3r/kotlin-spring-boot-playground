@@ -53,6 +53,8 @@
 
 - **MFA 재설정 차단**: 이미 MFA를 켠 사용자가 `/totp/setup`에 접근하면 `/totp/verify`로 redirect하고, `POST /totp/setup/verify`는 403을 반환합니다.
   비밀번호만 아는 공격자가 기존 시크릿을 다시 발급받는 것을 막습니다.
+- **코드 재사용 방지**: 코드가 맞으면 그 코드가 속한 time step을 사용자에게 기록하고, 이후에는 더 새로운 step의 코드만 받습니다. 같은 코드를 다시 내거나
+  허용 범위 안의 이전 step 코드를 내면 틀린 코드와 똑같이 처리합니다. `/totp/setup/verify`와 `/totp/verify`가 같은 기록을 씁니다.
 - **시도 횟수 제한**: `TotpLockManager`가 사용자별 TOTP 시도 횟수를 기록합니다. 시도는 코드 검증 전에 먼저 기록하므로 동시 요청으로도 제한을 넘을 수 없고, 성공하면
   초기화됩니다. 3회 실패하면 마지막 실패 시각부터 1시간 동안 잠기고, 잠긴 상태로 요청하면 세션을 무효화한 뒤 `/login?locked`로 보냅니다. 횟수와 시간은
   `application.yaml`의 `totp.lock.max-failures`, `totp.lock.duration`으로 설정하며, 만료 계산은 주입받은 `Clock`을 사용합니다.
@@ -67,7 +69,7 @@
 | `totp/TotpAuthenticationHandler`      | 로그인 성공 후 TOTP 화면 분기, `FACTOR_TOTP` 부여             |
 | `totp/TotpController`                 | TOTP 설정/인증 화면과 검증                                    |
 | `totp/TotpService`                    | 시크릿 발급, QR 코드 생성, 코드 검증                          |
-| `totp/TotpLockManager`                | TOTP 실패 횟수 기록과 잠금 판단                               |
+| `totp/TotpLockManager`                | TOTP 시도 횟수 기록과 잠금 판단                               |
 | `user/UserStore`                      | 메모리 사용자 저장소 (`UserDetailsService`)                   |
 | `web/*Controller`                     | 홈, 로그인, 회원가입, 대시보드 화면                           |
 | `view/*`                              | kotlinx.html 화면                                             |

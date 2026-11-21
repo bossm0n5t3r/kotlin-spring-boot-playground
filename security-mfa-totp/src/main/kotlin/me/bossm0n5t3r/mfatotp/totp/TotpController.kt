@@ -29,7 +29,6 @@ class TotpController(
     private val totpAuthenticationHandler: TotpAuthenticationHandler,
 ) {
     @GetMapping("/setup", produces = [MediaType.TEXT_HTML_VALUE])
-    @ResponseBody
     fun setup(csrfToken: CsrfToken): ResponseEntity<String> {
         val user =
             getCurrentUserDetailsOrNull()?.user
@@ -52,7 +51,6 @@ class TotpController(
     }
 
     @PostMapping("/setup/verify", produces = [MediaType.TEXT_HTML_VALUE])
-    @ResponseBody
     fun setupVerify(
         request: HttpServletRequest,
         response: HttpServletResponse,
@@ -117,7 +115,6 @@ class TotpController(
     }
 
     @PostMapping("/verify", produces = [MediaType.TEXT_HTML_VALUE])
-    @ResponseBody
     fun verify(
         request: HttpServletRequest,
         response: HttpServletResponse,
@@ -131,6 +128,8 @@ class TotpController(
             authentication.getCurrentUserDetailOrNull()?.user
                 ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
 
+        val totpSecret = user.totpSecret ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST)
+
         if (!totpLockManager.tryRecordAttempt(user.username)) {
             request.session.invalidate()
             return ResponseEntity.status(HttpStatus.SEE_OTHER)
@@ -138,7 +137,7 @@ class TotpController(
                 .build()
         }
 
-        if (verifyAndUseCode(user, user.totpSecret, code)) {
+        if (verifyAndUseCode(user, totpSecret, code)) {
             totpLockManager.resetFailures(user.username)
             totpAuthenticationHandler.grantTotpFactor(
                 authentication = authentication,
@@ -157,7 +156,7 @@ class TotpController(
         )
     }
 
-    private fun verifyAndUseCode(user: User, secret: String?, code: String?): Boolean {
+    private fun verifyAndUseCode(user: User, secret: String, code: String?): Boolean {
         val step = totpService.findMatchingStepOrNull(secret, code) ?: return false
         return user.useTotpStep(step)
     }
