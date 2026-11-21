@@ -2,12 +2,14 @@ package me.bossm0n5t3r.mfatotp.totp
 
 import com.atlassian.onetime.core.TOTPGenerator
 import com.atlassian.onetime.model.TOTPSecret
+import java.time.Duration
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlin.uuid.Uuid
+import me.bossm0n5t3r.mfatotp.support.MutableClock
 import me.bossm0n5t3r.mfatotp.support.MutableClockConfiguration
 import me.bossm0n5t3r.mfatotp.user.TotpUserDetails
 import me.bossm0n5t3r.mfatotp.user.User
@@ -36,6 +38,7 @@ class TotpControllerTest {
     @Autowired private lateinit var userService: UserService
     @Autowired private lateinit var userStore: UserStore
     @Autowired private lateinit var totpGenerator: TOTPGenerator
+    @Autowired private lateinit var clock: MutableClock
 
     @Test
     fun setup_issues_secret_and_qr_code_and_keeps_same_secret_on_refresh() {
@@ -146,6 +149,104 @@ class TotpControllerTest {
             .perform(verifyRequest(session, wrongCodeOf(generateCode(secret))))
             .andExpect(status().isOk)
             .andExpect(content().string(containsString(INVALID_CODE_MESSAGE)))
+    }
+
+    @Test
+    fun verify_invalidates_session_and_redirects_to_login_locked_after_3_failures() {
+        // given
+        val username = signUpWithMfaEnabled()
+        val session = login(username)
+        val secret = assertNotNull(userOf(username).totpSecret)
+        failVerify(session, secret, times = 3)
+
+        // when, then
+        mockMvc
+            .perform(verifyRequest(session, generateCode(secret)))
+            .andExpect(status().isSeeOther)
+            .andExpect(redirectedUrl("/login?locked"))
+        assertTrue(session.isInvalid)
+    }
+
+    @Test
+    fun verify_rejects_correct_code_after_relogin_if_locked() {
+        // given
+        val username = signUpWithMfaEnabled()
+        val secret = assertNotNull(userOf(username).totpSecret)
+        failVerify(login(username), secret, times = 3)
+        val newSession = login(username)
+
+        // when, then
+        mockMvc
+            .perform(verifyRequest(newSession, generateCode(secret)))
+            .andExpect(status().isSeeOther)
+            .andExpect(redirectedUrl("/login?locked"))
+    }
+
+    @Test
+    fun verify_accepts_correct_code_if_1_hour_has_passed_since_lock() {
+        // given
+        val username = signUpWithMfaEnabled()
+        val secret = assertNotNull(userOf(username).totpSecret)
+        failVerify(login(username), secret, times = 3)
+        clock.advance(Duration.ofHours(1))
+        val newSession = login(username)
+
+        // when, then
+        mockMvc
+            .perform(verifyRequest(newSession, generateCode(secret)))
+            .andExpect(status().isSeeOther)
+            .andExpect(redirectedUrl("/dashboard"))
+    }
+
+    @Test
+    fun verify_resets_failure_count_if_code_is_correct() {
+        // given
+        val username = signUpWithMfaEnabled()
+        val secret = assertNotNull(userOf(username).totpSecret)
+        val session = login(username)
+        failVerify(session, secret, times = 2)
+        mockMvc
+            .perform(verifyRequest(session, generateCode(secret)))
+            .andExpect(redirectedUrl("/dashboard"))
+        val newSession = login(username)
+
+        // when
+        failVerify(newSession, secret, times = 2)
+
+        // then
+        mockMvc
+            .perform(verifyRequest(newSession, generateCode(secret)))
+            .andExpect(status().isSeeOther)
+            .andExpect(redirectedUrl("/dashboard"))
+    }
+
+    @Test
+    fun setupVerify_and_verify_share_failure_count() {
+        // given
+        val username = signUp()
+        val session = login(username)
+        val secret = issueSecret(session, username)
+        repeat(2) {
+            mockMvc
+                .perform(setupVerifyRequest(session, wrongCodeOf(generateCode(secret))))
+                .andExpect(status().isOk)
+        }
+        failVerify(session, secret, times = 1)
+
+        // when, then
+        mockMvc
+            .perform(setupVerifyRequest(session, generateCode(secret)))
+            .andExpect(status().isSeeOther)
+            .andExpect(redirectedUrl("/login?locked"))
+    }
+
+    private fun failVerify(session: MockHttpSession, secret: String, times: Int) {
+        repeat(times) {
+            mockMvc
+                .perform(verifyRequest(session, wrongCodeOf(generateCode(secret))))
+                .andExpect(status().isOk)
+                .andExpect(content().string(containsString(INVALID_CODE_MESSAGE)))
+        }
     }
 
     private fun signUp(): String {
