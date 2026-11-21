@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import java.net.URI
 import me.bossm0n5t3r.mfatotp.user.TotpUserDetails
+import me.bossm0n5t3r.mfatotp.user.User
 import me.bossm0n5t3r.mfatotp.view.totpSetupPage
 import me.bossm0n5t3r.mfatotp.view.totpVerifyPage
 import org.springframework.http.HttpStatus
@@ -78,7 +79,7 @@ class TotpController(
                 .build()
         }
 
-        if (totpService.verifyCode(totpSecret, code)) {
+        if (verifyAndUseCode(user, totpSecret, code)) {
             totpLockManager.resetFailures(user.username)
             user.mfaEnabled = true
             totpAuthenticationHandler.grantTotpFactor(
@@ -138,7 +139,7 @@ class TotpController(
                 .build()
         }
 
-        if (totpService.verifyCode(user.totpSecret, code)) {
+        if (verifyAndUseCode(user, user.totpSecret, code)) {
             totpLockManager.resetFailures(user.username)
             totpAuthenticationHandler.grantTotpFactor(
                 authentication = authentication,
@@ -156,6 +157,11 @@ class TotpController(
                 error = "Invalid code. Please try again.",
             ),
         )
+    }
+
+    private fun verifyAndUseCode(user: User, secret: String?, code: String?): Boolean {
+        val step = totpService.findMatchingStepOrNull(secret, code) ?: return false
+        return user.useTotpStep(step)
     }
 
     private fun getAuthenticationOrNull(): Authentication? {

@@ -16,8 +16,10 @@ import java.util.Base64
 import java.util.stream.Stream
 import javax.imageio.ImageIO
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import me.bossm0n5t3r.mfatotp.support.MutableClock
 import org.junit.jupiter.params.ParameterizedTest
@@ -51,10 +53,14 @@ class TotpServiceTest {
             allowedFutureSteps = totpProperties.allowed.futureSteps,
         )
     private val qrCodeWriter = QRCodeWriter()
-    private val sut = TotpService(secretProvider, qrCodeWriter, totpGenerator, totpConfiguration)
+    private val sut =
+        TotpService(secretProvider, qrCodeWriter, totpGenerator, totpConfiguration, clock)
 
     private fun stepsOf(steps: Long): Duration =
         Duration.ofSeconds(totpProperties.timeStepSeconds * steps)
+
+    private fun currentStep(): Long =
+        (clock.millis() / 1000 - totpProperties.startTime) / totpProperties.timeStepSeconds
 
     private fun generateCode(secret: String): String =
         totpGenerator.generateCurrent(TOTPSecret.fromBase32EncodedString(secret)).value
@@ -210,6 +216,48 @@ class TotpServiceTest {
 
         // then
         assertFalse { result }
+    }
+
+    @Test
+    fun findMatchingStepOrNull_returns_current_step_for_current_code() {
+        // given
+        val secret = sut.generateSecret()
+        val code = generateCode(secret)
+
+        // when
+        val step = sut.findMatchingStepOrNull(secret, code)
+
+        // then
+        assertEquals(currentStep(), step)
+    }
+
+    @Test
+    fun findMatchingStepOrNull_returns_original_step_for_code_within_past_steps() {
+        // given
+        val secret = sut.generateSecret()
+        val code = generateCode(secret)
+        val originalStep = currentStep()
+        clock.advance(stepsOf(totpProperties.allowed.pastSteps.toLong()))
+
+        // when
+        val step = sut.findMatchingStepOrNull(secret, code)
+
+        // then
+        assertEquals(originalStep, step)
+    }
+
+    @Test
+    fun findMatchingStepOrNull_returns_null_for_wrong_code() {
+        // given
+        val secret = "ABCDEFGHIJKLMNOP"
+        val code = generateCode(secret).toCharArray()
+        code[0] = if (code[0] == '0') '1' else '0'
+
+        // when
+        val step = sut.findMatchingStepOrNull(secret, String(code))
+
+        // then
+        assertNull(step)
     }
 
     @Test

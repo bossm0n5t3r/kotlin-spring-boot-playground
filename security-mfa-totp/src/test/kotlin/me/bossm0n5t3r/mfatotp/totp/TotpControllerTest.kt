@@ -150,6 +150,61 @@ class TotpControllerTest {
     }
 
     @Test
+    fun verify_rejects_code_already_used_in_same_time_step() {
+        // given
+        val username = authFlow.signUpWithMfaEnabled()
+        val secret = authFlow.secretOf(username)
+        val code = authFlow.generateCode(secret)
+        mockMvc
+            .perform(authFlow.verifyRequest(authFlow.login(username), code))
+            .andExpect(redirectedUrl("/dashboard"))
+
+        // when, then
+        mockMvc
+            .perform(authFlow.verifyRequest(authFlow.login(username), code))
+            .andExpect(status().isOk)
+            .andExpect(content().string(containsString(INVALID_CODE_MESSAGE)))
+    }
+
+    @Test
+    fun verify_rejects_code_of_step_older_than_last_used_step() {
+        // given
+        val username = authFlow.signUpWithMfaEnabled()
+        val secret = authFlow.secretOf(username)
+        val olderCode = authFlow.generateCode(secret)
+        authFlow.advanceToNextStep()
+        mockMvc
+            .perform(
+                authFlow.verifyRequest(authFlow.login(username), authFlow.generateCode(secret)),
+            )
+            .andExpect(redirectedUrl("/dashboard"))
+
+        // when, then
+        mockMvc
+            .perform(authFlow.verifyRequest(authFlow.login(username), olderCode))
+            .andExpect(status().isOk)
+            .andExpect(content().string(containsString(INVALID_CODE_MESSAGE)))
+    }
+
+    @Test
+    fun verify_rejects_code_already_used_in_setup_verify() {
+        // given
+        val username = authFlow.signUp()
+        val setupSession = authFlow.login(username)
+        val secret = authFlow.issueSecret(setupSession, username)
+        val code = authFlow.generateCode(secret)
+        mockMvc
+            .perform(authFlow.setupVerifyRequest(setupSession, code))
+            .andExpect(redirectedUrl("/dashboard"))
+
+        // when, then
+        mockMvc
+            .perform(authFlow.verifyRequest(authFlow.login(username), code))
+            .andExpect(status().isOk)
+            .andExpect(content().string(containsString(INVALID_CODE_MESSAGE)))
+    }
+
+    @Test
     fun verify_invalidates_session_and_redirects_to_login_locked_after_3_failures() {
         // given
         val username = authFlow.signUpWithMfaEnabled()
@@ -206,6 +261,7 @@ class TotpControllerTest {
         mockMvc
             .perform(authFlow.verifyRequest(session, authFlow.generateCode(secret)))
             .andExpect(redirectedUrl("/dashboard"))
+        authFlow.advanceToNextStep()
         val newSession = authFlow.login(username)
 
         // when

@@ -2,6 +2,7 @@ package me.bossm0n5t3r.mfatotp.support
 
 import com.atlassian.onetime.core.TOTPGenerator
 import com.atlassian.onetime.model.TOTPSecret
+import java.time.Duration
 import kotlin.test.assertNotNull
 import kotlin.uuid.Uuid
 import me.bossm0n5t3r.mfatotp.user.TotpUserDetails
@@ -31,6 +32,7 @@ class AuthFlow(
     private val userService: UserService,
     private val userStore: UserStore,
     private val totpGenerator: TOTPGenerator,
+    private val clock: MutableClock,
 ) {
     fun signUp(): String {
         val username = Uuid.random().toHexDashString()
@@ -41,6 +43,7 @@ class AuthFlow(
     fun signUpWithMfaEnabled(): String {
         val username = signUp()
         completeTotpSetup(login(username), username)
+        advanceToNextStep()
         return username
     }
 
@@ -72,6 +75,10 @@ class AuthFlow(
         val session = login(username)
         completeTotpSetup(session, username)
         return session
+    }
+
+    fun advanceToNextStep() {
+        clock.advance(Duration.ofSeconds(totpGenerator.timeStepSeconds.toLong()))
     }
 
     fun userOf(username: String): User =
