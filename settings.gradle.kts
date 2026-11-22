@@ -5,6 +5,7 @@ plugins {
 rootProject.name = "kotlin-spring-boot-playground"
 
 include("account")
+include("caffeine")
 include("content-negotiation")
 include("http-exchange")
 include("interface-delegation")
