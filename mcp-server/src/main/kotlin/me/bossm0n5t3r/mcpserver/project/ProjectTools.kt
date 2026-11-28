@@ -34,6 +34,14 @@ class ProjectTools(
     )
     fun getProject(
         @McpToolParam(description = "Project ID, e.g. project-alpha") id: String,
-    ): Project =
-        projectRepository.findById(id) ?: throw NoSuchElementException("Project not found: $id")
+    ): Project {
+        // Validate before echoing: tool results are fed into the LLM context.
+        require(PROJECT_ID_PATTERN.matches(id)) { "Invalid project id format" }
+        return projectRepository.findById(id)
+            ?: throw NoSuchElementException("Project not found: $id")
+    }
+
+    companion object {
+        private val PROJECT_ID_PATTERN = Regex("^[a-z0-9-]{1,64}$")
+    }
 }
