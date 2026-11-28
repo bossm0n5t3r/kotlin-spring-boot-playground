@@ -1,44 +1,14 @@
 package me.bossm0n5t3r.mcpserver.project
 
-import io.modelcontextprotocol.client.McpClient
-import io.modelcontextprotocol.client.McpSyncClient
-import io.modelcontextprotocol.client.transport.HttpClientStreamableHttpTransport
 import io.modelcontextprotocol.spec.McpSchema
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
+import me.bossm0n5t3r.mcpserver.McpClientTestSupport
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.server.LocalServerPort
 import tools.jackson.databind.JsonNode
-import tools.jackson.databind.json.JsonMapper
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class ProjectToolsSchemaTest {
-    @LocalServerPort private var port: Int = 0
-
-    @Autowired private lateinit var jsonMapper: JsonMapper
-
-    private lateinit var client: McpSyncClient
-
-    @BeforeEach
-    fun setUp() {
-        val transport =
-            HttpClientStreamableHttpTransport.builder("http://localhost:$port")
-                .endpoint("/mcp")
-                .build()
-        client = McpClient.sync(transport).build()
-        client.initialize()
-    }
-
-    @AfterEach
-    fun tearDown() {
-        client.close()
-    }
-
+class ProjectToolsSchemaTest : McpClientTestSupport() {
     @Test
     fun listTools_returns_project_tools() {
         val tools = client.listTools().tools().associateBy { it.name() }
