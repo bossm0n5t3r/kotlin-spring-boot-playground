@@ -34,14 +34,14 @@ class ProjectToolsCallTest : McpClientTestSupport() {
         assertEquals("tenant-a", project.path("tenantId").asString())
     }
 
-    private fun callTool(
-        name: String,
-        arguments: Map<String, Any> = emptyMap(),
-    ): McpSchema.CallToolResult =
-        client.callTool(McpSchema.CallToolRequest.builder(name).arguments(arguments).build())
+    @Test
+    fun callTool_returns_project_if_undeclared_argument_is_given() {
+        val result = callTool("get_project", mapOf("id" to "project-alpha", "extra" to 1))
 
-    private fun textJson(result: McpSchema.CallToolResult): JsonNode {
-        val content = result.content().single() as McpSchema.TextContent
-        return jsonMapper.readTree(content.text())
+        assertFalse(result.isError ?: false)
+        assertEquals("project-alpha", textJson(result).path("id").asString())
     }
+
+    private fun textJson(result: McpSchema.CallToolResult): JsonNode =
+        jsonMapper.readTree(result.text())
 }

@@ -3,6 +3,7 @@ package me.bossm0n5t3r.mcpserver
 import io.modelcontextprotocol.client.McpClient
 import io.modelcontextprotocol.client.McpSyncClient
 import io.modelcontextprotocol.client.transport.HttpClientStreamableHttpTransport
+import io.modelcontextprotocol.spec.McpSchema
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
@@ -10,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import tools.jackson.databind.json.JsonMapper
 
-/** Starts the server on a random port and connects a real MCP client over Streamable HTTP. */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 abstract class McpClientTestSupport {
     @LocalServerPort private var port: Int = 0
@@ -33,4 +33,13 @@ abstract class McpClientTestSupport {
     fun closeClient() {
         client.close()
     }
+
+    protected fun callTool(
+        name: String,
+        arguments: Map<String, Any> = emptyMap(),
+    ): McpSchema.CallToolResult =
+        client.callTool(McpSchema.CallToolRequest.builder(name).arguments(arguments).build())
+
+    protected fun McpSchema.CallToolResult.text(): String =
+        (content().single() as McpSchema.TextContent).text()
 }
