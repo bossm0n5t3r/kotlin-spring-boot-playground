@@ -12,4 +12,16 @@ spring:
           mcp-endpoint: /mcp
 
 server:
+  # Local-only playground: unauthenticated MCP endpoint must not be exposed externally.
+  address: 127.0.0.1
   port: 8087
+
+playground:
+  mcp:
+    transport:
+      allowed-origins:
+        - http://localhost:*
+        - http://127.0.0.1:*
+      allowed-hosts:
+        - localhost:*
+        - 127.0.0.1:*
