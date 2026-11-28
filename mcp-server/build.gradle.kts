@@ -14,8 +14,11 @@ java { toolchain { languageVersion = JavaLanguageVersion.of(libs.versions.jdk.ge
 
 repositories { mavenCentral() }
 
+dependencyManagement { imports { mavenBom(libs.spring.ai.bom.get().toString()) } }
+
 dependencies {
     implementation(libs.spring.boot.starter.webmvc)
+    implementation(libs.spring.ai.starter.mcp.server.webmvc)
     implementation(libs.kotlin.reflect)
 
     // Test

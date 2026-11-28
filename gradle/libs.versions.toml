@@ -22,6 +22,7 @@ onetime = "2.2.0"
 zxing = "3.5.4"
 jetbrains-annotations = "26.1.0"
 caffeine = "3.3.1"
+spring-ai = "2.1.0"
 
 # readability4k
 readability4k-bossm0n5t3r = "1.2.0"
@@ -128,6 +129,8 @@ atlassian-onetime = { module = "com.atlassian:onetime", version.ref = "onetime" 
 zxing-javase = { module = "com.google.zxing:javase", version.ref = "zxing" }
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
 caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
+spring-ai-bom = { module = "org.springframework.ai:spring-ai-bom", version.ref = "spring-ai" }
+spring-ai-starter-mcp-server-webmvc = { module = "org.springframework.ai:spring-ai-starter-mcp-server-webmvc" }
 
 readability4k-bossm0n5t3r = { module = "com.m0n5t3r.boss:readability4k", version.ref = "readability4k-bossm0n5t3r" }
 readability4k-sermilion = { module = "com.github.Sermilion.readability4k:readability4k", version.ref = "readability4k-sermilion" }
